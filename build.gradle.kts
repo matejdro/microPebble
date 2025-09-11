@@ -84,6 +84,12 @@ dependencyAnalysis {
          includeGroup("com.google.dagger")
          includeDependency("javax.inject:javax.inject")
       }
+
+      bundle("kotlinxDatetime") {
+         includeDependency("org.jetbrains.kotlinx:kotlinx-io")
+         includeDependency("org.jetbrains.kotlinx:kotlinx-io-core")
+         includeDependency("org.jetbrains.kotlinx:kotlinx-datetime")
+      }
    }
 }
 

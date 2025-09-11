@@ -3,6 +3,7 @@ plugins {
    compose
    di
    navigation
+   showkase
 }
 
 android {
@@ -13,5 +14,11 @@ android {
 }
 
 dependencies {
+   api(projects.common)
+   api(libs.kotlinova.core)
    api(libs.kotlinova.navigation)
+   implementation(projects.commonCompose)
+   implementation(libs.kotlin.coroutines)
+   implementation(libs.kotlin.datetime)
+   implementation(libs.libpebble3)
 }

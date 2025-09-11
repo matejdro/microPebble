@@ -20,9 +20,11 @@ dependencies {
    api(libs.kotlinova.navigation)
 
    implementation(projects.commonCompose)
+   implementation(libs.androidx.core)
    implementation(libs.accompanist.permissions)
    implementation(libs.androidx.activity.compose)
    implementation(libs.libpebble3)
    implementation(libs.kotlin.coroutines)
+   implementation(libs.kotlin.datetime)
    implementation(libs.kotlinova.core)
 }
