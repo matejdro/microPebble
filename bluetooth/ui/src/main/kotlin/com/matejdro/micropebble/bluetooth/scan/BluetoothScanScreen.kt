@@ -2,7 +2,13 @@ package com.matejdro.micropebble.bluetooth.scan
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
+import android.companion.AssociationInfo
+import android.companion.AssociationRequest
+import android.companion.BluetoothDeviceFilter
+import android.companion.CompanionDeviceManager
+import android.content.Context
 import android.content.Intent
+import android.content.IntentSender
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -23,10 +29,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.getSystemService
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.matejdro.micropebble.bluetooth.ui.R
@@ -75,6 +83,9 @@ class BluetoothScanScreen(
                }
             }
 
+            val context = LocalContext.current
+            val companionManager = context.getSystemService<CompanionDeviceManager>()!!
+
             ScanScreenContent(
                scanState,
                toggleScan = {
@@ -86,11 +97,41 @@ class BluetoothScanScreen(
                      viewmodel.toggleScan()
                   }
                },
-               pairToDevice = viewmodel::connect,
+               pairToDevice = {
+                  associateWithCompanionManager(companionManager, it, context)
+               },
                cancelPairing = viewmodel::cancelPairing
             )
          }
       }
+   }
+
+   private fun associateWithCompanionManager(
+      companionManager: CompanionDeviceManager,
+      device: PebbleDevice,
+      context: Context,
+   ) {
+      companionManager.associate(
+         AssociationRequest.Builder().setSingleDevice(true)
+            .addDeviceFilter(
+               BluetoothDeviceFilter.Builder()
+                  .setAddress(device.identifier.asString)
+                  .build()
+            ).build(),
+         object : CompanionDeviceManager.Callback() {
+            override fun onFailure(error: CharSequence?) {}
+
+            override fun onAssociationPending(intentSender: IntentSender) {
+               super.onAssociationPending(intentSender)
+               context.startIntentSender(intentSender, null, 0, 0, 0)
+            }
+
+            override fun onAssociationCreated(associationInfo: AssociationInfo) {
+               viewmodel.connect(device)
+            }
+         },
+         null
+      )
    }
 }
 
