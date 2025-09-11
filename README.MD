@@ -2,7 +2,7 @@
 
 A small scrappy open source Pebble companion app, based on the [libpebble3](https://github.com/coredevices/libpebble3). 
 It's not meant as a grand replacement for the original app, but as a small app with the functional UI and the
-features that I care app.
+features that I care about.
 
 ## Checking out project
 
