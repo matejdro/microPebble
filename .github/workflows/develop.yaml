@@ -1,0 +1,93 @@
+name: develop-build
+run-name: Develop build of the app
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+env:
+  BUILD_NUMBER: ${{ github.run_number }}
+jobs:
+  build-app:
+    concurrency:
+      group: "develop-build"
+      cancel-in-progress: true
+    runs-on: "ubuntu-latest"
+    steps:
+      # Preparation
+
+      - name: Install screenshot test dependencies
+        run: "sudo apt-get install -y libfreetype6 fontconfig fonts-dejavu"
+      - name: Globally enable build cache and parallel execution
+        run: "mkdir -p ~/.gradle && echo -e 'org.gradle.caching=true\norg.gradle.parallel=true' >> ~/.gradle/gradle.properties"
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: temurin
+          cache: gradle
+      - uses: android-actions/setup-android@7c5672355aaa8fde5f97a91aa9a99616d1ace6bc
+      # Install extra android platform needed for Paparazzi
+      - run: sdkmanager "platforms;android-33" "platforms;android-34"
+      # Build app
+
+      - name: Compile app
+        run: "./gradlew compileDebugKotlin assembleRelease"
+        env:
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+      - name: "Upload proguard mappings"
+        uses: actions/upload-artifact@v4
+        with:
+          name: mapping-app-develop-release.txt
+          path: app/build/outputs/mapping/release/mapping.txt
+
+      # Tests
+
+      - name: Lint
+        run: "./gradlew lintRelease detektMain detektTest -x detektDebug -x detektDebugUnitTest assertModuleGraph buildHealth detectTooManyFiles debugComposeCompilerCheck reportMerge --continue"
+      - name: Compile Unit Tests
+        run: "./gradlew compileDebugUnitTestSources compileReleaseUnitTestSources"
+      - name: Run Unit Tests
+        run: "./gradlew test -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest"
+      - name: "Generate new Screenshot Tests"
+        run: "config/generate-screenshots.sh master"
+      - name: "Run Screenshot Tests"
+        run: "./gradlew --continue verifyPaparazziDebug"
+      - name: "Upload Screenshot test failures"
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: failed-screenshot-tests
+          path: app-screenshot-tests/build/paparazzi/failures
+
+      - name: Generate Changelog
+        id: changelog
+        uses: inovait/actions-common/changelog-since-last-build@v8
+        with:
+          git_commit_url_prefix: 'https://github.com/matejdro/microPebble/commit/'
+          jira_url: 'https://github.com/matejdro/microPebble'
+      - name: Tag build
+        env:
+          TAG_BUILD: "1.0.0-alpha${{env.BUILD_NUMBER}}"
+        run: |
+          git tag ${{env.TAG_BUILD}}
+          git push origin ${{env.TAG_BUILD}}
+      - name: "Publish arficats to action"
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: app/build/outputs/**/*-release.apk
+      - name: Create a Release
+        uses: ncipollo/release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: 1.0.0-alpha${{ env.BUILD_NUMBER }}
+          tag: 1.0.0-alpha${{ env.BUILD_NUMBER }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          artifacts: app/build/outputs/apk/release/app-release.apk
+          generateReleaseNotes: false
