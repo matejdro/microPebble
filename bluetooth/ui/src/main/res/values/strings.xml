@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="start_scan">Start scan</string>
+    <string name="stop_scan">Stop scan</string>
+    <string name="pair">Pair</string>
+    <string name="discovered_watches">Discovered watches:</string>
+</resources>

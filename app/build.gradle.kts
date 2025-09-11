@@ -123,6 +123,8 @@ custom {
 
 dependencies {
    implementation(projects.common)
+   implementation(projects.bluetooth.data)
+   implementation(projects.bluetooth.ui)
    implementation(projects.commonNavigation)
    implementation(projects.commonCompose)
    implementation(projects.home.ui)
@@ -136,6 +138,7 @@ dependencies {
    implementation(libs.coil)
    implementation(libs.dispatch)
    implementation(libs.kotlin.immutableCollections)
+   implementation(libs.libpebble3)
    implementation(libs.moshi)
    implementation(libs.kotlin.coroutines)
    implementation(libs.kotlinova.core)
@@ -144,6 +147,8 @@ dependencies {
 
    implementation(libs.androidx.datastore)
    implementation(libs.androidx.datastore.preferences)
+
+   runtimeOnly(libs.ktor.okhttp)
 
    debugImplementation(libs.whatTheStack)
 

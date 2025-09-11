@@ -10,11 +10,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
+import com.matejdro.micropebble.di.ApplicationGraph
+import com.matejdro.micropebble.di.MainApplicationGraph
 import dev.zacsweers.metro.createGraphFactory
 import dispatch.core.DefaultDispatcherProvider
 import dispatch.core.defaultDispatcher
-import com.matejdro.micropebble.di.ApplicationGraph
-import com.matejdro.micropebble.di.MainApplicationGraph
 import si.inova.kotlinova.core.dispatchers.AccessCallbackDispatcherProvider
 import si.inova.kotlinova.core.logging.AndroidLogcatLogger
 import si.inova.kotlinova.core.logging.LogPriority
@@ -60,6 +60,8 @@ open class MicroPebbleApplication : Application() {
             .interceptorCoroutineContext(applicationGraph.getDefaultCoroutineScope().defaultDispatcher)
             .build()
       }
+
+      applicationGraph.initLibPebble()
    }
 
    private fun enableStrictMode() {
@@ -115,11 +117,7 @@ open class MicroPebbleApplication : Application() {
             .detectResourceMismatches()
             .detectUnbufferedIo()
             .penaltyListener(ContextCompat.getMainExecutor(this)) { e ->
-               if (BuildConfig.DEBUG) {
-                  throw e
-               } else {
-                  applicationGraph.getErrorReporter().report(e)
-               }
+               reportStrictModePenalty(e)
             }
             .build()
       )
@@ -171,4 +169,5 @@ private val STRICT_MODE_EXCLUSIONS = listOf(
    "UnixDirectoryStream", // https://issuetracker.google.com/issues/270704908,
    "SurfaceControl.finalize", // https://issuetracker.google.com/issues/167533582
    "InsetsSourceControl", // https://issuetracker.google.com/issues/307473789
+   "io.rebble.libpebblecommon.di.LibPebbleModuleKt.initKoin", // libPebble init is doing a lot of main thread reads
 )

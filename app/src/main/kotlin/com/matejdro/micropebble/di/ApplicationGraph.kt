@@ -1,12 +1,13 @@
 package com.matejdro.micropebble.di
 
 import android.app.Application
+import com.matejdro.micropebble.MainViewModel
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Multibinds
 import dev.zacsweers.metro.Provides
 import dispatch.core.DefaultCoroutineScope
-import com.matejdro.micropebble.MainViewModel
-import dev.zacsweers.metro.Multibinds
+import io.rebble.libpebblecommon.connection.LibPebble
 import si.inova.kotlinova.core.reporting.ErrorReporter
 import si.inova.kotlinova.core.time.AndroidDateTimeFormatter
 import si.inova.kotlinova.navigation.conditions.ConditionalNavigationHandler
@@ -35,6 +36,7 @@ interface ApplicationGraph {
    fun getNavigationContext(): NavigationContext
    fun getDateFormatter(): AndroidDateTimeFormatter
    fun getMainViewModelFactory(): MainViewModel.Factory
+   fun initLibPebble(): LibPebble
 
    @Multibinds(allowEmpty = true)
    fun provideEmptyConditionalMultibinds(): Map<KClass<*>, ConditionalNavigationHandler>
