@@ -11,6 +11,7 @@ import androidx.core.content.getSystemService
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import com.matejdro.micropebble.di.ApplicationGraph
+import com.matejdro.micropebble.di.ComponentFactory
 import com.matejdro.micropebble.di.MainApplicationGraph
 import dev.zacsweers.metro.createGraphFactory
 import dispatch.core.DefaultDispatcherProvider
@@ -35,6 +36,9 @@ open class MicroPebbleApplication : Application() {
 
    override fun onCreate() {
       super.onCreate()
+
+      ComponentFactory.serviceFactories = applicationGraph.provideServiceFactories()
+      ComponentFactory.receiverFactories = applicationGraph.provideReceiverFactories()
 
       if (!isMainProcess()) {
          // Do not perform any initialisation in other processes, they are usually library-specific
