@@ -8,17 +8,22 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,9 +33,14 @@ import com.matejdro.micropebble.bluetooth.ui.R
 import com.matejdro.micropebble.navigation.keys.base.BluetoothScanScreenKey
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
+import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
+import io.rebble.libpebblecommon.connection.ConnectingPebbleDevice
 import io.rebble.libpebblecommon.connection.DiscoveredPebbleDevice
+import io.rebble.libpebblecommon.connection.FakeConnectedDevice
+import io.rebble.libpebblecommon.connection.PebbleBleIdentifier
 import io.rebble.libpebblecommon.connection.PebbleDevice
 import io.rebble.libpebblecommon.connection.PebbleIdentifier
+import io.rebble.libpebblecommon.connection.endpointmanager.FirmwareUpdater
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
@@ -76,7 +86,8 @@ class BluetoothScanScreen(
                      viewmodel.toggleScan()
                   }
                },
-               pairToDevice = {}
+               pairToDevice = viewmodel::connect,
+               cancelPairing = viewmodel::cancelPairing
             )
          }
       }
@@ -84,7 +95,12 @@ class BluetoothScanScreen(
 }
 
 @Composable
-private fun ScanScreenContent(scanState: ScanState, toggleScan: () -> Unit, pairToDevice: (PebbleDevice) -> Unit) {
+private fun ScanScreenContent(
+   scanState: ScanState,
+   toggleScan: () -> Unit,
+   pairToDevice: (PebbleDevice) -> Unit,
+   cancelPairing: (PebbleDevice) -> Unit,
+) {
    Column(
       Modifier
          .verticalScroll(rememberScrollState())
@@ -104,10 +120,25 @@ private fun ScanScreenContent(scanState: ScanState, toggleScan: () -> Unit, pair
       Text(stringResource(R.string.discovered_watches), modifier = Modifier.padding(vertical = 8.dp))
 
       for (watch in scanState.foundDevices) {
-         Row(Modifier.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+         Row(Modifier.defaultMinSize(minHeight = 48.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(watch.name, modifier = Modifier.weight(1f))
-            Button(onClick = { pairToDevice(watch) }) {
-               Text(stringResource(R.string.pair))
+
+            if (watch is ConnectingPebbleDevice) {
+               Row {
+                  CircularProgressIndicator(Modifier.size(24.dp))
+                  Button(onClick = { cancelPairing(watch) }) {
+                     Text(stringResource(R.string.cancel))
+                  }
+               }
+            } else if (watch is ConnectedPebbleDevice) {
+               Icon(
+                  painterResource(R.drawable.outline_check_24),
+                  contentDescription = stringResource(R.string.pairing_successful)
+               )
+            } else {
+               Button(onClick = { pairToDevice(watch) }) {
+                  Text(stringResource(R.string.pair))
+               }
             }
          }
       }
@@ -119,7 +150,7 @@ private fun ScanScreenContent(scanState: ScanState, toggleScan: () -> Unit, pair
 @ShowkaseComposable(group = "Test")
 internal fun ScanStoppedPreview() {
    PreviewTheme {
-      ScanScreenContent(ScanState(true, false, emptyList()), {}, {})
+      ScanScreenContent(ScanState(true, false, emptyList()), {}, {}, {})
    }
 }
 
@@ -128,7 +159,7 @@ internal fun ScanStoppedPreview() {
 @ShowkaseComposable(group = "Test")
 internal fun ScanStartedPreview() {
    PreviewTheme {
-      ScanScreenContent(ScanState(true, true, emptyList()), {}, {})
+      ScanScreenContent(ScanState(true, true, emptyList()), {}, {}, {})
    }
 }
 
@@ -141,19 +172,43 @@ internal fun ScanStartedWithDevicesPreview() {
          ScanState(
             true,
             true,
-            List(5) {
+            listOf(
                object : DiscoveredPebbleDevice {
                   override val identifier: PebbleIdentifier
                      get() = throw UnsupportedOperationException("Not supported in fakes")
                   override val name: String
-                     get() = "Watch $it"
+                     get() = "Discovered watch"
                   override val nickname: String?
                      get() = name
 
                   override fun connect() {}
-               }
-            }
+               },
+               object : ConnectingPebbleDevice {
+                  override val identifier: PebbleIdentifier
+                     get() = throw UnsupportedOperationException("Not supported in fakes")
+                  override val name: String
+                     get() = "Pairing watch"
+                  override val nickname: String?
+                     get() = name
+                  override val negotiating: Boolean
+                     get() = false
+                  override val rebootingAfterFirmwareUpdate: Boolean
+                     get() = false
+
+                  override fun disconnect() {}
+
+                  override fun connect() {}
+               },
+               FakeConnectedDevice(
+                  PebbleBleIdentifier(""),
+                  null,
+                  FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle,
+                  "Connected watch",
+                  null
+               )
+            )
          ),
+         {},
          {},
          {}
       )

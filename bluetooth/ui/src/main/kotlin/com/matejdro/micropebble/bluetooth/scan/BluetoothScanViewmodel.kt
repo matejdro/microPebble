@@ -4,7 +4,8 @@ import androidx.compose.runtime.Stable
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.base.BluetoothScanScreenKey
 import dev.zacsweers.metro.Inject
-import io.rebble.libpebblecommon.connection.BleDiscoveredPebbleDevice
+import io.rebble.libpebblecommon.connection.ActiveDevice
+import io.rebble.libpebblecommon.connection.PebbleDevice
 import io.rebble.libpebblecommon.connection.Scanning
 import io.rebble.libpebblecommon.connection.Watches
 import io.rebble.libpebblecommon.connection.bt.BluetoothState
@@ -33,9 +34,7 @@ class BluetoothScanViewmodel(
       actionLogger.logAction { "BluetoothScanViewmodel.onServiceRegistered()" }
 
       resources.launchResourceControlTask(_uiState) {
-         val watchesFlow = watches.watches.map { watchList ->
-            watchList.filterIsInstance<BleDiscoveredPebbleDevice>()
-         }
+         val watchesFlow = watches.watches
 
          val bluetoothFlow = scanning.bluetoothEnabled.map { it == BluetoothState.Enabled }
 
@@ -63,5 +62,17 @@ class BluetoothScanViewmodel(
       } else {
          scanning.startBleScan()
       }
+   }
+
+   fun connect(device: PebbleDevice) {
+      actionLogger.logAction { "BluetoothScanViewmodel.connect(device = ${device.name})" }
+
+      device.connect()
+   }
+
+   fun cancelPairing(device: PebbleDevice) {
+      actionLogger.logAction { "BluetoothScanViewmodel.cancelPairing(device = ${device.name})" }
+
+      (device as? ActiveDevice)?.disconnect()
    }
 }
