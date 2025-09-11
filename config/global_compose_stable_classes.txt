@@ -1,0 +1,13 @@
+// Consider java time objects stable
+java.time.*
+// Consider kotlin collections stable
+kotlin.collections.*
+
+// Library classes
+com.zhuinden.simplestack.Backstack
+si.inova.kotlinova.core.time.AndroidDateTimeFormatter
+si.inova.kotlinova.core.time.FakeAndroidDateTimeFormatter
+si.inova.kotlinova.core.outcome.CauseException
+
+// Suspend lamdas
+kotlin.coroutines.SuspendFunction2

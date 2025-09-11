@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- This is just background for the launcher, it can be any shape -->
+    <issue id="IconLauncherShape" severity="ignore" />
+
+    <!-- Some libraries can include obsolete lint checks. We can't do anything about that, so just ignore those -->
+    <issue id="ObsoleteLintCustomCheck" severity="ignore" />
+
+    <!-- We don't care about empty folders -->
+    <issue id="IconMissingDensityFolder" severity="ignore" />
+
+    <issue id="AllowBackup" severity="ignore" />
+    <issue id="GoogleAppIndexingWarning" severity="ignore" />
+
+    <!--
+Ignore unknown issue id to allow us to configure issues in this file  that
+    do not appear in all modules (for example compose-specific)
+-->
+    <issue id="UnknownIssueId" severity="ignore" />
+
+    <!-- Do not allow builds to pass with autoboxing -->
+    <issue id="AutoboxingStateCreation" severity="error" />
+
+    <!-- We decide when we update target SDK, not lint -->
+    <issue id="OldTargetApi" severity="ignore" />
+
+    <!-- Permission checks very often happen in different place than method calls, making this more false positive than not -->
+    <issue id="MissingPermission" severity="ignore" />
+
+    <!-- We regularly update dependencies at our own pace -->
+    <issue id="AndroidGradlePluginVersion" severity="ignore" />
+    <issue id="GradleDependency" severity="ignore" />
+</lint>

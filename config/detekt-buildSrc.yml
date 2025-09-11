@@ -1,0 +1,10 @@
+config:
+  excludes: 'kotlinovanavigation'
+
+potential-bugs:
+  MissingPackageDeclaration:
+    active: false
+
+style:
+  MagicNumber:
+    active: false

@@ -1,0 +1,14 @@
+<network-security-config>
+    <!-- Allow clear text traffic on localhost on debug builds for instrumented tests -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
+
+    <!-- Override config for debug to allow cleartext traffic on tests and charles certificate -->
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>

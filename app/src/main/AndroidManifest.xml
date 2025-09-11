@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Required for WhatTheStack -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:name=".MicroPebbleApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MicroPebble"
+        android:windowSoftInputMode="adjustResize"
+        tools:ignore="UnusedAttribute">
+        <profileable android:shell="true" />
+
+        <!--
+            Compose handles all of those config changes for us, so for 100% compose app, we do not need to recreate the activity.
+
+            singleInstancePerTask + PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI allows app to be launched in multiple instances
+            side-by-side. Disable if this is not desired.
+            See https://developer.android.com/develop/ui/compose/layouts/adaptive/support-multi-window-mode#multi-instance
+        -->
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|locale|layoutDirection|density"
+            android:exported="true"
+            android:launchMode="singleInstancePerTask"
+            android:theme="@style/Theme.MicroPebble.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="demoapp" />
+            </intent-filter>
+
+            <property
+                android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
+                android:value="true" />
+        </activity>
+    </application>
+
+</manifest>

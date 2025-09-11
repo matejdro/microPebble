@@ -1,0 +1,12 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+/androidTestResultsUserPreferences.xml
+/android-architecture-playground.iml
+/modules/**/*.iml
+/appInsightsSettings.xml
+/other.xml
+/git_toolbox_blame.xml
+/runConfigurations.xml
+/AndroidProjectSystem.xml
+/jarRepositories.xml

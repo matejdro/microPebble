@@ -1,0 +1,26 @@
+ *.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+/.idea/gradle.xml
+/.idea/vcs.xml
+/.idea/misc.xml
+/.idea/kotlinc.xml
+/.idea/compiler.xml
+/.idea/.name
+/.idea/deploymentTargetDropDown.xml
+/.kotlin
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+/.idea/migrations.xml
+/merge.sarif
+/.idea/deploymentTargetSelector.xml

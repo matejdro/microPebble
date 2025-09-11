@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_no_network">You have no network connection</string>
+    <string name="error_no_network_with_existing_data">You have no network connection. Displayed data may be out of date.</string>
+    <string name="error_unknown">Something went wrong</string>
+</resources>
