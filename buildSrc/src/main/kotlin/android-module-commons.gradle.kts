@@ -1,8 +1,8 @@
 import com.android.build.api.dsl.LibraryBuildFeatures
 import com.android.build.gradle.tasks.asJavaVersion
+import jacoco.setupJacocoMergingAndroid
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import jacoco.setupJacocoMergingAndroid
 import util.commonAndroid
 
 val libs = the<LibrariesForLibs>()
@@ -30,7 +30,7 @@ commonAndroid {
    }
 
    defaultConfig {
-      minSdk = 24
+      minSdk = 26
 
       testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
    }
