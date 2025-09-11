@@ -67,7 +67,7 @@ open class MicroPebbleApplication : Application() {
    private fun enableStrictMode() {
       // Also check on staging release build, if applicable
       // penaltyListener only supports P and newer, so we are forced to only enable StrictMode on those devices
-      if (!BuildConfig.DEBUG || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+      if (!BuildConfig.DEBUG) {
          return
       }
 
@@ -79,21 +79,9 @@ open class MicroPebbleApplication : Application() {
             .detectLeakedClosableObjects()
             .detectLeakedRegistrationObjects()
             .detectLeakedSqlLiteObjects()
-            .run {
-               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                  detectCredentialProtectedWhileLocked()
-                     .detectImplicitDirectBoot()
-               } else {
-                  this
-               }
-            }
-            .run {
-               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                  detectUnsafeIntentLaunch()
-               } else {
-                  this
-               }
-            }
+            .detectCredentialProtectedWhileLocked()
+            .detectImplicitDirectBoot()
+            .detectUnsafeIntentLaunch()
             .run {
                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
                   detectBlockedBackgroundActivityLaunch()
@@ -123,13 +111,7 @@ open class MicroPebbleApplication : Application() {
       )
    }
 
-   private fun reportStrictModePenalty(violation: Violation) {
-      val e = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-         violation
-      } else {
-         IllegalStateException("Strict mode violation: $violation")
-      }
-
+   private fun reportStrictModePenalty(e: Violation) {
       if (
          e.cause == null &&
          (
