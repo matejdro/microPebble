@@ -35,6 +35,7 @@ includeBuild("libpebble3") {
 
 include(":app")
 include(":app-screenshot-tests")
+include(":bluetooth:api")
 include(":bluetooth:data")
 include(":bluetooth:ui")
 include(":common")

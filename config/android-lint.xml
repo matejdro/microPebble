@@ -31,6 +31,9 @@ Ignore unknown issue id to allow us to configure issues in this file  that
     <issue id="AndroidGradlePluginVersion" severity="ignore" />
     <issue id="GradleDependency" severity="ignore" />
 
+    <!-- We use custom AppComponentFactory -->
+    <issue id="Instantiatable" severity="ignore" />
+
     <issue id="all">
         <ignore path="**/libpebble3/**" />
     </issue>

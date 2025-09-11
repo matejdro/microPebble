@@ -123,6 +123,8 @@ custom {
 
 dependencies {
    implementation(projects.common)
+   compileOnly(projects.commonAndroid)
+   implementation(projects.bluetooth.api)
    implementation(projects.bluetooth.data)
    implementation(projects.bluetooth.ui)
    implementation(projects.commonNavigation)

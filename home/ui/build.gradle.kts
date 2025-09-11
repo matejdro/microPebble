@@ -14,6 +14,7 @@ android {
 }
 
 dependencies {
+   api(projects.bluetooth.api)
    api(projects.common)
    api(libs.kotlinova.core)
    api(libs.kotlinova.navigation)
