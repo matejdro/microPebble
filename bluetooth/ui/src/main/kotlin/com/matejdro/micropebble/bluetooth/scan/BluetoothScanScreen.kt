@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.matejdro.micropebble.bluetooth.ui.R
 import com.matejdro.micropebble.navigation.keys.base.BluetoothScanScreenKey
@@ -115,6 +116,7 @@ private fun ScanScreenContent(scanState: ScanState, toggleScan: () -> Unit, pair
 
 @Preview
 @Composable
+@ShowkaseComposable(group = "Test")
 internal fun ScanStoppedPreview() {
    PreviewTheme {
       ScanScreenContent(ScanState(true, false, emptyList()), {}, {})
@@ -123,6 +125,7 @@ internal fun ScanStoppedPreview() {
 
 @Preview
 @Composable
+@ShowkaseComposable(group = "Test")
 internal fun ScanStartedPreview() {
    PreviewTheme {
       ScanScreenContent(ScanState(true, true, emptyList()), {}, {})
@@ -131,6 +134,7 @@ internal fun ScanStartedPreview() {
 
 @Preview
 @Composable
+@ShowkaseComposable(group = "Test")
 internal fun ScanStartedWithDevicesPreview() {
    PreviewTheme {
       ScanScreenContent(

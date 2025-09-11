@@ -6,6 +6,6 @@ object Splits {
       // Then copy "Tests1" into N classes and rename it + edit SplitIndex inside the class
       // Finally, update number at the end of the "it.maxParallelForks = minOf" in the build.gradle.kts of this module
       // to the N
-      throw NotImplementedError("Missing splits")
+      emptyList()
    )
 }

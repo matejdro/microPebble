@@ -15,7 +15,7 @@ android {
       unitTests.all {
          it.useJUnit()
 
-         it.maxParallelForks = minOf(Runtime.getRuntime().availableProcessors(), 2)
+         it.maxParallelForks = 1 // minOf(Runtime.getRuntime().availableProcessors(), 2)
       }
    }
 }
@@ -55,7 +55,7 @@ dependencyAnalysis {
 }
 
 dependencies {
-   testImplementation(projects.app) {
+   implementation(projects.app) {
       // If your app has multiple flavors, this is how you define them:
       //      attributes {
       //         attribute(
