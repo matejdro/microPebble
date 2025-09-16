@@ -19,6 +19,7 @@ dependencies {
    api(libs.kotlinova.core)
    api(libs.kotlinova.navigation)
    implementation(projects.commonCompose)
+   implementation(projects.sharedResources)
    implementation(libs.kotlin.coroutines)
    implementation(libs.kotlin.datetime)
    implementation(libs.libpebble3)

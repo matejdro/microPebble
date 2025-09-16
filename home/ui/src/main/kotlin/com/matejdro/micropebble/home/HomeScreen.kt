@@ -49,6 +49,7 @@ import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
+import com.matejdro.micropebble.sharedresources.R as sharedR
 
 @InjectNavigationScreen
 class HomeScreen(
@@ -114,7 +115,7 @@ private fun HomeScreenContent(
                   if (device is ConnectedPebbleDevice) {
                      stringResource(R.string.connected)
                   } else if (device is ConnectingPebbleDevice) {
-                     stringResource(R.string.connecting)
+                     stringResource(sharedR.string.connecting)
                   } else {
                      stringResource(R.string.disconnected)
                   }

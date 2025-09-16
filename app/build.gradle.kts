@@ -130,6 +130,7 @@ dependencies {
    implementation(projects.commonNavigation)
    implementation(projects.commonCompose)
    implementation(projects.home.ui)
+   implementation(projects.sharedResources)
 
    implementation(libs.androidx.activity.compose)
    implementation(libs.androidx.core)
@@ -137,6 +138,7 @@ dependencies {
    implementation(libs.androidx.lifecycle.runtime)
    implementation(libs.androidx.lifecycle.viewModel)
    implementation(libs.androidx.lifecycle.viewModel.compose)
+   implementation(libs.accompanist.permissions)
    implementation(libs.coil)
    implementation(libs.dispatch)
    implementation(libs.kotlin.immutableCollections)

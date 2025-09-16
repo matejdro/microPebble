@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.Service
 import android.content.BroadcastReceiver
 import com.matejdro.micropebble.MainViewModel
+import com.matejdro.micropebble.notifications.NotificationChannelManager
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Multibinds
@@ -41,6 +42,7 @@ interface ApplicationGraph {
    fun getDateFormatter(): AndroidDateTimeFormatter
    fun getMainViewModelFactory(): MainViewModel.Factory
    fun initLibPebble(): LibPebble
+   fun initNotificationChannels(): NotificationChannelManager
 
    @Multibinds(allowEmpty = true)
    fun provideEmptyConditionalMultibinds(): Map<KClass<*>, ConditionalNavigationHandler>

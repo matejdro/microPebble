@@ -66,6 +66,7 @@ open class MicroPebbleApplication : Application() {
       }
 
       applicationGraph.initLibPebble()
+      applicationGraph.initNotificationChannels()
    }
 
    private fun enableStrictMode() {
