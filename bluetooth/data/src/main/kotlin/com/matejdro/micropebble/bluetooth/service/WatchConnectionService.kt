@@ -1,18 +1,22 @@
 package com.matejdro.micropebble.bluetooth.service
 
+import android.app.Notification
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.matejdro.micropebble.common.di.ServiceKey
+import com.matejdro.micropebble.common.notifications.NotificationKeys
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
 import io.rebble.libpebblecommon.connection.ConnectingPebbleDevice
 import io.rebble.libpebblecommon.connection.Watches
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.matejdro.micropebble.sharedresources.R as sharedR
 
 /**
  * Most of the connection code is in the LibPebble3. This service is mainly used to keep the app alive in the background and
@@ -25,20 +29,44 @@ class WatchConnectionService(
    private val watches: Watches,
 ) : Service() {
    private val coroutineScope = MainScope()
+   private var finishTimer: Job? = null
    override fun onCreate() {
       super.onCreate()
 
       coroutineScope.launch {
-         // Wait a bit until data is loaded from the DB.
-         // Workaround for the https://github.com/coredevices/libpebble3/issues/9
-         delay(DATABASE_LOAD_WAIT_TIME_MS)
-
          watches.watches.collect { deviceList ->
+            if (deviceList.isEmpty()) {
+               startFinishTimer()
+            } else {
+               finishTimer?.cancel()
+            }
+
             if (deviceList.none { it is ConnectedPebbleDevice || it is ConnectingPebbleDevice }) {
                // Stop the service when we have no watches to connect to
                stopSelf()
+            } else if (deviceList.any { it is ConnectingPebbleDevice }) {
+               startForeground(
+                  NotificationKeys.ID_FOREGROUND_CONNECTING,
+                  Notification.Builder(this@WatchConnectionService, NotificationKeys.CHANNEL_CONNECTING)
+                     .setContentTitle(getString(sharedR.string.app_name))
+                     .setContentText(getString(sharedR.string.connecting))
+                     .setSmallIcon(sharedR.drawable.ic_notification)
+                     .build()
+               )
+            } else {
+               stopForeground(STOP_FOREGROUND_REMOVE)
             }
          }
+      }
+   }
+
+   private fun startFinishTimer() {
+      // Wait a bit until data is loaded from the DB.
+      // Workaround for the https://github.com/coredevices/libpebble3/issues/9
+
+      coroutineScope.launch {
+         delay(DATABASE_LOAD_WAIT_TIME_MS)
+         stopSelf()
       }
    }
 

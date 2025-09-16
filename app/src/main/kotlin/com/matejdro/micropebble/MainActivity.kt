@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.matejdro.micropebble.ui.theme.MicroPebbleTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -91,6 +93,8 @@ class MainActivity : ComponentActivity() {
 
    @Composable
    private fun NavigationRoot(initialHistory: ImmutableList<ScreenKey>) {
+      RequestStartupPermissions()
+
       MicroPebbleTheme {
          // A surface container using the 'background' color from the theme
          Surface(
@@ -113,6 +117,22 @@ class MainActivity : ComponentActivity() {
 
                mainDeepLinkHandler.HandleNewIntentDeepLinks(this@MainActivity, backstack)
             }
+         }
+      }
+   }
+
+   @Composable
+   private fun RequestStartupPermissions() {
+      val permissions = rememberMultiplePermissionsState(
+         listOf(
+            android.Manifest.permission.POST_NOTIFICATIONS,
+         )
+      ) { permissions ->
+      }
+
+      LaunchedEffect(Unit) {
+         if (!permissions.allPermissionsGranted) {
+            permissions.launchMultiplePermissionRequest()
          }
       }
    }

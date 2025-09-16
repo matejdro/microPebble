@@ -3,9 +3,11 @@
           xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application>
-        <service android:name="com.matejdro.micropebble.bluetooth.service.WatchConnectionService" />
+        <service android:name="com.matejdro.micropebble.bluetooth.service.WatchConnectionService"
+                 android:foregroundServiceType="connectedDevice" />
         <receiver android:name=".service.ServiceBootStarter" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

@@ -14,6 +14,7 @@ android {
 dependencies {
    api(projects.bluetooth.api)
    api(projects.commonAndroid)
+   implementation(projects.sharedResources)
    implementation(libs.libpebble3)
    implementation(libs.kotlin.coroutines)
 }
