@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.matejdro.micropebble.ui.theme.MicroPebbleTheme
@@ -94,7 +95,10 @@ class MainActivity : ComponentActivity() {
 
    @Composable
    private fun NavigationRoot(initialHistory: ImmutableList<ScreenKey>) {
-      RequestStartupPermissions()
+      val mainState = viewModel.mainState.collectAsStateWithLifecycle().value
+      if (mainState != null) {
+         RequestStartupPermissions(mainState)
+      }
 
       MicroPebbleTheme {
          // A surface container using the 'background' color from the theme
@@ -123,7 +127,7 @@ class MainActivity : ComponentActivity() {
    }
 
    @Composable
-   private fun RequestStartupPermissions() {
+   private fun RequestStartupPermissions(mainState: MainState) {
       val permissions = rememberMultiplePermissionsState(
          listOfNotNull(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) android.Manifest.permission.POST_NOTIFICATIONS else null,
@@ -133,6 +137,8 @@ class MainActivity : ComponentActivity() {
       LaunchedEffect(Unit) {
          if (!permissions.allPermissionsGranted) {
             permissions.launchMultiplePermissionRequest()
+         } else if (!mainState.notificationListenerEnabled) {
+            viewModel.requestNotificationPermissions()
          }
       }
    }
