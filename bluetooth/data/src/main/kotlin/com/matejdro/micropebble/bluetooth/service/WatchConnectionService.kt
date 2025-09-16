@@ -64,7 +64,7 @@ class WatchConnectionService(
       // Wait a bit until data is loaded from the DB.
       // Workaround for the https://github.com/coredevices/libpebble3/issues/9
 
-      coroutineScope.launch {
+      finishTimer = coroutineScope.launch {
          delay(DATABASE_LOAD_WAIT_TIME_MS)
          stopSelf()
       }
