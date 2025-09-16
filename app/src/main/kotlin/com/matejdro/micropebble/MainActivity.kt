@@ -1,5 +1,6 @@
 package com.matejdro.micropebble
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -124,11 +125,10 @@ class MainActivity : ComponentActivity() {
    @Composable
    private fun RequestStartupPermissions() {
       val permissions = rememberMultiplePermissionsState(
-         listOf(
-            android.Manifest.permission.POST_NOTIFICATIONS,
+         listOfNotNull(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) android.Manifest.permission.POST_NOTIFICATIONS else null,
          )
-      ) { permissions ->
-      }
+      ) {}
 
       LaunchedEffect(Unit) {
          if (!permissions.allPermissionsGranted) {
