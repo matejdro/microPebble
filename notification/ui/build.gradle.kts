@@ -2,6 +2,8 @@ plugins {
    androidLibraryModule
    compose
    di
+   navigation
+   showkase
 }
 
 android {
@@ -13,7 +15,14 @@ android {
 }
 
 dependencies {
-   api(projects.notification.api)
+   api(projects.common)
+   implementation(projects.commonCompose)
 
-   testImplementation(projects.common.test)
+
+   api(libs.kotlin.coroutines)
+   api(libs.kotlinova.navigation)
+   implementation(libs.accompanist.drawablepainter)
+   implementation(libs.kotlinova.core)
+   implementation(libs.kotlin.datetime)
+   implementation(libs.libpebble3)
 }

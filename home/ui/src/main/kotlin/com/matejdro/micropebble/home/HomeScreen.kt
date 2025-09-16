@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.home.fakes.FakeDisconnectedKnownDevice
 import com.matejdro.micropebble.home.fakes.FakeKnownConnectingDevice
+import com.matejdro.micropebble.navigation.keys.NotificationAppListKey
 import com.matejdro.micropebble.navigation.keys.base.BluetoothScanScreenKey
 import com.matejdro.micropebble.navigation.keys.base.HomeScreenKey
 import com.matejdro.micropebble.ui.R
@@ -65,6 +67,7 @@ class HomeScreen(
             HomeScreenContent(
                it,
                { navigator.navigateTo(BluetoothScanScreenKey) },
+               { navigator.navigateTo(NotificationAppListKey) },
                viewModel::setDeviceConnect,
                viewModel::forgetDevice
             )
@@ -77,12 +80,22 @@ class HomeScreen(
 private fun HomeScreenContent(
    state: HomeState,
    startPairing: () -> Unit,
+   openNotificationApps: () -> Unit,
    setConnect: (KnownPebbleDevice, connect: Boolean) -> Unit,
    forget: (KnownPebbleDevice) -> Unit,
 ) {
    Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-      Button(onClick = startPairing) {
-         Text(stringResource(R.string.pair_new_watch))
+      FlowRow(
+         horizontalArrangement = Arrangement.spacedBy(8.dp),
+         verticalArrangement = Arrangement.spacedBy(8.dp)
+      ) {
+         Button(onClick = startPairing) {
+            Text(stringResource(R.string.pair_new_watch))
+         }
+
+         Button(onClick = openNotificationApps) {
+            Text(stringResource(R.string.notification_apps))
+         }
       }
 
       Text("Paired watches:", Modifier.padding(16.dp))
@@ -144,7 +157,7 @@ private const val LUMINANCE_HALF_BRIGHT = 0.5
 @ShowkaseComposable(group = "Test")
 internal fun HomeBlankPreview() {
    PreviewTheme {
-      HomeScreenContent(HomeState(emptyList()), {}, { _, _ -> }, {})
+      HomeScreenContent(HomeState(emptyList()), {}, {}, { _, _ -> }, {})
    }
 }
 
@@ -180,6 +193,6 @@ internal fun HomeWithDevicesPreview() {
    )
 
    PreviewTheme {
-      HomeScreenContent(HomeState(deviceList), {}, { _, _ -> }, {})
+      HomeScreenContent(HomeState(deviceList), {}, {}, { _, _ -> }, {})
    }
 }

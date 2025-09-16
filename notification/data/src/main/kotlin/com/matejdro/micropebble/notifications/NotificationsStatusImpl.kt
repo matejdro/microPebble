@@ -23,10 +23,11 @@ class NotificationsStatusImpl(
 
    override fun requestNotificationAccess(): Boolean {
       val companionManager = context.getSystemService<CompanionDeviceManager>() ?: return false
+
+      @Suppress("DEPRECATION")
       val associations = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
          companionManager.myAssociations
       } else {
-         @Suppress("DEPRECATION")
          companionManager.associations
       }
 

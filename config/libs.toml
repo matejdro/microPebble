@@ -66,6 +66,7 @@ versionCatalogUpdate = "1.0.0"
 whatTheStack = "1.0.0-alpha08"
 
 [libraries]
+accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 # Dummy entry, we don't need to actually use the stdlib explicitly, but it is used for the version checker to auto update kotlin
 android-agp = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
