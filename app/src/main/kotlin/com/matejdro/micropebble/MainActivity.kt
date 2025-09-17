@@ -131,6 +131,7 @@ class MainActivity : ComponentActivity() {
       val permissions = rememberMultiplePermissionsState(
          listOfNotNull(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) android.Manifest.permission.POST_NOTIFICATIONS else null,
+            android.Manifest.permission.READ_CONTACTS,
          )
       ) {}
 
