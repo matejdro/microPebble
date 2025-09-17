@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -30,10 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.matejdro.micropebble.navigation.keys.NotificationAppListKey
+import com.matejdro.micropebble.notification.ui.R
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
@@ -63,18 +67,62 @@ class NotificationAppListScreen(
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
       ) {
-         NotificationAppListScreenContent(it, viewModel::setAppEnabled)
+         NotificationAppListScreenContent(
+            it,
+            viewModel::setAppEnabled,
+            viewModel::setNotificationsPhoneMute,
+            viewModel::setCallsPhoneMute
+         )
       }
    }
 }
 
 @Composable
-private fun NotificationAppListScreenContent(apps: List<AppWithCount>, setAppEnabled: (String, Boolean) -> Unit) {
+private fun NotificationAppListScreenContent(
+   state: NotificationAppListState,
+   setAppEnabled: (String, Boolean) -> Unit,
+   setNotificationsPhoneMute: (Boolean) -> Unit,
+   setCallsPhoneMute: (Boolean) -> Unit,
+) {
    LazyColumn(
       Modifier.fillMaxSize(),
       contentPadding = WindowInsets.safeDrawing.asPaddingValues()
    ) {
-      itemsWithDivider(apps) { app ->
+      item {
+         Row(
+            Modifier
+               .fillMaxWidth()
+               .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+         ) {
+            Text(
+               stringResource(R.string.mute_phone_notifications_when_connected),
+               Modifier
+                  .padding(end = 16.dp)
+                  .weight(1f)
+            )
+            Switch(state.mutePhoneNotificationSoundsWhenConnected, onCheckedChange = setNotificationsPhoneMute)
+         }
+
+         Row(
+            Modifier
+               .fillMaxWidth()
+               .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+         ) {
+            Text(
+               stringResource(R.string.mute_phone_calls_when_connected),
+               Modifier
+                  .padding(end = 16.dp)
+                  .weight(1f)
+            )
+            Switch(state.mutePhoneCallSoundsWhenConnected, onCheckedChange = setCallsPhoneMute)
+         }
+      }
+
+      item { HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.onSurface) }
+
+      itemsWithDivider(state.apps) { app ->
          App(app, setAppEnabled = { setAppEnabled(app.app.packageName, it) })
       }
    }
@@ -104,7 +152,7 @@ private fun AppIcon(packageName: String) {
       Box(
          Modifier
             .size(32.dp)
-            .background(Color.Cyan)
+            .background(Color.Cyan),
       )
 
       return
@@ -149,6 +197,8 @@ internal fun NotificationAppListScreenContentPreview() {
          )
       }
 
-      NotificationAppListScreenContent(apps, { _, _ -> })
+      val state = NotificationAppListState(apps, true, false)
+
+      NotificationAppListScreenContent(state, { _, _ -> }, {}, {})
    }
 }

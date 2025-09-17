@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mute_phone_notifications_when_connected">Mute phone notifications when connected</string>
+    <string name="mute_phone_calls_when_connected">Mute phone calls when connected</string>
+</resources>
