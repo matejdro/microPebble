@@ -172,7 +172,8 @@ internal fun HomeWithDevicesPreview() {
          FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle,
          "Red PT",
          null,
-         color = WatchColor.TimeRed
+         color = WatchColor.TimeRed,
+         connectionFailureInfo = null
       ),
       FakeConnectedDevice(
          PebbleBleIdentifier(""),
@@ -180,15 +181,16 @@ internal fun HomeWithDevicesPreview() {
          FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle,
          "Black P2D",
          null,
-         color = WatchColor.Pebble2DuoBlack
+         color = WatchColor.Pebble2DuoBlack,
+         connectionFailureInfo = null
       ),
       FakeKnownConnectingDevice(
          name = "White P2D",
-         color = WatchColor.Pebble2DuoWhite
+         color = WatchColor.Pebble2DuoWhite,
       ),
       FakeDisconnectedKnownDevice(
          name = "Classic Fly BLue",
-         color = WatchColor.ClassicFlyBlue
+         color = WatchColor.ClassicFlyBlue,
       ),
    )
 

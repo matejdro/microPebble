@@ -25,6 +25,5 @@ dependencies {
    implementation(libs.androidx.activity.compose)
    implementation(libs.libpebble3)
    implementation(libs.kotlin.coroutines)
-   implementation(libs.kotlin.datetime)
    implementation(libs.kotlinova.core)
 }

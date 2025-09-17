@@ -21,6 +21,5 @@ dependencies {
    implementation(projects.commonCompose)
    implementation(projects.sharedResources)
    implementation(libs.kotlin.coroutines)
-   implementation(libs.kotlin.datetime)
    implementation(libs.libpebble3)
 }

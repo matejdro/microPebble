@@ -23,6 +23,5 @@ dependencies {
    api(libs.kotlinova.navigation)
    implementation(libs.accompanist.drawablepainter)
    implementation(libs.kotlinova.core)
-   implementation(libs.kotlin.datetime)
    implementation(libs.libpebble3)
 }

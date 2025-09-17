@@ -14,7 +14,6 @@ import kotlin.time.Duration.Companion.milliseconds
  *
  * @see kotlinx.coroutines.test.runTest
  */
-@OptIn(ExperimentalStdlibApi::class)
 fun runTestWithDispatchers(
    context: CoroutineContext = EmptyCoroutineContext,
    dispatchTimeoutMs: Long = 60_000L,
@@ -36,7 +35,6 @@ fun runTestWithDispatchers(
  *
  * @see kotlinx.coroutines.test.runTest
  */
-@OptIn(ExperimentalStdlibApi::class)
 fun TestScope.runTestWithDispatchers(
    dispatchTimeoutMs: Long = 60_000L,
    testBody: suspend TestScope.() -> Unit,

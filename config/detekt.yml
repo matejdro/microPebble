@@ -1150,7 +1150,10 @@ compiler:
   CompilerWarning:
     active: true
     ignoreDiagnostic:
+      # Ignore opt-in warnings (https://github.com/BraisGabin/detekt-compiler-rules/issues/47)
       - OPT_IN_USAGE
+      - OPT_IN_OVERRIDE
+      - OPT_IN_USAGE_FUTURE_ERROR
 
 kotlinovanavigation:
   NavigationKeyNoEnums:

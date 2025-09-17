@@ -43,6 +43,7 @@ import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
 import io.rebble.libpebblecommon.connection.ConnectingPebbleDevice
+import io.rebble.libpebblecommon.connection.ConnectionFailureInfo
 import io.rebble.libpebblecommon.connection.DiscoveredPebbleDevice
 import io.rebble.libpebblecommon.connection.FakeConnectedDevice
 import io.rebble.libpebblecommon.connection.PebbleBleIdentifier
@@ -221,6 +222,8 @@ internal fun ScanStartedWithDevicesPreview() {
                      get() = "Discovered watch"
                   override val nickname: String?
                      get() = name
+                  override val connectionFailureInfo: ConnectionFailureInfo?
+                     get() = null
 
                   override fun connect() {}
                },
@@ -235,6 +238,8 @@ internal fun ScanStartedWithDevicesPreview() {
                      get() = false
                   override val rebootingAfterFirmwareUpdate: Boolean
                      get() = false
+                  override val connectionFailureInfo: ConnectionFailureInfo?
+                     get() = null
 
                   override fun disconnect() {}
 
@@ -245,7 +250,8 @@ internal fun ScanStartedWithDevicesPreview() {
                   null,
                   FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle,
                   "Connected watch",
-                  null
+                  null,
+                  connectionFailureInfo = null
                )
             )
          ),

@@ -1,15 +1,13 @@
 package com.matejdro.micropebble.home.fakes
 
 import io.rebble.libpebblecommon.connection.ConnectingKnownPebbleDevice
+import io.rebble.libpebblecommon.connection.ConnectionFailureInfo
 import io.rebble.libpebblecommon.connection.PebbleBleIdentifier
 import io.rebble.libpebblecommon.connection.PebbleIdentifier
 import io.rebble.libpebblecommon.metadata.WatchColor
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
-import kotlinx.datetime.Instant
-import kotlin.time.ExperimentalTime
-import kotlin.uuid.ExperimentalUuidApi
+import kotlin.time.Instant
 
-@OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
 class FakeKnownConnectingDevice(
    override val name: String,
    override val nickname: String? = null,
@@ -19,6 +17,7 @@ class FakeKnownConnectingDevice(
    override val lastConnected: Instant = Instant.DISTANT_PAST,
    override val negotiating: Boolean = false,
    override val rebootingAfterFirmwareUpdate: Boolean = false,
+   override val connectionFailureInfo: ConnectionFailureInfo? = null,
 ) : ConnectingKnownPebbleDevice {
    override val runningFwVersion: String = "v1.2.3-core"
    override val serial: String = "XXXXXXXXXXXX"
