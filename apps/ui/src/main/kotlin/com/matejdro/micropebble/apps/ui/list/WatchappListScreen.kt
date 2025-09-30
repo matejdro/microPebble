@@ -131,7 +131,7 @@ private fun App(app: AppBasicProperties, enableActions: Boolean, delete: () -> U
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun NotificationAppListScreenContentPreview() {
+internal fun WatchappListScreenContentPreview() {
    PreviewTheme {
       val apps = List(10) {
          AppBasicProperties(
@@ -151,7 +151,7 @@ internal fun NotificationAppListScreenContentPreview() {
 @Preview
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun NotificationAppListInstallingPreview() {
+internal fun WatchappListInstallingPreview() {
    PreviewTheme {
       val apps = List(10) {
          AppBasicProperties(
@@ -171,7 +171,7 @@ internal fun NotificationAppListInstallingPreview() {
 @Preview
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun NotificationAppListInstallingErrorPreview() {
+internal fun WatchappListInstallingErrorPreview() {
    PreviewTheme {
       val apps = List(10) {
          AppBasicProperties(
