@@ -1,10 +1,12 @@
 package com.matejdro.micropebble.bluetooth.service
 
 import android.app.Notification
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.matejdro.micropebble.common.di.ServiceKey
+import com.matejdro.micropebble.common.notifications.MainActivityProvider
 import com.matejdro.micropebble.common.notifications.NotificationKeys
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
@@ -27,6 +29,7 @@ import com.matejdro.micropebble.sharedresources.R as sharedR
 @Inject
 class WatchConnectionService(
    private val watches: Watches,
+   private val mainActivityProvider: MainActivityProvider,
 ) : Service() {
    private val coroutineScope = MainScope()
    private var finishTimer: Job? = null
@@ -51,6 +54,14 @@ class WatchConnectionService(
                      .setContentTitle(getString(sharedR.string.app_name))
                      .setContentText(getString(sharedR.string.connecting))
                      .setSmallIcon(sharedR.drawable.ic_notification)
+                     .setContentIntent(
+                        PendingIntent.getActivity(
+                           this@WatchConnectionService,
+                           0,
+                           mainActivityProvider.getMainActivityIntent(),
+                           PendingIntent.FLAG_IMMUTABLE
+                        )
+                     )
                      .build()
                )
             } else {
