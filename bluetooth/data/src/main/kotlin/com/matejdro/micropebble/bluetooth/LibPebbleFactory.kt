@@ -34,7 +34,7 @@ interface LibPebbleFactory {
          }
 
          override suspend fun removeFromLocker(id: Uuid): Boolean {
-            return false
+            return true
          }
 
          override suspend fun checkForFirmwareUpdate(watch: WatchInfo): FirmwareUpdateCheckResult? {

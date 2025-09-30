@@ -1,6 +1,6 @@
 package com.matejdro.micropebble.apps.ui.list
 
-import android.content.Context
+yimport android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.compose.runtime.Stable
@@ -15,6 +15,7 @@ import io.rebble.libpebblecommon.connection.LockerApi
 import io.rebble.libpebblecommon.connection.UserFacingError
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consume
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.buffer
@@ -33,6 +34,7 @@ import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 import java.io.File
 import kotlin.time.Duration.Companion.seconds
+import kotlin.uuid.Uuid
 
 @Stable
 @Inject
@@ -46,8 +48,8 @@ class WatchappListViewModel(
 ) : SingleScreenViewModel<WatchappListKey>(resources.scope) {
    private val _uiState = MutableStateFlow<Outcome<WatchappListState>>(Outcome.Progress())
    val uiState: StateFlow<Outcome<WatchappListState>> = _uiState
-   private val _installingStatus = MutableStateFlow<Outcome<Unit>>(Outcome.Success(Unit))
-   val installingStatus: StateFlow<Outcome<Unit>> = _installingStatus
+   private val _actionStatus = MutableStateFlow<Outcome<Unit>>(Outcome.Success(Unit))
+   val actionStatus: StateFlow<Outcome<Unit>> = _actionStatus
 
    override fun onServiceRegistered() {
       actionLogger.logAction { "WatchappListViewModel.onServiceRegistered()" }
@@ -59,7 +61,7 @@ class WatchappListViewModel(
       }
    }
 
-   fun startInstall(contentUri: Uri) = resources.launchResourceControlTask(_installingStatus) {
+   fun startInstall(contentUri: Uri) = resources.launchResourceControlTask(_actionStatus) {
       actionLogger.logAction { "WatchappListViewModel.startInstall($contentUri)" }
 
       withDefault {
@@ -75,31 +77,52 @@ class WatchappListViewModel(
 
          stream.source().buffer().use { it.readAll(tmpFile.sink()) }
 
-         val errorCollection = errorHandler.userFacingErrors.filterIsInstance<UserFacingError.FailedToSideloadApp>()
-            .buffer(Channel.BUFFERED)
-            .produceIn(this)
-
-         val success = try {
-            lockerApi.sideloadApp(Path(tmpFile.absolutePath))
+         try {
+            runLibPebbleActionWithErrorConversion<UserFacingError.FailedToSideloadApp> {
+               lockerApi.sideloadApp(Path(tmpFile.absolutePath))
+            }
          } finally {
             tmpFile.delete()
             Unit // Extra Unit to not trip up detekt
          }
 
-         val result = if (!success) {
+         emit(Outcome.Success(Unit))
+      }
+   }
+
+   fun deleteApp(uuid: Uuid) = resources.launchResourceControlTask(_actionStatus) {
+      actionLogger.logAction { "WatchappListViewModel.deleteApp(uuid = $uuid)" }
+
+      withDefault {
+         runLibPebbleActionWithErrorConversion<UserFacingError.FailedToRemovePbwFromLocker> {
+            lockerApi.removeApp(uuid)
+         }
+
+         emit(Outcome.Success(Unit))
+      }
+   }
+
+   private suspend inline fun <reified E : UserFacingError> runLibPebbleActionWithErrorConversion(
+      crossinline action: suspend () -> Boolean,
+   ) {
+      coroutineScope {
+         val errorCollection = errorHandler.userFacingErrors.filterIsInstance<E>()
+            .buffer(Channel.BUFFERED)
+            .produceIn(this)
+
+         val success = action()
+
+         if (!success) {
             val error = withTimeoutOrNull(1.seconds) {
                errorCollection.consume { receive() }
             }
                ?.let { LibPebbleError(it.message) }
                ?: UnknownCauseException()
 
-            Outcome.Error(error)
-         } else {
-            errorCollection.cancel()
-            Outcome.Success(Unit)
+            throw error
          }
 
-         emit(result)
+         errorCollection.cancel()
       }
    }
 
