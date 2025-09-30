@@ -1,6 +1,6 @@
 package com.matejdro.micropebble.apps.ui.list
 
-yimport android.content.Context
+import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.compose.runtime.Stable
@@ -75,7 +75,9 @@ class WatchappListViewModel(
                "Files provider should not return null streams"
             }
 
-         stream.source().buffer().use { it.readAll(tmpFile.sink()) }
+         tmpFile.sink().use { fileSink ->
+            stream.source().buffer().use { it.readAll(fileSink) }
+         }
 
          try {
             runLibPebbleActionWithErrorConversion<UserFacingError.FailedToSideloadApp> {
