@@ -4,6 +4,7 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Binds
 import dev.zacsweers.metro.ContributesTo
 import io.rebble.libpebblecommon.connection.LibPebble
+import io.rebble.libpebblecommon.connection.LockerApi
 import io.rebble.libpebblecommon.connection.NotificationApps
 import io.rebble.libpebblecommon.connection.Scanning
 import io.rebble.libpebblecommon.connection.Watches
@@ -24,4 +25,9 @@ interface LibPebbleBindings {
    fun bindToNotificationApps(
       libPebble: LibPebble,
    ): NotificationApps
+
+   @Binds
+   fun bindToLockerApi(
+      libPebble: LibPebble,
+   ): LockerApi
 }

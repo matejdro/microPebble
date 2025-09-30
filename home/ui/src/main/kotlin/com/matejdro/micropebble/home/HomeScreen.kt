@@ -33,6 +33,7 @@ import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.home.fakes.FakeDisconnectedKnownDevice
 import com.matejdro.micropebble.home.fakes.FakeKnownConnectingDevice
 import com.matejdro.micropebble.navigation.keys.NotificationAppListKey
+import com.matejdro.micropebble.navigation.keys.WatchappListKey
 import com.matejdro.micropebble.navigation.keys.base.BluetoothScanScreenKey
 import com.matejdro.micropebble.navigation.keys.base.HomeScreenKey
 import com.matejdro.micropebble.ui.R
@@ -68,6 +69,7 @@ class HomeScreen(
                it,
                { navigator.navigateTo(BluetoothScanScreenKey) },
                { navigator.navigateTo(NotificationAppListKey) },
+               { navigator.navigateTo(WatchappListKey) },
                viewModel::setDeviceConnect,
                viewModel::forgetDevice
             )
@@ -81,6 +83,7 @@ private fun HomeScreenContent(
    state: HomeState,
    startPairing: () -> Unit,
    openNotificationApps: () -> Unit,
+   openWatchapps: () -> Unit,
    setConnect: (KnownPebbleDevice, connect: Boolean) -> Unit,
    forget: (KnownPebbleDevice) -> Unit,
 ) {
@@ -95,6 +98,10 @@ private fun HomeScreenContent(
 
          Button(onClick = openNotificationApps) {
             Text(stringResource(R.string.notification_apps))
+         }
+
+         Button(onClick = openWatchapps) {
+            Text(stringResource(R.string.watch_apps))
          }
       }
 
@@ -157,7 +164,7 @@ private const val LUMINANCE_HALF_BRIGHT = 0.5
 @ShowkaseComposable(group = "Test")
 internal fun HomeBlankPreview() {
    PreviewTheme {
-      HomeScreenContent(HomeState(emptyList()), {}, {}, { _, _ -> }, {})
+      HomeScreenContent(HomeState(emptyList()), {}, {}, {}, { _, _ -> }, {})
    }
 }
 
@@ -195,6 +202,6 @@ internal fun HomeWithDevicesPreview() {
    )
 
    PreviewTheme {
-      HomeScreenContent(HomeState(deviceList), {}, {}, { _, _ -> }, {})
+      HomeScreenContent(HomeState(deviceList), {}, {}, {}, { _, _ -> }, {})
    }
 }
