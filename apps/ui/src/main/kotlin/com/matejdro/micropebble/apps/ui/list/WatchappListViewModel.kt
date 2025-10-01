@@ -14,6 +14,7 @@ import io.rebble.libpebblecommon.connection.Errors
 import io.rebble.libpebblecommon.connection.LockerApi
 import io.rebble.libpebblecommon.connection.UserFacingError
 import io.rebble.libpebblecommon.locker.AppType
+import io.rebble.libpebblecommon.locker.LockerWrapper
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.coroutineScope
@@ -22,6 +23,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.io.files.Path
@@ -58,8 +61,14 @@ class WatchappListViewModel(
       resources.launchResourceControlTask(_uiState) {
          emitAll(
             combine(
-               lockerApi.getLocker(AppType.Watchface, null, Int.MAX_VALUE),
-               lockerApi.getLocker(AppType.Watchapp, null, Int.MAX_VALUE),
+               lockerApi.getLocker(AppType.Watchface, null, Int.MAX_VALUE)
+                  .map {
+                     it.filterIsInstance<LockerWrapper.NormalApp>()
+                  },
+               lockerApi.getLocker(AppType.Watchapp, null, Int.MAX_VALUE)
+                  .map {
+                     it.filterIsInstance<LockerWrapper.NormalApp>()
+                  }.onEach { println("apps ${it.map { it.properties.title }}") },
             ) { watchfaces, watchapps ->
                Outcome.Success(WatchappListState(watchfaces, watchapps))
             }
@@ -108,6 +117,13 @@ class WatchappListViewModel(
 
          emit(Outcome.Success(Unit))
       }
+   }
+
+   fun reorderApp(uuid: Uuid, index: Int) = resources.launchResourceControlTask(_actionStatus) {
+      actionLogger.logAction { "WatchappListViewModel.reorderApp($uuid, $index)" }
+      lockerApi.setAppOrder(uuid, index)
+
+      emit(Outcome.Success(Unit))
    }
 
    private suspend inline fun <reified E : UserFacingError> runLibPebbleActionWithErrorConversion(

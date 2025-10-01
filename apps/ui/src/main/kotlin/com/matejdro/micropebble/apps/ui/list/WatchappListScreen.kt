@@ -2,17 +2,20 @@ package com.matejdro.micropebble.apps.ui.list
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -25,10 +28,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +46,10 @@ import com.matejdro.micropebble.ui.components.ErrorAlertDialog
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
+import com.mohamedrejeb.compose.dnd.drag.DropStrategy
+import com.mohamedrejeb.compose.dnd.reorder.ReorderContainer
+import com.mohamedrejeb.compose.dnd.reorder.ReorderableItem
+import com.mohamedrejeb.compose.dnd.reorder.rememberReorderState
 import io.rebble.libpebblecommon.locker.AppProperties
 import io.rebble.libpebblecommon.locker.AppType
 import io.rebble.libpebblecommon.locker.LockerWrapper
@@ -79,7 +88,8 @@ class WatchappListScreen(
             installFromPbw = {
                selectPwbResult.launch(arrayOf("*/*"))
             },
-            deleteApp = viewModel::deleteApp
+            deleteApp = viewModel::deleteApp,
+            setOrder = viewModel::reorderApp
          )
       }
    }
@@ -91,51 +101,105 @@ private fun WatchappListScreenContent(
    actionStatus: Outcome<Unit>?,
    installFromPbw: () -> Unit,
    deleteApp: (Uuid) -> Unit,
+   setOrder: (Uuid, Int) -> Unit,
 ) {
    ErrorAlertDialog(actionStatus, errorText = { it.installUserFriendlyErrorMessage() })
    var selectedTab by remember { mutableIntStateOf(0) }
 
-   LazyColumn(
-      Modifier.fillMaxSize(),
-      contentPadding = WindowInsets.safeDrawing.asPaddingValues()
+   val reorderState = rememberReorderState<LockerWrapper>(dragAfterLongPress = true)
+
+   ReorderContainer(
+      reorderState,
+      enabled = selectedTab == 1
    ) {
-      item {
-         if (actionStatus is Outcome.Progress) {
-            CircularProgressIndicator(Modifier.padding(8.dp))
-         } else {
-            Button(onClick = installFromPbw, Modifier.padding(8.dp)) {
-               Text("Install from PBW")
-            }
-         }
-      }
-
-      item { HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.onSurface) }
-
-      item {
-         TabRow(selectedTabIndex = selectedTab) {
-            Tab(selectedTab == 0, onClick = { selectedTab = 0 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
-               Text("Watchfaces")
-            }
-
-            Tab(selectedTab == 1, onClick = { selectedTab = 1 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
-               Text("Watchapps")
-            }
-         }
-      }
-
       val displayedItems = if (selectedTab == 0) state.watchfaces else state.watchapps
+      var reorderingList by remember(displayedItems) { mutableStateOf(displayedItems) }
 
-      itemsWithDivider(displayedItems) { app ->
-         App(app, actionStatus !is Outcome.Progress) { deleteApp(app.properties.id) }
+      LazyColumn(
+         Modifier.fillMaxSize(),
+         contentPadding = WindowInsets.safeDrawing.asPaddingValues()
+      ) {
+         item("ButtonsBar") {
+            if (actionStatus is Outcome.Progress) {
+               CircularProgressIndicator(Modifier.padding(8.dp))
+            } else {
+               Button(onClick = installFromPbw, Modifier.padding(8.dp)) {
+                  Text("Install from PBW")
+               }
+            }
+         }
+
+         item("Divider") { HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.onSurface) }
+
+         item("TabBar") {
+            TabRow(selectedTabIndex = selectedTab) {
+               Tab(selectedTab == 0, onClick = { selectedTab = 0 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
+                  Text("Watchfaces")
+               }
+
+               Tab(selectedTab == 1, onClick = { selectedTab = 1 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
+                  Text("Watchapps")
+               }
+            }
+         }
+
+         itemsWithDivider(
+            reorderingList,
+            key = { it.properties.id.toString() },
+            contentType = { "app" },
+            modifier = { Modifier.animateItem() }) { app ->
+            ReorderableItem(
+               state = reorderState,
+               key = app.properties.id,
+               data = app,
+               onDragEnter = { state ->
+                  reorderingList = reorderingList.toMutableList().apply {
+                     val index = indexOf(app)
+                     if (index == -1) return@ReorderableItem
+                     remove(state.data)
+                     add(index, state.data)
+
+                     // scope.launch {
+                     //    handleLazyListScroll(
+                     //       lazyListState = lazyListState,
+                     //       dropIndex = index,
+                     //    )
+                     // }
+                  }
+               },
+               onDrop = {
+                  setOrder(it.data.properties.id, reorderingList.indexOf(it.data))
+               },
+               draggableContent = {
+                  App(
+                     app,
+                     actionStatus !is Outcome.Progress,
+                     delete = { deleteApp(app.properties.id) },
+                  )
+               },
+               modifier = Modifier
+                  .fillMaxWidth()
+            ) {
+               App(
+                  app,
+                  actionStatus !is Outcome.Progress,
+                  delete = { deleteApp(app.properties.id) },
+                  Modifier.graphicsLayer {
+                     alpha = if (isDragging) 0f else 1f
+                  }
+               )
+            }
+         }
       }
    }
 }
 
 @Composable
-private fun App(app: LockerWrapper, enableActions: Boolean, delete: () -> Unit) {
+private fun App(app: LockerWrapper, enableActions: Boolean, delete: () -> Unit, modifier: Modifier = Modifier) {
    Row(
       verticalAlignment = Alignment.CenterVertically,
-      modifier = Modifier
+      modifier = modifier
+         .background(MaterialTheme.colorScheme.surface)
          .padding(8.dp)
          .sizeIn(minHeight = 48.dp)
    ) {
@@ -162,7 +226,13 @@ internal fun WatchappListScreenContentPreview() {
    PreviewTheme {
       val state = WatchappListState(fakeApps, fakeApps)
 
-      WatchappListScreenContent(state, Outcome.Success(Unit), {}, {})
+      WatchappListScreenContent(
+         state,
+         Outcome.Success(Unit),
+         {},
+         {},
+         { _, _ -> }
+      )
    }
 }
 
@@ -173,7 +243,13 @@ internal fun WatchappListInstallingPreview() {
    PreviewTheme {
       val state = WatchappListState(fakeApps, fakeApps)
 
-      WatchappListScreenContent(state, Outcome.Progress(Unit), {}, {})
+      WatchappListScreenContent(
+         state,
+         Outcome.Progress(Unit),
+         {},
+         {},
+         { _, _ -> }
+      )
    }
 }
 
@@ -184,7 +260,13 @@ internal fun WatchappListInstallingErrorPreview() {
    PreviewTheme {
       val state = WatchappListState(fakeApps, fakeApps)
 
-      WatchappListScreenContent(state, Outcome.Error(NoNetworkException()), {}, {})
+      WatchappListScreenContent(
+         state,
+         Outcome.Error(NoNetworkException()),
+         {},
+         {},
+         { _, _ -> }
+      )
    }
 }
 

@@ -22,6 +22,7 @@ dependencies {
    implementation(projects.commonCompose)
    implementation(projects.commonNavigation)
    implementation(libs.androidx.activity.compose)
+   implementation(libs.composeDnd)
    implementation(libs.dispatch)
    implementation(libs.kotlin.io)
    implementation(libs.kotlinova.core)
