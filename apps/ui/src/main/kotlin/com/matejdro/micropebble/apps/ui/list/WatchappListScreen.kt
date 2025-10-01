@@ -4,6 +4,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.apps.ui.R
 import com.matejdro.micropebble.apps.ui.errors.installUserFriendlyErrorMessage
+import com.matejdro.micropebble.apps.ui.webviewconfig.AppConfigScreenKey
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
 import com.matejdro.micropebble.ui.components.ErrorAlertDialog
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
@@ -49,6 +51,8 @@ import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.outcome.Outcome
+import si.inova.kotlinova.navigation.instructions.navigateTo
+import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 import kotlin.uuid.Uuid
@@ -56,6 +60,7 @@ import kotlin.uuid.Uuid
 @InjectNavigationScreen
 class WatchappListScreen(
    private val viewModel: WatchappListViewModel,
+   private val navigator: Navigator,
 ) : Screen<WatchappListKey>() {
    @Composable
    override fun Content(key: WatchappListKey) {
@@ -79,7 +84,10 @@ class WatchappListScreen(
             installFromPbw = {
                selectPwbResult.launch(arrayOf("*/*"))
             },
-            deleteApp = viewModel::deleteApp
+            deleteApp = viewModel::deleteApp,
+            openConfiguration = { appUuid ->
+               navigator.navigateTo(AppConfigScreenKey(appUuid))
+            }
          )
       }
    }
@@ -91,6 +99,7 @@ private fun WatchappListScreenContent(
    actionStatus: Outcome<Unit>?,
    installFromPbw: () -> Unit,
    deleteApp: (Uuid) -> Unit,
+   openConfiguration: (Uuid) -> Unit,
 ) {
    ErrorAlertDialog(actionStatus, errorText = { it.installUserFriendlyErrorMessage() })
    var selectedTab by remember { mutableIntStateOf(0) }
@@ -126,15 +135,21 @@ private fun WatchappListScreenContent(
       val displayedItems = if (selectedTab == 0) state.watchfaces else state.watchapps
 
       itemsWithDivider(displayedItems) { app ->
-         App(app, actionStatus !is Outcome.Progress) { deleteApp(app.properties.id) }
+         App(
+            app,
+            actionStatus !is Outcome.Progress,
+            { deleteApp(app.properties.id) },
+            { openConfiguration(app.properties.id) }
+         )
       }
    }
 }
 
 @Composable
-private fun App(app: LockerWrapper, enableActions: Boolean, delete: () -> Unit) {
+private fun App(app: LockerWrapper, enableActions: Boolean, delete: () -> Unit, openConfiguration: () -> Unit) {
    Row(
       verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
       modifier = Modifier
          .padding(8.dp)
          .sizeIn(minHeight = 48.dp)
@@ -147,8 +162,14 @@ private fun App(app: LockerWrapper, enableActions: Boolean, delete: () -> Unit) 
          Text(app.properties.title, style = MaterialTheme.typography.bodyMedium)
       }
 
+      if (app is LockerWrapper.NormalApp && app.configurable) {
+         OutlinedButton(onClick = openConfiguration, contentPadding = PaddingValues(8.dp)) {
+            Icon(painterResource(R.drawable.ic_settings), contentDescription = stringResource(R.string.configure))
+         }
+      }
+
       if (app !is LockerWrapper.SystemApp) {
-         OutlinedButton(onClick = delete, enabled = enableActions) {
+         OutlinedButton(onClick = delete, enabled = enableActions, contentPadding = PaddingValues(8.dp)) {
             Icon(painterResource(R.drawable.ic_delete), contentDescription = stringResource(R.string.delete_app))
          }
       }
@@ -162,7 +183,13 @@ internal fun WatchappListScreenContentPreview() {
    PreviewTheme {
       val state = WatchappListState(fakeApps, fakeApps)
 
-      WatchappListScreenContent(state, Outcome.Success(Unit), {}, {})
+      WatchappListScreenContent(
+         state,
+         Outcome.Success(Unit),
+         {},
+         {},
+         {}
+      )
    }
 }
 
@@ -173,7 +200,13 @@ internal fun WatchappListInstallingPreview() {
    PreviewTheme {
       val state = WatchappListState(fakeApps, fakeApps)
 
-      WatchappListScreenContent(state, Outcome.Progress(Unit), {}, {})
+      WatchappListScreenContent(
+         state,
+         Outcome.Progress(Unit),
+         {},
+         {},
+         {}
+      )
    }
 }
 
@@ -184,7 +217,13 @@ internal fun WatchappListInstallingErrorPreview() {
    PreviewTheme {
       val state = WatchappListState(fakeApps, fakeApps)
 
-      WatchappListScreenContent(state, Outcome.Error(NoNetworkException()), {}, {})
+      WatchappListScreenContent(
+         state,
+         Outcome.Error(NoNetworkException()),
+         {},
+         {},
+         {}
+      )
    }
 }
 
@@ -205,7 +244,7 @@ private val fakeApps = List(10) {
             it
          ),
          true,
-         false,
+         it % 4 == 0,
          false
       )
    } else {

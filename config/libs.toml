@@ -25,6 +25,7 @@ androidx-test-uiautomator = "2.3.0"
 certificateTransparency = "2.8.4"
 coil = "3.3.0"
 composeGuard = "2.4.0"
+composeWebview = "0.33.6"
 dependencyAnalysis = "3.0.1"
 desugarJdkLibs = "2.1.5"
 detekt = "1.23.8"
@@ -38,6 +39,7 @@ junit4-parameterinjector = "1.18"
 junit5 = "5.13.4"
 junit5-launcher = "1.13.4"
 keeperPlugin = "0.16.1"
+koin = "4.1.1"
 kotest = "5.9.1"
 kotlin = "2.2.0"
 kotlin-coroutines = "1.10.2"
@@ -110,6 +112,7 @@ certificateTransparency-android = { module = "com.appmattus.certificatetranspare
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 composeGuard = { module = "com.joetr.compose.guard:com.joetr.compose.guard.gradle.plugin", version.ref = "composeGuard" }
+composeWebview = { module = "io.github.kevinnzou:compose-webview", version.ref = "composeWebview" }
 dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
 desugarJdkLibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 detekt-api = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
@@ -126,6 +129,7 @@ junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "ju
 junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
 junit5-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit5-launcher" }
 keeperPlugin = { module = "com.slack.keeper:keeper", version.ref = "keeperPlugin" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }

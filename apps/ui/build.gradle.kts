@@ -3,6 +3,7 @@ plugins {
    compose
    di
    navigation
+   parcelize
    showkase
 }
 
@@ -22,9 +23,12 @@ dependencies {
    implementation(projects.commonCompose)
    implementation(projects.commonNavigation)
    implementation(libs.androidx.activity.compose)
+   implementation(libs.composeWebview)
    implementation(libs.dispatch)
    implementation(libs.kotlin.io)
    implementation(libs.kotlinova.core)
    implementation(libs.okio)
    implementation(libs.libpebble3)
+
+   compileOnly(libs.koin.core)
 }

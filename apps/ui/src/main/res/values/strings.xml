@@ -5,4 +5,5 @@
     <string name="watchfaces">Watchfaces</string>
     <string name="watchapps">Watchapps</string>
     <string name="install_from_pbw">Install from PBW</string>
+    <string name="configure">Configure</string>
 </resources>

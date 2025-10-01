@@ -1,1 +1,5 @@
-<network-security-config />
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config xmlns:tools="http://schemas.android.com/tools">
+    <!-- Some PebleKit JS configuration pages are hosted on the clear text, so we need to enable HTTP -->
+    <base-config cleartextTrafficPermitted="true" tools:ignore="InsecureBaseConfiguration" />
+</network-security-config>
