@@ -104,7 +104,7 @@ private fun WatchappListScreenContent(
             CircularProgressIndicator(Modifier.padding(8.dp))
          } else {
             Button(onClick = installFromPbw, Modifier.padding(8.dp)) {
-               Text("Install from PBW")
+               Text(stringResource(R.string.install_from_pbw))
             }
          }
       }
@@ -114,11 +114,11 @@ private fun WatchappListScreenContent(
       item {
          TabRow(selectedTabIndex = selectedTab) {
             Tab(selectedTab == 0, onClick = { selectedTab = 0 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
-               Text("Watchfaces")
+               Text(stringResource(R.string.watchfaces))
             }
 
             Tab(selectedTab == 1, onClick = { selectedTab = 1 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
-               Text("Watchapps")
+               Text(stringResource(R.string.watchapps))
             }
          }
       }

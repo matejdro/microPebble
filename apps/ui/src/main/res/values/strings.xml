@@ -2,4 +2,7 @@
 <resources>
     <string name="this_is_not_a_valid_pbw_file">This is not a valid Pbw file</string>
     <string name="delete_app">Delete app</string>
+    <string name="watchfaces">Watchfaces</string>
+    <string name="watchapps">Watchapps</string>
+    <string name="install_from_pbw">Install from PBW</string>
 </resources>
