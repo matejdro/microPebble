@@ -13,14 +13,15 @@ import dispatch.core.withDefault
 import io.rebble.libpebblecommon.connection.Errors
 import io.rebble.libpebblecommon.connection.LockerApi
 import io.rebble.libpebblecommon.connection.UserFacingError
+import io.rebble.libpebblecommon.locker.AppType
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.io.files.Path
@@ -56,7 +57,12 @@ class WatchappListViewModel(
 
       resources.launchResourceControlTask(_uiState) {
          emitAll(
-            lockerApi.getAllLockerBasicInfo().map { Outcome.Success(WatchappListState(it)) }
+            combine(
+               lockerApi.getLocker(AppType.Watchface, null, Int.MAX_VALUE),
+               lockerApi.getLocker(AppType.Watchapp, null, Int.MAX_VALUE),
+            ) { watchfaces, watchapps ->
+               Outcome.Success(WatchappListState(watchfaces, watchapps))
+            }
          )
       }
    }

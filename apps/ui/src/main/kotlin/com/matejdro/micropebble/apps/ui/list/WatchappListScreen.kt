@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
@@ -18,8 +19,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -34,15 +41,16 @@ import com.matejdro.micropebble.ui.components.ErrorAlertDialog
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
-import io.rebble.libpebblecommon.locker.AppBasicProperties
+import io.rebble.libpebblecommon.locker.AppProperties
 import io.rebble.libpebblecommon.locker.AppType
+import io.rebble.libpebblecommon.locker.LockerWrapper
+import io.rebble.libpebblecommon.locker.SystemApps
 import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
-import java.util.Locale
 import kotlin.uuid.Uuid
 
 @InjectNavigationScreen
@@ -85,6 +93,8 @@ private fun WatchappListScreenContent(
    deleteApp: (Uuid) -> Unit,
 ) {
    ErrorAlertDialog(actionStatus, errorText = { it.installUserFriendlyErrorMessage() })
+   var selectedTab by remember { mutableIntStateOf(0) }
+
    LazyColumn(
       Modifier.fillMaxSize(),
       contentPadding = WindowInsets.safeDrawing.asPaddingValues()
@@ -101,29 +111,46 @@ private fun WatchappListScreenContent(
 
       item { HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.onSurface) }
 
-      itemsWithDivider(state.apps) { app ->
-         App(app, actionStatus !is Outcome.Progress) { deleteApp(app.id) }
+      item {
+         TabRow(selectedTabIndex = selectedTab) {
+            Tab(selectedTab == 0, onClick = { selectedTab = 0 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
+               Text("Watchfaces")
+            }
+
+            Tab(selectedTab == 1, onClick = { selectedTab = 1 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
+               Text("Watchapps")
+            }
+         }
+      }
+
+      val displayedItems = if (selectedTab == 0) state.watchfaces else state.watchapps
+
+      itemsWithDivider(displayedItems) { app ->
+         App(app, actionStatus !is Outcome.Progress) { deleteApp(app.properties.id) }
       }
    }
 }
 
 @Composable
-private fun App(app: AppBasicProperties, enableActions: Boolean, delete: () -> Unit) {
-   Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(8.dp)) {
+private fun App(app: LockerWrapper, enableActions: Boolean, delete: () -> Unit) {
+   Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier
+         .padding(8.dp)
+         .sizeIn(minHeight = 48.dp)
+   ) {
       Column(
          modifier = Modifier
             .weight(1f),
          verticalArrangement = Arrangement.spacedBy(8.dp)
       ) {
-         Text(app.title, style = MaterialTheme.typography.bodyMedium)
-         Text(
-            app.type.code.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
-            style = MaterialTheme.typography.bodySmall
-         )
+         Text(app.properties.title, style = MaterialTheme.typography.bodyMedium)
       }
 
-      OutlinedButton(onClick = delete, enabled = enableActions) {
-         Icon(painterResource(R.drawable.ic_delete), contentDescription = stringResource(R.string.delete_app))
+      if (app !is LockerWrapper.SystemApp) {
+         OutlinedButton(onClick = delete, enabled = enableActions) {
+            Icon(painterResource(R.drawable.ic_delete), contentDescription = stringResource(R.string.delete_app))
+         }
       }
    }
 }
@@ -133,16 +160,7 @@ private fun App(app: AppBasicProperties, enableActions: Boolean, delete: () -> U
 @ShowkaseComposable(group = "Test")
 internal fun WatchappListScreenContentPreview() {
    PreviewTheme {
-      val apps = List(10) {
-         AppBasicProperties(
-            Uuid.fromLongs(0L, it.toLong()),
-            if (it % 2 == 0) AppType.Watchapp else AppType.Watchface,
-            "App $it",
-            "Dev $it"
-         )
-      }
-
-      val state = WatchappListState(apps)
+      val state = WatchappListState(fakeApps, fakeApps)
 
       WatchappListScreenContent(state, Outcome.Success(Unit), {}, {})
    }
@@ -153,16 +171,7 @@ internal fun WatchappListScreenContentPreview() {
 @ShowkaseComposable(group = "Test")
 internal fun WatchappListInstallingPreview() {
    PreviewTheme {
-      val apps = List(10) {
-         AppBasicProperties(
-            Uuid.fromLongs(0L, it.toLong()),
-            if (it % 2 == 0) AppType.Watchapp else AppType.Watchface,
-            "App $it",
-            "Dev $it"
-         )
-      }
-
-      val state = WatchappListState(apps)
+      val state = WatchappListState(fakeApps, fakeApps)
 
       WatchappListScreenContent(state, Outcome.Progress(Unit), {}, {})
    }
@@ -173,17 +182,48 @@ internal fun WatchappListInstallingPreview() {
 @ShowkaseComposable(group = "Test")
 internal fun WatchappListInstallingErrorPreview() {
    PreviewTheme {
-      val apps = List(10) {
-         AppBasicProperties(
-            Uuid.fromLongs(0L, it.toLong()),
-            if (it % 2 == 0) AppType.Watchapp else AppType.Watchface,
-            "App $it",
-            "Dev $it"
-         )
-      }
-
-      val state = WatchappListState(apps)
+      val state = WatchappListState(fakeApps, fakeApps)
 
       WatchappListScreenContent(state, Outcome.Error(NoNetworkException()), {}, {})
+   }
+}
+
+private val fakeApps = List(10) {
+   if (it % 2 == 0) {
+      LockerWrapper.NormalApp(
+         AppProperties(
+            Uuid.fromLongs(0L, it.toLong()),
+            AppType.Watchapp,
+            "App $it",
+            "Dev $it",
+            emptyList(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            it
+         ),
+         true,
+         false,
+         false
+      )
+   } else {
+      LockerWrapper.SystemApp(
+         AppProperties(
+            Uuid.fromLongs(0L, it.toLong()),
+            if (it % 4 == 0) AppType.Watchapp else AppType.Watchface,
+            "System App $it",
+            "Dev $it",
+            emptyList(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            it
+         ),
+         SystemApps.entries.first()
+      )
    }
 }
