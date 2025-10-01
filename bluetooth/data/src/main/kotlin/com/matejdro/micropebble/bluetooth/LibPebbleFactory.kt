@@ -57,7 +57,6 @@ interface LibPebbleFactory {
       val dummyTranscriptionProvider = object : TranscriptionProvider {
          override suspend fun transcribe(
             encoderInfo: VoiceEncoderInfo,
-            languageCode: String,
             audioFrames: Flow<UByteArray>,
          ): TranscriptionResult {
             return TranscriptionResult.Disabled
