@@ -6,4 +6,7 @@
     <string name="discovered_watches">Discovered watches:</string>
     <string name="pairing_successful">Pairing successful</string>
     <string name="cancel">Cancel</string>
+    <string name="pairing_tip">Note: If you used a watch before, please remove the watch from your phone\'s bluetooth settings
+        before pairing again
+    </string>
 </resources>

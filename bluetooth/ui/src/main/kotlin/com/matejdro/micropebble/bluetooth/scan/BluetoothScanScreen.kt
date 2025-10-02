@@ -159,6 +159,8 @@ private fun ScanScreenContent(
          Text(text)
       }
 
+      Text(stringResource(R.string.pairing_tip), modifier = Modifier.padding(vertical = 8.dp))
+
       Text(stringResource(R.string.discovered_watches), modifier = Modifier.padding(vertical = 8.dp))
 
       for (watch in scanState.foundDevices) {
