@@ -17,6 +17,7 @@ android {
 dependencies {
    api(projects.commonNavigation)
    api(projects.common)
+   api(projects.notification.api)
    api(libs.kotlinova.navigation)
 
    implementation(projects.commonCompose)

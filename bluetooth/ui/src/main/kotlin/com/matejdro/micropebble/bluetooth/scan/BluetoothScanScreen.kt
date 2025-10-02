@@ -39,6 +39,7 @@ import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.matejdro.micropebble.bluetooth.ui.R
 import com.matejdro.micropebble.navigation.keys.base.BluetoothScanScreenKey
+import com.matejdro.micropebble.notifications.NotificationsStatus
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
@@ -57,6 +58,7 @@ import si.inova.kotlinova.navigation.screens.Screen
 @InjectNavigationScreen
 class BluetoothScanScreen(
    private val viewmodel: BluetoothScanViewmodel,
+   private val notificationsStatus: NotificationsStatus,
 ) : Screen<BluetoothScanScreenKey>() {
    @Composable
    override fun Content(key: BluetoothScanScreenKey) {
@@ -128,6 +130,7 @@ class BluetoothScanScreen(
             }
 
             override fun onAssociationCreated(associationInfo: AssociationInfo) {
+               notificationsStatus.requestNotificationAccess()
                viewmodel.connect(device)
             }
          },
