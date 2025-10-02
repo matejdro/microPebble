@@ -71,7 +71,8 @@ class NotificationAppListScreen(
             it,
             viewModel::setAppEnabled,
             viewModel::setNotificationsPhoneMute,
-            viewModel::setCallsPhoneMute
+            viewModel::setCallsPhoneMute,
+            viewModel::setRespectDoNotDisturb,
          )
       }
    }
@@ -83,6 +84,7 @@ private fun NotificationAppListScreenContent(
    setAppEnabled: (String, Boolean) -> Unit,
    setNotificationsPhoneMute: (Boolean) -> Unit,
    setCallsPhoneMute: (Boolean) -> Unit,
+   setRespectDoNotDisturb: (Boolean) -> Unit,
 ) {
    LazyColumn(
       Modifier.fillMaxSize(),
@@ -117,6 +119,21 @@ private fun NotificationAppListScreenContent(
                   .weight(1f)
             )
             Switch(state.mutePhoneCallSoundsWhenConnected, onCheckedChange = setCallsPhoneMute)
+         }
+
+         Row(
+            Modifier
+               .fillMaxWidth()
+               .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+         ) {
+            Text(
+               stringResource(R.string.respect_dnd),
+               Modifier
+                  .padding(end = 16.dp)
+                  .weight(1f)
+            )
+            Switch(state.respectDoNotDisturb, onCheckedChange = setRespectDoNotDisturb)
          }
       }
 
@@ -197,8 +214,19 @@ internal fun NotificationAppListScreenContentPreview() {
          )
       }
 
-      val state = NotificationAppListState(apps, true, false)
+      val state = NotificationAppListState(
+         apps,
+         true,
+         false,
+         false
+      )
 
-      NotificationAppListScreenContent(state, { _, _ -> }, {}, {})
+      NotificationAppListScreenContent(
+         state,
+         { _, _ -> },
+         {},
+         {},
+         {}
+      )
    }
 }

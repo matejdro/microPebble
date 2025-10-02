@@ -6,4 +6,5 @@ data class NotificationAppListState(
    val apps: List<AppWithCount>,
    val mutePhoneNotificationSoundsWhenConnected: Boolean,
    val mutePhoneCallSoundsWhenConnected: Boolean,
+   val respectDoNotDisturb: Boolean,
 )

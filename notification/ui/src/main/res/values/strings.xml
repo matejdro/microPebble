@@ -2,4 +2,5 @@
 <resources>
     <string name="mute_phone_notifications_when_connected">Mute phone notifications when connected</string>
     <string name="mute_phone_calls_when_connected">Mute phone calls when connected</string>
+    <string name="respect_dnd">Respect phone\'s do not disturb mode</string>
 </resources>
