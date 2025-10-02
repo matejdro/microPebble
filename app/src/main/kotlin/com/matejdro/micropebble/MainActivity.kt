@@ -1,6 +1,5 @@
 package com.matejdro.micropebble
 
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,16 +10,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.matejdro.micropebble.ui.theme.MicroPebbleTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -95,11 +91,6 @@ class MainActivity : ComponentActivity() {
 
    @Composable
    private fun NavigationRoot(initialHistory: ImmutableList<ScreenKey>) {
-      val mainState = viewModel.mainState.collectAsStateWithLifecycle().value
-      if (mainState != null) {
-         RequestStartupPermissions(mainState)
-      }
-
       MicroPebbleTheme {
          // A surface container using the 'background' color from the theme
          Surface(
@@ -122,27 +113,6 @@ class MainActivity : ComponentActivity() {
 
                mainDeepLinkHandler.HandleNewIntentDeepLinks(this@MainActivity, backstack)
             }
-         }
-      }
-   }
-
-   @Composable
-   private fun RequestStartupPermissions(mainState: MainState) {
-      val permissions = rememberMultiplePermissionsState(
-         listOfNotNull(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) android.Manifest.permission.POST_NOTIFICATIONS else null,
-            android.Manifest.permission.READ_CONTACTS,
-            android.Manifest.permission.ACCESS_FINE_LOCATION,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-            android.Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-         )
-      ) {}
-
-      LaunchedEffect(Unit) {
-         if (!permissions.allPermissionsGranted) {
-            permissions.launchMultiplePermissionRequest()
-         } else if (!mainState.notificationListenerEnabled) {
-            viewModel.requestNotificationPermissions()
          }
       }
    }

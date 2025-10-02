@@ -7,4 +7,24 @@
     <string name="connect">"Connect: "</string>
     <string name="notification_apps">Notification apps</string>
     <string name="watch_apps">Watch apps</string>
+    <string name="grant">Grant</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="permissions">Permissions</string>
+    <string name="notification_listener_permission_title">Notification access</string>
+    <string name="notification_listener_permission_description">Needed for forwarding notifications to the watch</string>
+    <string name="notification_listener_permission_disabled_explanation">Can only be granted when connected to a watch</string>
+    <string name="location_permission_title">Location</string>
+    <string name="location_permission_description">Needed for watch app\'s access to location (for example for the Weather).
+        Background location is needed so watch apps can also access location when this app is not open.
+    </string>
+    <string name="contacts_permission_title">Contacts</string>
+    <string name="contacts_permission_description">Needed for SMS alerts</string>
+    <string name="notifications_permission_title">Notifications</string>
+    <string name="notification_permission_description">Needed for watch disconnection alerts and for error reporting</string>
+    <string name="continue_to_the_app">Continue to the app</string>
+    <string name="onboarding_title">Welcome to the Micropebble App!</string>
+    <string name="onboarding_intro">Since the app is mostly running on its own in the background, afterwards, all permissions are
+        being asked up front. All are optional:
+    </string>
+    <string name="grant_background">Grant background</string>
 </resources>

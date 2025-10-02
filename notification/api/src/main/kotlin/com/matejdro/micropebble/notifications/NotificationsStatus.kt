@@ -4,4 +4,6 @@ interface NotificationsStatus {
    val isServiceRegistered: Boolean
 
    fun requestNotificationAccess(): Boolean
+
+   val isNotificationAccessEnabled: Boolean
 }

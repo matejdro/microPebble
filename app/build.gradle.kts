@@ -142,7 +142,6 @@ dependencies {
    implementation(libs.androidx.lifecycle.runtime)
    implementation(libs.androidx.lifecycle.viewModel)
    implementation(libs.androidx.lifecycle.viewModel.compose)
-   implementation(libs.accompanist.permissions)
    implementation(libs.coil)
    implementation(libs.dispatch)
    implementation(libs.kotlin.immutableCollections)

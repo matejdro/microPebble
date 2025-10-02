@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.notifications
 
+import android.app.NotificationManager
 import android.companion.CompanionDeviceManager
 import android.content.ComponentName
 import android.content.Context
@@ -16,14 +17,15 @@ import io.rebble.libpebblecommon.notification.LibPebbleNotificationListener
 class NotificationsStatusImpl(
    private val context: Context,
 ) : NotificationsStatus {
+   private val companionManager = requireNotNull(context.getSystemService<CompanionDeviceManager>())
+   private val notificationManager = requireNotNull(context.getSystemService<NotificationManager>())
+
    override val isServiceRegistered: Boolean
       get() {
          return NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
       }
 
    override fun requestNotificationAccess(): Boolean {
-      val companionManager = context.getSystemService<CompanionDeviceManager>() ?: return false
-
       @Suppress("DEPRECATION")
       val associations = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
          companionManager.myAssociations
@@ -35,7 +37,13 @@ class NotificationsStatusImpl(
          return false
       }
 
-      companionManager.requestNotificationAccess(ComponentName(context, LibPebbleNotificationListener::class.java))
+      companionManager.requestNotificationAccess(getNotificationListenerComponent())
       return true
    }
+
+   override val isNotificationAccessEnabled: Boolean
+      get() = notificationManager.isNotificationListenerAccessGranted(getNotificationListenerComponent())
+
+   private fun getNotificationListenerComponent(): ComponentName =
+      ComponentName(context, LibPebbleNotificationListener::class.java)
 }
