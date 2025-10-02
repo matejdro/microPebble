@@ -144,8 +144,6 @@ private fun NotificationPermission() {
       }
    }
 
-   val context = LocalContext.current
-
    Card(Modifier.fillMaxWidth()) {
       Column(
          Modifier.padding(8.dp),
@@ -169,8 +167,6 @@ private fun ContactsPermission() {
          rejectedPermission = true
       }
    }
-
-   val context = LocalContext.current
 
    Card(Modifier.fillMaxWidth()) {
       Column(
