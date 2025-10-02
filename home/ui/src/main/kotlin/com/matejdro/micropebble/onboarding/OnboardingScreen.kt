@@ -154,7 +154,7 @@ private fun NotificationPermission() {
          Text(stringResource(R.string.notifications_permission_title), style = MaterialTheme.typography.headlineSmall)
          Text(stringResource(R.string.notification_permission_description))
 
-         SinglePermissionButton(permissionState, rejectedPermission, context)
+         SinglePermissionButton(permissionState, rejectedPermission)
       }
    }
 }
@@ -180,7 +180,7 @@ private fun ContactsPermission() {
          Text(stringResource(R.string.contacts_permission_title), style = MaterialTheme.typography.headlineSmall)
          Text(stringResource(R.string.contacts_permission_description))
 
-         SinglePermissionButton(permissionState, rejectedPermission, context)
+         SinglePermissionButton(permissionState, rejectedPermission)
       }
    }
 }
@@ -269,8 +269,9 @@ private fun NotificationListenerPermission(onboardingState: OnboardingState, req
 private fun SinglePermissionButton(
    permissionState: PermissionState,
    rejectedPermission: Boolean,
-   context: Context,
 ) {
+   val context = LocalContext.current
+
    if (permissionState.status == PermissionStatus.Granted) {
       Text("✅")
    } else if (rejectedPermission) {

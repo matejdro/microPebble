@@ -3,4 +3,5 @@ plugins {
 }
 
 dependencies {
+   compileOnly(libs.androidx.compose.runtime)
 }
