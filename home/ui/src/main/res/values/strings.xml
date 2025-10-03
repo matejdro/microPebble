@@ -27,4 +27,6 @@
         being asked up front. All are optional:
     </string>
     <string name="grant_background">Grant background</string>
+    <string name="calendar_permission_title">Calendar</string>
+    <string name="calendar_permission_description">Needed to sync calendar to the Timeline</string>
 </resources>

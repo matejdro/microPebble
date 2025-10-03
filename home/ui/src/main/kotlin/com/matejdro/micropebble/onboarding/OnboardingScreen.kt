@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
+import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -130,6 +131,7 @@ private fun ColumnScope.OnboardingScrollContent(state: OnboardingState, requestN
    ContactsPermission()
    LocationPermission()
    NotificationListenerPermission(state, requestNotificationListenerPermission)
+   CalendarPermission()
 }
 
 @Composable
@@ -262,6 +264,33 @@ private fun NotificationListenerPermission(onboardingState: OnboardingState, req
 }
 
 @Composable
+private fun CalendarPermission() {
+   var rejectedPermission by remember { mutableStateOf(false) }
+   val permissionState = rememberMultiplePermissionsState(
+      listOf(
+         Manifest.permission.READ_CALENDAR,
+         Manifest.permission.WRITE_CALENDAR,
+      )
+   ) { permissions ->
+      if (!permissions.values.all { granted -> granted }) {
+         rejectedPermission = true
+      }
+   }
+
+   Card(Modifier.fillMaxWidth()) {
+      Column(
+         Modifier.padding(8.dp),
+         verticalArrangement = Arrangement.spacedBy(8.dp)
+      ) {
+         Text(stringResource(R.string.calendar_permission_title), style = MaterialTheme.typography.headlineSmall)
+         Text(stringResource(R.string.calendar_permission_description))
+
+         MultiPermissionButton(permissionState, rejectedPermission)
+      }
+   }
+}
+
+@Composable
 private fun SinglePermissionButton(
    permissionState: PermissionState,
    rejectedPermission: Boolean,
@@ -278,6 +307,25 @@ private fun SinglePermissionButton(
       ) { Text(stringResource(R.string.open_settings)) }
    } else {
       Button(onClick = { permissionState.launchPermissionRequest() }) { Text(stringResource(R.string.grant)) }
+   }
+}
+
+@Composable
+private fun MultiPermissionButton(
+   permissionState: MultiplePermissionsState,
+   rejectedPermission: Boolean,
+) {
+   val context = LocalContext.current
+   if (permissionState.allPermissionsGranted) {
+      Text("✅")
+   } else if (rejectedPermission) {
+      Button(
+         onClick = {
+            openSystemPermissionSettings(context)
+         }
+      ) { Text(stringResource(R.string.open_settings)) }
+   } else {
+      Button(onClick = { permissionState.launchMultiplePermissionRequest() }) { Text(stringResource(R.string.grant)) }
    }
 }
 
