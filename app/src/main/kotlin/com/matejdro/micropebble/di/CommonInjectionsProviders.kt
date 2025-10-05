@@ -9,6 +9,7 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import dispatch.core.IOCoroutineScope
 import si.inova.kotlinova.core.reporting.ErrorReporter
 import si.inova.kotlinova.core.time.AndroidDateTimeFormatter
@@ -37,6 +38,7 @@ interface CommonInjectionsProviders {
    }
 
    @Provides
+   @SingleIn(AppScope::class)
    fun provideDefaultPreferences(context: Context, ioCoroutineScope: IOCoroutineScope): DataStore<Preferences> {
       return PreferenceDataStoreFactory.create(scope = ioCoroutineScope) {
          context.preferencesDataStoreFile("preferences")
