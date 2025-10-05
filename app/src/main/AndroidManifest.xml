@@ -54,6 +54,12 @@
                 android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
                 android:value="true" />
         </activity>
+
+        <provider
+            android:authorities="com.getpebble.android.provider.basalt"
+            android:name="io.rebble.libpebblecommon.pebblekit.PebbleKitProvider"
+            tools:ignore="ExportedContentProvider"
+            android:exported="true" />
     </application>
 
 </manifest>
