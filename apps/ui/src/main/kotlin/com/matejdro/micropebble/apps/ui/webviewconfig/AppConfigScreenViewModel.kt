@@ -8,6 +8,7 @@ import io.rebble.libpebblecommon.connection.Watches
 import io.rebble.libpebblecommon.js.PKJSApp
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
@@ -39,7 +40,8 @@ class AppConfigScreenViewModel(
             }.first().first()
          connectedWatch.launchApp(key.uuid)
 
-         val session = connectedWatch.currentPKJSSession.filterNotNull().first { it.uuid == key.uuid }
+         val session =
+            connectedWatch.currentCompanionAppSession.filterNotNull().filterIsInstance<PKJSApp>().first { it.uuid == key.uuid }
          this@AppConfigScreenViewModel.session = session
          emit(Outcome.Success(AppConfigScreenState.WebView(session.requestConfigurationUrl() ?: error("No URL"))))
       }
