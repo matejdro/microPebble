@@ -42,7 +42,8 @@ class NotificationAppListViewModel(
                   apps,
                   notificationsConfig.mutePhoneNotificationSoundsWhenConnected,
                   notificationsConfig.mutePhoneCallSoundsWhenConnected,
-                  notificationsConfig.respectDoNotDisturb
+                  notificationsConfig.respectDoNotDisturb,
+                  notificationsConfig.sendNotifications
                )
             )
          }
@@ -88,6 +89,18 @@ class NotificationAppListViewModel(
          libPebble.config.value.copy(
             notificationConfig = libPebble.config.value.notificationConfig.copy(
                respectDoNotDisturb = respect
+            )
+         )
+      )
+   }
+
+   fun setSendNotifications(send: Boolean) {
+      actionLogger.logAction { "NotificationAppListViewModel.setSendNotifications(send = $send)" }
+
+      libPebble.updateConfig(
+         libPebble.config.value.copy(
+            notificationConfig = libPebble.config.value.notificationConfig.copy(
+               sendNotifications = send
             )
          )
       )

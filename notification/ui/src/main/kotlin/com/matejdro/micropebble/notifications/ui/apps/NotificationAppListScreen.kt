@@ -73,6 +73,7 @@ class NotificationAppListScreen(
             viewModel::setNotificationsPhoneMute,
             viewModel::setCallsPhoneMute,
             viewModel::setRespectDoNotDisturb,
+            viewModel::setSendNotifications
          )
       }
    }
@@ -85,12 +86,28 @@ private fun NotificationAppListScreenContent(
    setNotificationsPhoneMute: (Boolean) -> Unit,
    setCallsPhoneMute: (Boolean) -> Unit,
    setRespectDoNotDisturb: (Boolean) -> Unit,
+   setSendNotifications: (Boolean) -> Unit,
 ) {
    LazyColumn(
       Modifier.fillMaxSize(),
       contentPadding = WindowInsets.safeDrawing.asPaddingValues()
    ) {
       item {
+         Row(
+            Modifier
+               .fillMaxWidth()
+               .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+         ) {
+            Text(
+               stringResource(R.string.send_notifications_to_the_watch),
+               Modifier
+                  .padding(end = 16.dp)
+                  .weight(1f)
+            )
+            Switch(state.sendNotifications, onCheckedChange = setSendNotifications)
+         }
+
          Row(
             Modifier
                .fillMaxWidth()
@@ -218,12 +235,14 @@ internal fun NotificationAppListScreenContentPreview() {
          apps,
          true,
          false,
-         false
+         false,
+         true
       )
 
       NotificationAppListScreenContent(
          state,
          { _, _ -> },
+         {},
          {},
          {},
          {}
