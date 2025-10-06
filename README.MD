@@ -4,6 +4,20 @@ A small scrappy open source Pebble companion app, based on the [libpebble3](http
 It's not meant as a grand replacement for the original app, but as a small app with the functional UI and the
 features that I care about.
 
+Supported features:
+
+* Connecting to the LE watches
+* Installing / uninstalling watch apps via PBW
+* PebbleKit JS (including configuration pages)
+* Basic notification config
+* Music control
+* Calendar sync
+* PebbleKit Android (for Notification Center, Music Boss etc.),
+  albeit [it's slow](https://github.com/coredevices/libpebble3/issues/17).
+* Developer connection
+
+# Contributing
+
 ## Checking out project
 
 1. Install [Git LFS](https://git-lfs.com/)
@@ -65,7 +79,7 @@ custom {
 }
 ```
 
-# Creating screenshot tests
+## Creating screenshot tests
 
 To create screenshot tests for your compose screen:
 
