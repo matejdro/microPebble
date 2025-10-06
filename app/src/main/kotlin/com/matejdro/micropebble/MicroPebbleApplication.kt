@@ -16,6 +16,8 @@ import com.matejdro.micropebble.di.MainApplicationGraph
 import dev.zacsweers.metro.createGraphFactory
 import dispatch.core.DefaultDispatcherProvider
 import dispatch.core.defaultDispatcher
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import si.inova.kotlinova.core.dispatchers.AccessCallbackDispatcherProvider
 import si.inova.kotlinova.core.logging.AndroidLogcatLogger
 import si.inova.kotlinova.core.logging.LogPriority
@@ -65,7 +67,14 @@ open class MicroPebbleApplication : Application() {
             .build()
       }
 
-      applicationGraph.initLibPebble()
+      applicationGraph.initLibPebble().apply {
+         applicationGraph.getDefaultCoroutineScope().launch {
+            val config = config.first()
+            if (!config.watchConfig.lanDevConnection) {
+               updateConfig(config.copy(watchConfig = config.watchConfig.copy(lanDevConnection = true)))
+            }
+         }
+      }
       applicationGraph.initNotificationChannels()
    }
 

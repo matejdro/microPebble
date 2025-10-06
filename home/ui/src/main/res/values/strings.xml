@@ -29,4 +29,5 @@
     <string name="grant_background">Grant background</string>
     <string name="calendar_permission_title">Calendar</string>
     <string name="calendar_permission_description">Needed to sync calendar to the Timeline</string>
+    <string name="developer_connection">Developer connection</string>
 </resources>

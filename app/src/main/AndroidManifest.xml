@@ -7,6 +7,9 @@
     <!-- Required for WhatTheStack -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- For developer connection Wi-Fi access -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:name=".MicroPebbleApplication"
         android:allowBackup="true"

@@ -23,6 +23,7 @@ dependencies {
    implementation(projects.commonCompose)
    implementation(projects.commonNavigation)
    implementation(libs.androidx.activity.compose)
+   implementation(libs.androidx.core)
    implementation(libs.composeWebview)
    implementation(libs.dispatch)
    implementation(libs.kotlin.io)

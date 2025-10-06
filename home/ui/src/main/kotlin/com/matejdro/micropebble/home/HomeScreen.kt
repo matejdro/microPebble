@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.home.fakes.FakeDisconnectedKnownDevice
 import com.matejdro.micropebble.home.fakes.FakeKnownConnectingDevice
+import com.matejdro.micropebble.navigation.keys.DeveloperConnectionScreenKey
 import com.matejdro.micropebble.navigation.keys.NotificationAppListKey
 import com.matejdro.micropebble.navigation.keys.OnboardingKey
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
@@ -72,6 +73,7 @@ class HomeScreen(
                { navigator.navigateTo(NotificationAppListKey) },
                { navigator.navigateTo(WatchappListKey) },
                { navigator.navigateTo(OnboardingKey) },
+               { navigator.navigateTo(DeveloperConnectionScreenKey) },
                viewModel::setDeviceConnect,
                viewModel::forgetDevice
             )
@@ -87,6 +89,7 @@ private fun HomeScreenContent(
    openNotificationApps: () -> Unit,
    openWatchapps: () -> Unit,
    openPermissions: () -> Unit,
+   openDevConnection: () -> Unit,
    setConnect: (KnownPebbleDevice, connect: Boolean) -> Unit,
    forget: (KnownPebbleDevice) -> Unit,
 ) {
@@ -109,6 +112,10 @@ private fun HomeScreenContent(
 
          Button(onClick = openPermissions) {
             Text(stringResource(R.string.permissions))
+         }
+
+         Button(onClick = openDevConnection) {
+            Text(stringResource(R.string.developer_connection))
          }
       }
 
@@ -171,7 +178,7 @@ private const val LUMINANCE_HALF_BRIGHT = 0.5
 @ShowkaseComposable(group = "Test")
 internal fun HomeBlankPreview() {
    PreviewTheme {
-      HomeScreenContent(HomeState(emptyList()), {}, {}, {}, {}, { _, _ -> }, {})
+      HomeScreenContent(HomeState(emptyList()), {}, {}, {}, {}, {}, { _, _ -> }, {})
    }
 }
 
@@ -209,6 +216,6 @@ internal fun HomeWithDevicesPreview() {
    )
 
    PreviewTheme {
-      HomeScreenContent(HomeState(deviceList), {}, {}, {}, {}, { _, _ -> }, {})
+      HomeScreenContent(HomeState(deviceList), {}, {}, {}, {}, {}, { _, _ -> }, {})
    }
 }

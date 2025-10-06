@@ -43,6 +43,7 @@ interface ApplicationGraph {
    fun getMainViewModelFactory(): MainViewModel.Factory
    fun initLibPebble(): LibPebble
    fun initNotificationChannels(): NotificationChannelManager
+   fun getDefaultScope(): DefaultCoroutineScope
 
    @Multibinds(allowEmpty = true)
    fun provideEmptyConditionalMultibinds(): Map<KClass<*>, ConditionalNavigationHandler>

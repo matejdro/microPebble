@@ -6,6 +6,7 @@ import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import io.rebble.libpebblecommon.LibPebbleConfig
+import io.rebble.libpebblecommon.WatchConfig
 import io.rebble.libpebblecommon.connection.AppContext
 import io.rebble.libpebblecommon.connection.FirmwareUpdateCheckResult
 import io.rebble.libpebblecommon.connection.LibPebble
@@ -68,7 +69,9 @@ interface LibPebbleFactory {
       }
 
       return LibPebble3.create(
-         LibPebbleConfig(),
+         LibPebbleConfig(
+            watchConfig = WatchConfig(lanDevConnection = true)
+         ),
          dummyWebServices,
          AppContext(context),
          dummyTokenProvider,
