@@ -90,5 +90,5 @@ jobs:
           name: 1.0.0-alpha${{ env.BUILD_NUMBER }}
           tag: 1.0.0-alpha${{ env.BUILD_NUMBER }}
           body: ${{ steps.changelog.outputs.changelog }}
-          artifacts: app/build/outputs/apk/release/app-release.apk
+          artifacts: app/build/outputs/apk/release/micropebble-release.apk
           generateReleaseNotes: false

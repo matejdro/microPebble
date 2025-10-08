@@ -10,6 +10,8 @@ plugins {
    id("androidx.baselineprofile")
 }
 
+setProperty("archivesBaseName", "micropebble")
+
 android {
    namespace = "com.matejdro.micropebble"
 
