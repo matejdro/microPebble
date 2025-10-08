@@ -38,6 +38,7 @@ junit4 = "4.13.2"
 junit4-parameterinjector = "1.18"
 junit5 = "5.13.4"
 junit5-launcher = "1.13.4"
+kermit = "2.0.4"
 keeperPlugin = "0.16.1"
 koin = "4.1.1"
 kotest = "5.9.1"
@@ -61,6 +62,7 @@ retrofit = "3.0.0"
 showkase = "1.0.5"
 simpleStack = "2.9.0"
 tomlj = "1.1.1"
+tinylog = "2.7.0"
 turbine = "1.2.1"
 unmock-androidJar = "16-robolectric-13921718"
 unmock-plugin = "0.9.0"
@@ -129,6 +131,7 @@ junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "ju
 junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
 junit5-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit5-launcher" }
 keeperPlugin = { module = "com.slack.keeper:keeper", version.ref = "keeperPlugin" }
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
@@ -168,6 +171,8 @@ retrofit-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.re
 showkase = { module = "com.airbnb.android:showkase", version.ref = "showkase" }
 showkase-processor = { module = "com.airbnb.android:showkase-processor", version.ref = "showkase" }
 simpleStack = { module = "com.github.Zhuinden:simple-stack", version.ref = "simpleStack" }
+tinylog-api = { module = "org.tinylog:tinylog-api-kotlin", version.ref = "tinylog" }
+tinylog-impl = { module = "org.tinylog:tinylog-impl", version.ref = "tinylog" }
 tomlj = { module = "org.tomlj:tomlj", version.ref = "tomlj" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unmock-androidJar = { module = "org.robolectric:android-all", version.ref = "unmock-androidJar" }

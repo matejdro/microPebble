@@ -90,6 +90,14 @@ dependencyAnalysis {
          includeDependency("org.jetbrains.kotlinx:kotlinx-io-core")
          includeDependency("org.jetbrains.kotlinx:kotlinx-datetime")
       }
+
+      bundle("kermit") {
+         includeGroup("co.touchlab")
+      }
+
+      bundle("tinylog") {
+         includeGroup("org.tinylog")
+      }
    }
 }
 

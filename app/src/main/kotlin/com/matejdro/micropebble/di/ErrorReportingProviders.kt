@@ -5,6 +5,7 @@ import com.matejdro.micropebble.common.exceptions.CrashOnDebugException
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
+import org.tinylog.kotlin.Logger
 import si.inova.kotlinova.core.exceptions.UnknownCauseException
 import si.inova.kotlinova.core.outcome.CauseException
 import si.inova.kotlinova.core.reporting.ErrorReporter
@@ -23,6 +24,7 @@ interface ErrorReportingProviders {
 
             if (throwable.shouldReport) {
                throwable.printStackTrace()
+               Logger.error(throwable)
             } else if (BuildConfig.DEBUG) {
                if (throwable is CrashOnDebugException) {
                   throw throwable
