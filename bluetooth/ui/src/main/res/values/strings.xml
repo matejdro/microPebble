@@ -14,6 +14,5 @@
     <string name="disconnected">Disconnected</string>
     <string name="forget">Forget</string>
     <string name="connect">"Connect: "</string>
-    <string name="paired_watches">Paired watches:</string>
     <string name="no_paired_watches_yet">No paired watches yet</string>
 </resources>
