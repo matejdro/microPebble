@@ -136,6 +136,7 @@ dependencies {
    implementation(projects.notification.data)
    implementation(projects.notification.ui)
    implementation(projects.home.ui)
+   implementation(projects.logging.data)
    implementation(projects.sharedResources)
 
    implementation(libs.androidx.activity.compose)
@@ -149,10 +150,13 @@ dependencies {
    implementation(libs.kotlin.immutableCollections)
    implementation(libs.libpebble3)
    implementation(libs.moshi)
+   implementation(libs.kermit)
    implementation(libs.kotlin.coroutines)
    implementation(libs.kotlinova.core)
    implementation(libs.kotlinova.navigation)
    implementation(libs.simpleStack)
+   implementation(libs.tinylog.api)
+   implementation(libs.tinylog.impl)
 
    implementation(libs.androidx.datastore)
    implementation(libs.androidx.datastore.preferences)

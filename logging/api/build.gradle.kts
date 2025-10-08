@@ -1,0 +1,6 @@
+plugins {
+   pureKotlinModule
+}
+
+dependencies {
+}

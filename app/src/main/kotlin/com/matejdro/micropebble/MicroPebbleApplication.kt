@@ -13,6 +13,9 @@ import coil3.SingletonImageLoader
 import com.matejdro.micropebble.di.ApplicationGraph
 import com.matejdro.micropebble.di.ComponentFactory
 import com.matejdro.micropebble.di.MainApplicationGraph
+import com.matejdro.micropebble.logging.MultiLogcatLogger
+import com.matejdro.micropebble.logging.TinyLogKermitWriter
+import com.matejdro.micropebble.logging.TinyLogLogcatLogger
 import dev.zacsweers.metro.createGraphFactory
 import dispatch.core.DefaultDispatcherProvider
 import dispatch.core.defaultDispatcher
@@ -21,6 +24,9 @@ import kotlinx.coroutines.launch
 import si.inova.kotlinova.core.dispatchers.AccessCallbackDispatcherProvider
 import si.inova.kotlinova.core.logging.AndroidLogcatLogger
 import si.inova.kotlinova.core.logging.LogPriority
+import si.inova.kotlinova.core.logging.LogcatLogger
+import java.io.File
+import co.touchlab.kermit.Logger as KermitLogger
 
 open class MicroPebbleApplication : Application() {
    open val applicationGraph: ApplicationGraph by lazy {
@@ -47,7 +53,7 @@ open class MicroPebbleApplication : Application() {
          return
       }
 
-      AndroidLogcatLogger.installOnDebuggableApp(this, minPriority = LogPriority.VERBOSE)
+      setupLogging()
 
       enableStrictMode()
 
@@ -76,6 +82,31 @@ open class MicroPebbleApplication : Application() {
          }
       }
       applicationGraph.initNotificationChannels()
+   }
+
+   private fun setupLogging() {
+      // Logging situation with this app is a bit complicated:
+      // logcat (the library) - used in the app part to log
+      // Kermit - used in the LibPebble3 to log
+      // Tinylog - used to create a persistent rolling file log
+      // Both logcat and Kermit log into the Android's Logcat log, here we just need to wire them to also log
+      // into Tinylog
+
+      val directoryForLogs: File = File(cacheDir, "logs")
+      directoryForLogs.mkdirs()
+      System.setProperty("tinylog.directory", directoryForLogs.getAbsolutePath())
+
+      val logcatLoggers = listOfNotNull(
+         TinyLogLogcatLogger(),
+         if (BuildConfig.DEBUG) {
+            AndroidLogcatLogger(minPriority = LogPriority.VERBOSE)
+         } else {
+            null
+         }
+      )
+      LogcatLogger.install(MultiLogcatLogger(logcatLoggers))
+
+      KermitLogger.addLogWriter(TinyLogKermitWriter())
    }
 
    private fun enableStrictMode() {
