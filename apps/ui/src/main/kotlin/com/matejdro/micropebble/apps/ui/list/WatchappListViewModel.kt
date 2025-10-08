@@ -14,6 +14,7 @@ import io.rebble.libpebblecommon.connection.Errors
 import io.rebble.libpebblecommon.connection.LockerApi
 import io.rebble.libpebblecommon.connection.UserFacingError
 import io.rebble.libpebblecommon.locker.AppType
+import io.rebble.libpebblecommon.locker.LockerWrapper
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.coroutineScope
@@ -61,7 +62,12 @@ class WatchappListViewModel(
                lockerApi.getLocker(AppType.Watchface, null, Int.MAX_VALUE),
                lockerApi.getLocker(AppType.Watchapp, null, Int.MAX_VALUE),
             ) { watchfaces, watchapps ->
-               Outcome.Success(WatchappListState(watchfaces, watchapps))
+               Outcome.Success(
+                  WatchappListState(
+                     watchfaces.filterIsInstance<LockerWrapper.NormalApp>(),
+                     watchapps.filterIsInstance<LockerWrapper.NormalApp>()
+                  )
+               )
             }
          )
       }

@@ -3,16 +3,20 @@ package com.matejdro.micropebble.apps.ui.list
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -106,43 +110,63 @@ private fun WatchappListScreenContent(
    ErrorAlertDialog(actionStatus, errorText = { it.installUserFriendlyErrorMessage() })
    var selectedTab by remember { mutableIntStateOf(0) }
 
-   LazyColumn(
-      Modifier.fillMaxSize(),
-      contentPadding = WindowInsets.safeDrawing.asPaddingValues()
-   ) {
-      item {
-         if (actionStatus is Outcome.Progress) {
-            CircularProgressIndicator(Modifier.padding(8.dp))
-         } else {
-            Button(onClick = installFromPbw, Modifier.padding(8.dp)) {
-               Text(stringResource(R.string.install_from_pbw))
+   val displayedItems = if (selectedTab == 0) state.watchfaces else state.watchapps
+
+   Box {
+      LazyColumn(
+         Modifier.fillMaxSize(),
+         contentPadding = WindowInsets.safeDrawing.asPaddingValues()
+      ) {
+         item {
+            if (actionStatus is Outcome.Progress) {
+               CircularProgressIndicator(Modifier.padding(8.dp))
+            } else {
+               Button(
+                  onClick = installFromPbw,
+                  Modifier
+                     .fillMaxWidth()
+                     .wrapContentWidth()
+               ) {
+                  Text(stringResource(R.string.install_from_pbw))
+               }
             }
          }
-      }
 
-      item { HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.onSurface) }
+         item { HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.onSurface) }
 
-      item {
-         TabRow(selectedTabIndex = selectedTab) {
-            Tab(selectedTab == 0, onClick = { selectedTab = 0 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
-               Text(stringResource(R.string.watchfaces))
-            }
+         item {
+            TabRow(selectedTabIndex = selectedTab) {
+               Tab(selectedTab == 0, onClick = { selectedTab = 0 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
+                  Text(stringResource(R.string.watchfaces))
+               }
 
-            Tab(selectedTab == 1, onClick = { selectedTab = 1 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
-               Text(stringResource(R.string.watchapps))
+               Tab(selectedTab == 1, onClick = { selectedTab = 1 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
+                  Text(stringResource(R.string.watchapps))
+               }
             }
          }
-      }
 
-      val displayedItems = if (selectedTab == 0) state.watchfaces else state.watchapps
+         if (displayedItems.isEmpty()) {
+            item {
+               Text(
+                  "None installed yet",
+                  Modifier
+                     .padding(32.dp)
+                     .fillMaxWidth()
+                     .wrapContentSize(),
+                  style = MaterialTheme.typography.titleSmall
+               )
+            }
+         }
 
-      itemsWithDivider(displayedItems) { app ->
-         App(
-            app,
-            actionStatus !is Outcome.Progress,
-            { deleteApp(app.properties.id) },
-            { openConfiguration(app.properties.id) }
-         )
+         itemsWithDivider(displayedItems) { app ->
+            App(
+               app,
+               actionStatus !is Outcome.Progress,
+               { deleteApp(app.properties.id) },
+               { openConfiguration(app.properties.id) }
+            )
+         }
       }
    }
 }
@@ -222,6 +246,23 @@ internal fun WatchappListInstallingErrorPreview() {
       WatchappListScreenContent(
          state,
          Outcome.Error(NoNetworkException()),
+         {},
+         {},
+         {}
+      )
+   }
+}
+
+@FullScreenPreviews
+@Composable
+@ShowkaseComposable(group = "Test")
+internal fun WatchappListScreenContentEmptyPreview() {
+   PreviewTheme {
+      val state = WatchappListState(emptyList(), emptyList())
+
+      WatchappListScreenContent(
+         state,
+         Outcome.Success(Unit),
          {},
          {},
          {}
