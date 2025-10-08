@@ -16,6 +16,8 @@ Supported features:
   albeit [it's slow](https://github.com/coredevices/libpebble3/issues/17).
 * Developer connection
 
+![docs/home1.png](docs/home1.png) ![docs/home2.png](docs/home2.png) ![docs/home3.png](docs/home3.png)
+
 # Contributing
 
 ## Checking out project
