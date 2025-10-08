@@ -63,6 +63,16 @@
             android:name="io.rebble.libpebblecommon.pebblekit.PebbleKitProvider"
             tools:ignore="ExportedContentProvider"
             android:exported="true" />
+
+        <provider
+            android:name=".logging.LogFileProvider"
+            android:authorities="com.matejdro.micropebble.logs"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/logging_file_paths" />
+        </provider>
     </application>
 
 </manifest>

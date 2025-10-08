@@ -28,4 +28,5 @@
     <string name="notifications">Notifications</string>
     <string name="tools">Tools</string>
     <string name="version">MicroPebble version %1$s</string>
+    <string name="save_logs">Save logs</string>
 </resources>
