@@ -51,6 +51,7 @@ import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.outcome.Outcome
+import si.inova.kotlinova.navigation.di.ContributesScreenBinding
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
@@ -58,6 +59,7 @@ import si.inova.kotlinova.navigation.screens.Screen
 import kotlin.uuid.Uuid
 
 @InjectNavigationScreen
+@ContributesScreenBinding
 class WatchappListScreen(
    private val viewModel: WatchappListViewModel,
    private val navigator: Navigator,

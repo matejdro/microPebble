@@ -2,7 +2,7 @@ package com.matejdro.micropebble.bluetooth.scan
 
 import androidx.compose.runtime.Stable
 import com.matejdro.micropebble.common.logging.ActionLogger
-import com.matejdro.micropebble.navigation.keys.base.BluetoothScanScreenKey
+import com.matejdro.micropebble.navigation.keys.BluetoothScanScreenKey
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.connection.ActiveDevice
 import io.rebble.libpebblecommon.connection.PebbleDevice

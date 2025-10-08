@@ -33,8 +33,8 @@ import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.bluetooth.ui.R
 import com.matejdro.micropebble.bluetooth.watches.fakes.FakeDisconnectedKnownDevice
 import com.matejdro.micropebble.bluetooth.watches.fakes.FakeKnownConnectingDevice
+import com.matejdro.micropebble.navigation.keys.BluetoothScanScreenKey
 import com.matejdro.micropebble.navigation.keys.WatchListKey
-import com.matejdro.micropebble.navigation.keys.base.BluetoothScanScreenKey
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme

@@ -1,105 +1,239 @@
 package com.matejdro.micropebble.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
-import com.matejdro.micropebble.navigation.keys.DeveloperConnectionScreenKey
+import com.matejdro.micropebble.home.ui.R
+import com.matejdro.micropebble.navigation.keys.HomeScreenKey
 import com.matejdro.micropebble.navigation.keys.NotificationAppListKey
-import com.matejdro.micropebble.navigation.keys.OnboardingKey
 import com.matejdro.micropebble.navigation.keys.WatchListKey
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
-import com.matejdro.micropebble.navigation.keys.base.HomeScreenKey
-import com.matejdro.micropebble.ui.R
+import com.matejdro.micropebble.tools.ToolsScreenKey
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
+import si.inova.kotlinova.core.activity.requireActivity
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 
 @InjectNavigationScreen
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class HomeScreen(
    private val navigator: Navigator,
    private val watchesScreen: Screen<WatchListKey>,
+   private val watchappsScreen: Screen<WatchappListKey>,
+   private val notificationsScreen: Screen<NotificationAppListKey>,
+   private val toolsScreen: Screen<ToolsScreenKey>,
 ) : Screen<HomeScreenKey>() {
    @Composable
    override fun Content(key: HomeScreenKey) {
+      val keyState = rememberUpdatedState(key)
+
+      val mainContent = remember {
+         movableContentOf {
+            MainContent(keyState.value.selectedScreen)
+         }
+      }
+
+      val sizeClass = calculateWindowSizeClass(activity = LocalContext.current.requireActivity())
+
       Surface {
          HomeScreenContent(
-            { watchesScreen.Content(WatchListKey) },
-            { navigator.navigateTo(NotificationAppListKey) },
-            { navigator.navigateTo(WatchappListKey) },
-            { navigator.navigateTo(OnboardingKey) },
-         ) { navigator.navigateTo(DeveloperConnectionScreenKey) }
+            selectedScreen = key.selectedScreen,
+            tabletMode = sizeClass.widthSizeClass == WindowWidthSizeClass.Expanded,
+            mainContent = mainContent,
+            switchScreen = { navigator.navigateTo(HomeScreenKey(it)) },
+         )
+      }
+   }
+
+   @Composable
+   private fun MainContent(tab: HomeScreenKey.Screen) {
+      val stateHolder = rememberSaveableStateHolder()
+      // We must provide name here, not the enum, because name stays the same after process kill, while enum object is different
+      stateHolder.SaveableStateProvider(tab) {
+         when (tab) {
+            HomeScreenKey.Screen.WATCHES -> watchesScreen.Content(WatchListKey)
+            HomeScreenKey.Screen.APPS -> watchappsScreen.Content(WatchappListKey)
+            HomeScreenKey.Screen.NOTIFICATIONS -> notificationsScreen.Content(NotificationAppListKey)
+            HomeScreenKey.Screen.TOOLS -> toolsScreen.Content(ToolsScreenKey)
+         }
       }
    }
 }
 
 @Composable
 private fun HomeScreenContent(
-   watchesScreen: @Composable () -> Unit,
-   openNotificationApps: () -> Unit,
-   openWatchapps: () -> Unit,
-   openPermissions: () -> Unit,
-   openDevConnection: () -> Unit,
+   selectedScreen: HomeScreenKey.Screen,
+   tabletMode: Boolean,
+   mainContent: @Composable () -> Unit,
+   switchScreen: (HomeScreenKey.Screen) -> Unit,
 ) {
-   Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-      FlowRow(
-         horizontalArrangement = Arrangement.spacedBy(8.dp),
-         verticalArrangement = Arrangement.spacedBy(8.dp)
+   if (tabletMode) {
+      NavigationRailContent(mainContent, selectedScreen, switchScreen)
+   } else {
+      NavigationBarContent(mainContent, selectedScreen, switchScreen)
+   }
+}
+
+@Composable
+private fun NavigationBarContent(
+   mainContent: @Composable () -> Unit,
+   selectedScreen: HomeScreenKey.Screen,
+   switchScreen: (HomeScreenKey.Screen) -> Unit,
+) {
+   Column {
+      Box(
+         Modifier
+            .fillMaxWidth()
+            .weight(1f)
       ) {
-         Button(onClick = openNotificationApps) {
-            Text(stringResource(R.string.notification_apps))
-         }
-
-         Button(onClick = openWatchapps) {
-            Text(stringResource(R.string.watch_apps))
-         }
-
-         Button(onClick = openPermissions) {
-            Text(stringResource(R.string.permissions))
-         }
-
-         Button(onClick = openDevConnection) {
-            Text(stringResource(R.string.developer_connection))
-         }
+         mainContent()
       }
 
-      watchesScreen()
+      NavigationBar {
+         NavigationBarItem(
+            selected = selectedScreen == HomeScreenKey.Screen.WATCHES,
+            onClick = { switchScreen(HomeScreenKey.Screen.WATCHES) },
+            icon = { Icon(painter = painterResource(id = R.drawable.watches), contentDescription = null) },
+            label = { Text(stringResource(R.string.watches)) }
+         )
+
+         NavigationBarItem(
+            selected = selectedScreen == HomeScreenKey.Screen.APPS,
+            onClick = { switchScreen(HomeScreenKey.Screen.APPS) },
+            icon = { Icon(painter = painterResource(id = R.drawable.watchapps), contentDescription = null) },
+            label = { Text(stringResource(R.string.watch_apps)) }
+         )
+
+         NavigationBarItem(
+            selected = selectedScreen == HomeScreenKey.Screen.NOTIFICATIONS,
+            onClick = { switchScreen(HomeScreenKey.Screen.NOTIFICATIONS) },
+            icon = { Icon(painter = painterResource(id = R.drawable.notifications), contentDescription = null) },
+            label = { Text(stringResource(R.string.notifications)) }
+         )
+
+         NavigationBarItem(
+            selected = selectedScreen == HomeScreenKey.Screen.TOOLS,
+            onClick = { switchScreen(HomeScreenKey.Screen.TOOLS) },
+            icon = { Icon(painter = painterResource(id = R.drawable.tools), contentDescription = null) },
+            label = { Text(stringResource(R.string.tools)) }
+         )
+      }
+   }
+}
+
+@Composable
+private fun NavigationRailContent(
+   mainContent: @Composable () -> Unit,
+   selectedScreen: HomeScreenKey.Screen,
+   switchScreen: (HomeScreenKey.Screen) -> Unit,
+) {
+   Row {
+      NavigationRail {
+         NavigationRailItem(
+            selected = selectedScreen == HomeScreenKey.Screen.WATCHES,
+            onClick = { switchScreen(HomeScreenKey.Screen.WATCHES) },
+            icon = { Icon(painter = painterResource(id = R.drawable.watches), contentDescription = null) },
+            label = { Text(stringResource(R.string.watches)) }
+         )
+
+         NavigationRailItem(
+            selected = selectedScreen == HomeScreenKey.Screen.APPS,
+            onClick = { switchScreen(HomeScreenKey.Screen.APPS) },
+            icon = { Icon(painter = painterResource(id = R.drawable.watchapps), contentDescription = null) },
+            label = { Text(stringResource(R.string.watch_apps)) }
+         )
+
+         NavigationRailItem(
+            selected = selectedScreen == HomeScreenKey.Screen.NOTIFICATIONS,
+            onClick = { switchScreen(HomeScreenKey.Screen.NOTIFICATIONS) },
+            icon = { Icon(painter = painterResource(id = R.drawable.notifications), contentDescription = null) },
+            label = { Text(stringResource(R.string.notifications)) }
+         )
+
+         NavigationRailItem(
+            selected = selectedScreen == HomeScreenKey.Screen.TOOLS,
+            onClick = { switchScreen(HomeScreenKey.Screen.TOOLS) },
+            icon = { Icon(painter = painterResource(id = R.drawable.tools), contentDescription = null) },
+            label = { Text(stringResource(R.string.tools)) }
+         )
+      }
+
+      Box(
+         Modifier
+            .fillMaxHeight()
+            .weight(1f)
+      ) {
+         mainContent()
+      }
    }
 }
 
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
-internal fun HomeBlankPreview() {
+internal fun HomePhonePreview() {
    PreviewTheme {
       HomeScreenContent(
-         watchesScreen = {
+         tabletMode = false,
+         selectedScreen = HomeScreenKey.Screen.APPS,
+         mainContent = {
             Box(
                Modifier
                   .fillMaxSize()
                   .background(Color.Red)
             )
          },
-         openNotificationApps = {},
-         openWatchapps = {},
-         openPermissions = {}
-      ) {}
+         switchScreen = {},
+      )
+   }
+}
+
+@Preview(device = Devices.TABLET)
+@Composable
+@ShowkaseComposable(group = "Test")
+internal fun HomeTabletPreview() {
+   PreviewTheme {
+      HomeScreenContent(
+         tabletMode = true,
+         selectedScreen = HomeScreenKey.Screen.APPS,
+         mainContent = {
+            Box(
+               Modifier
+                  .fillMaxSize()
+                  .background(Color.Red)
+            )
+         },
+         switchScreen = {},
+      )
    }
 }

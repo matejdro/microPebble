@@ -49,11 +49,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
+import si.inova.kotlinova.navigation.di.ContributesScreenBinding
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 import kotlin.time.Instant
 
 @InjectNavigationScreen
+@ContributesScreenBinding
 class NotificationAppListScreen(
    private val viewModel: NotificationAppListViewModel,
 ) : Screen<NotificationAppListKey>() {

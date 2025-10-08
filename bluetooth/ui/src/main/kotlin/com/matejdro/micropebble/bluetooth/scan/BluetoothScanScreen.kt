@@ -38,7 +38,7 @@ import androidx.core.content.getSystemService
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.matejdro.micropebble.bluetooth.ui.R
-import com.matejdro.micropebble.navigation.keys.base.BluetoothScanScreenKey
+import com.matejdro.micropebble.navigation.keys.BluetoothScanScreenKey
 import com.matejdro.micropebble.notifications.NotificationsStatus
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.PreviewTheme

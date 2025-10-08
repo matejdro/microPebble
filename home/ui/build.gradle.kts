@@ -3,11 +3,12 @@ plugins {
    compose
    di
    navigation
+   parcelize
    showkase
 }
 
 android {
-   namespace = "com.matejdro.micropebble.ui"
+   namespace = "com.matejdro.micropebble.home.ui"
    buildFeatures {
       androidResources = true
    }
@@ -21,5 +22,6 @@ dependencies {
    implementation(projects.commonCompose)
    implementation(libs.accompanist.permissions)
    implementation(libs.kotlin.coroutines)
+   implementation(libs.androidx.compose.material3.sizeClasses)
    implementation(libs.libpebble3)
 }

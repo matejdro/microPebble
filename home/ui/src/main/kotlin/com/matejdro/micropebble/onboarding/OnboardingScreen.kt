@@ -43,9 +43,9 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
+import com.matejdro.micropebble.home.ui.R
+import com.matejdro.micropebble.navigation.keys.HomeScreenKey
 import com.matejdro.micropebble.navigation.keys.OnboardingKey
-import com.matejdro.micropebble.navigation.keys.base.HomeScreenKey
-import com.matejdro.micropebble.ui.R
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
@@ -73,7 +73,13 @@ class OnboardingScreen(
          OnboardingContent(
             it,
             viewModel::requestNotificationPermissions,
-            { navigator.navigate(ReplaceBackstack(HomeScreenKey)) }
+            {
+               navigator.navigate(
+                  ReplaceBackstack(
+                     HomeScreenKey(HomeScreenKey.Screen.WATCHES)
+                  )
+               )
+            }
          )
       }
    }

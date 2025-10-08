@@ -7,8 +7,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.matejdro.micropebble.common.logging.ActionLogger
+import com.matejdro.micropebble.navigation.keys.HomeScreenKey
 import com.matejdro.micropebble.navigation.keys.OnboardingKey
-import com.matejdro.micropebble.navigation.keys.base.HomeScreenKey
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +28,11 @@ class MainViewModel @Inject constructor(
    init {
       actionLogger.logAction { "MainViewModel init()" }
       viewModelScope.launch {
-         _startingScreen.value = if (preferences.data.first()[onboardingShown] == true) HomeScreenKey else OnboardingKey
+         _startingScreen.value = if (preferences.data.first()[onboardingShown] == true) {
+            HomeScreenKey(HomeScreenKey.Screen.WATCHES)
+         } else {
+            OnboardingKey
+         }
          preferences.edit {
             it[onboardingShown] = true
          }

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="notification_apps">Notification apps</string>
-    <string name="watch_apps">Watch apps</string>
+    <string name="watch_apps">Watchapps</string>
     <string name="grant">Grant</string>
     <string name="open_settings">Open Settings</string>
     <string name="permissions">Permissions</string>
@@ -25,4 +24,7 @@
     <string name="calendar_permission_title">Calendar</string>
     <string name="calendar_permission_description">Needed to sync calendar to the Timeline</string>
     <string name="developer_connection">Developer connection</string>
+    <string name="watches">Watches</string>
+    <string name="notifications">Notifications</string>
+    <string name="tools">Tools</string>
 </resources>
