@@ -3,16 +3,24 @@ package com.matejdro.micropebble.bluetooth.watches
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -25,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -83,63 +92,91 @@ private fun WatchListScreenContent(
    setConnect: (KnownPebbleDevice, connect: Boolean) -> Unit,
    forget: (KnownPebbleDevice) -> Unit,
 ) {
-   Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-      FlowRow(
-         horizontalArrangement = Arrangement.spacedBy(8.dp),
-         verticalArrangement = Arrangement.spacedBy(8.dp)
+   Box {
+      LazyColumn(
+         verticalArrangement = Arrangement.spacedBy(32.dp), modifier = Modifier.fillMaxSize(),
+         contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
       ) {
-         Button(onClick = startPairing) {
-            Text(stringResource(R.string.pair_new_watch))
+         items(state.pairedDevices, key = { it.serial }) { device ->
+            Watch(device, setConnect, forget)
+         }
+
+         item {
+            // Extra padding at the end to allow scrolling past the FAB
+            Box(Modifier.size(100.dp))
          }
       }
 
-      Text(stringResource(R.string.paired_watches), Modifier.padding(16.dp))
+      if (state.pairedDevices.isEmpty()) {
+         Text(
+            stringResource(R.string.no_paired_watches_yet),
+            Modifier
+               .fillMaxSize()
+               .wrapContentSize(Alignment.Center),
+            style = MaterialTheme.typography.titleSmall
+         )
+      }
 
-      for (device in state.pairedDevices) {
-         val deviceVariant = device.color
-         val watchColor = deviceVariant?.color ?: MaterialTheme.colorScheme.surface
-         val textColor: Color = if (watchColor.luminance() > LUMINANCE_HALF_BRIGHT) {
-            Color.Black
-         } else {
-            Color.White
+      FloatingActionButton(
+         onClick = startPairing,
+         Modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .padding(16.dp)
+            .align(Alignment.BottomEnd)
+      ) {
+         Icon(painterResource(R.drawable.add), contentDescription = stringResource(R.string.pair_new_watch))
+      }
+   }
+}
+
+@Composable
+private fun Watch(
+   device: KnownPebbleDevice,
+   setConnect: (KnownPebbleDevice, Boolean) -> Unit,
+   forget: (KnownPebbleDevice) -> Unit,
+) {
+   val deviceVariant = device.color
+   val watchColor = deviceVariant?.color ?: MaterialTheme.colorScheme.surface
+   val textColor: Color = if (watchColor.luminance() > LUMINANCE_HALF_BRIGHT) {
+      Color.Black
+   } else {
+      Color.White
+   }
+
+   CompositionLocalProvider(LocalContentColor provides textColor) {
+      val shape = RoundedCornerShape(8.dp)
+      Column(
+         Modifier
+            .padding(horizontal = 32.dp)
+            .width(300.dp)
+            .background(watchColor, shape)
+            .border(Dp.Hairline, MaterialTheme.colorScheme.onSurface, shape)
+            .padding(16.dp)
+            .clip(shape),
+         verticalArrangement = Arrangement.spacedBy(8.dp)
+      ) {
+         Text(device.displayName(), style = MaterialTheme.typography.titleMedium)
+         Text(deviceVariant?.uiDescription ?: "Unknown watch variant")
+
+         Text(
+            if (device is ConnectedPebbleDevice) {
+               stringResource(R.string.connected)
+            } else if (device is ConnectingPebbleDevice) {
+               stringResource(sharedR.string.connecting)
+            } else {
+               stringResource(R.string.disconnected)
+            }
+         )
+
+         Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.connect), Modifier.padding(end = 16.dp))
+            Switch(checked = device is ConnectingPebbleDevice || device is ConnectedPebbleDevice, onCheckedChange = {
+               setConnect(device, it)
+            })
          }
 
-         CompositionLocalProvider(LocalContentColor provides textColor) {
-            val shape = RoundedCornerShape(8.dp)
-            Column(
-               Modifier
-                  .padding(8.dp)
-                  .fillMaxWidth()
-                  .background(watchColor, shape)
-                  .border(Dp.Hairline, MaterialTheme.colorScheme.onSurface, shape)
-                  .padding(8.dp)
-                  .clip(shape),
-               verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-               Text(device.displayName())
-               Text(deviceVariant?.uiDescription ?: "Unknown watch variant")
-
-               Text(
-                  if (device is ConnectedPebbleDevice) {
-                     stringResource(R.string.connected)
-                  } else if (device is ConnectingPebbleDevice) {
-                     stringResource(sharedR.string.connecting)
-                  } else {
-                     stringResource(R.string.disconnected)
-                  }
-               )
-
-               Row(verticalAlignment = Alignment.CenterVertically) {
-                  Text(stringResource(R.string.connect), Modifier.padding(end = 16.dp))
-                  Switch(checked = device is ConnectingPebbleDevice || device is ConnectedPebbleDevice, onCheckedChange = {
-                     setConnect(device, it)
-                  })
-               }
-
-               Button(onClick = { forget(device) }) {
-                  Text(stringResource(R.string.forget))
-               }
-            }
+         Button(onClick = { forget(device) }) {
+            Text(stringResource(R.string.forget))
          }
       }
    }
@@ -167,6 +204,7 @@ internal fun WatchListWithDevicesPreview() {
          FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle,
          "Red PT",
          null,
+         serial = "1",
          color = WatchColor.TimeRed,
          connectionFailureInfo = null
       ),
@@ -176,15 +214,18 @@ internal fun WatchListWithDevicesPreview() {
          FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle,
          "Black P2D",
          null,
+         serial = "2",
          color = WatchColor.Pebble2DuoBlack,
          connectionFailureInfo = null
       ),
       FakeKnownConnectingDevice(
          name = "White P2D",
+         serial = "3",
          color = WatchColor.Pebble2DuoWhite,
       ),
       FakeDisconnectedKnownDevice(
          name = "Classic Fly BLue",
+         serial = "4",
          color = WatchColor.ClassicFlyBlue,
       ),
    )

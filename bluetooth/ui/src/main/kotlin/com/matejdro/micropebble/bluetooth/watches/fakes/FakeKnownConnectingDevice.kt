@@ -18,9 +18,9 @@ class FakeKnownConnectingDevice(
    override val negotiating: Boolean = false,
    override val rebootingAfterFirmwareUpdate: Boolean = false,
    override val connectionFailureInfo: ConnectionFailureInfo? = null,
+   override val serial: String = "XXXXXXXXXXXX",
 ) : ConnectingKnownPebbleDevice {
    override val runningFwVersion: String = "v1.2.3-core"
-   override val serial: String = "XXXXXXXXXXXX"
 
    override fun forget() {}
    override fun setNickname(nickname: String?) {

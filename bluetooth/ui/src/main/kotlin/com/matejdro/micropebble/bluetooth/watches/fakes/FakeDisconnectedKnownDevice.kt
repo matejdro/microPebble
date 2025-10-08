@@ -16,9 +16,9 @@ class FakeDisconnectedKnownDevice(
    override val identifier: PebbleIdentifier = PebbleBleIdentifier(""),
    override val lastConnected: Instant = Instant.DISTANT_PAST,
    override val connectionFailureInfo: ConnectionFailureInfo? = null,
+   override val serial: String = "XXXXXXXXXXXX",
 ) : KnownPebbleDevice {
    override val runningFwVersion: String = "v1.2.3-core"
-   override val serial: String = "XXXXXXXXXXXX"
 
    override fun forget() {}
    override fun setNickname(nickname: String?) {
