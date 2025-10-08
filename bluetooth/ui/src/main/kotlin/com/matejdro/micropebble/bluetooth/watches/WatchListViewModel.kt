@@ -1,9 +1,9 @@
-package com.matejdro.micropebble.home
+package com.matejdro.micropebble.bluetooth.watches
 
 import androidx.compose.runtime.Stable
 import com.matejdro.micropebble.bluetooth.api.ConnectionServiceStarter
 import com.matejdro.micropebble.common.logging.ActionLogger
-import com.matejdro.micropebble.navigation.keys.base.HomeScreenKey
+import com.matejdro.micropebble.navigation.keys.WatchListKey
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.connection.ActiveDevice
 import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
@@ -22,17 +22,17 @@ import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 @Stable
 @Inject
 @ContributesScopedService
-class HomeViewModel(
+class WatchListViewModel(
    private val resources: CoroutineResourceManager,
    private val actionLogger: ActionLogger,
    private val watches: Watches,
    private val serviceStarter: ConnectionServiceStarter,
-) : SingleScreenViewModel<HomeScreenKey>(resources.scope) {
-   private val _state = MutableStateFlow<Outcome<HomeState>>(Outcome.Progress())
-   val state: StateFlow<Outcome<HomeState>> = _state
+) : SingleScreenViewModel<WatchListKey>(resources.scope) {
+   private val _state = MutableStateFlow<Outcome<WatchListState>>(Outcome.Progress())
+   val state: StateFlow<Outcome<WatchListState>> = _state
 
    override fun onServiceRegistered() {
-      actionLogger.logAction { "HomeViewModel.onServiceRegistered()" }
+      actionLogger.logAction { "WatchListViewModel.onServiceRegistered()" }
 
       resources.launchResourceControlTask(_state) {
          emitAll(
@@ -41,14 +41,14 @@ class HomeViewModel(
                   serviceStarter.start()
                }
             }.map {
-               Outcome.Success(HomeState(it.filterIsInstance<KnownPebbleDevice>()))
+               Outcome.Success(WatchListState(it.filterIsInstance<KnownPebbleDevice>()))
             }
          )
       }
    }
 
    fun setDeviceConnect(knownDevice: KnownPebbleDevice, connect: Boolean) {
-      actionLogger.logAction { "HomeViewModel.setDeviceConnect(knownDevice = ${knownDevice.name}, connect = $connect)" }
+      actionLogger.logAction { "WatchListViewModel.setDeviceConnect(knownDevice = ${knownDevice.name}, connect = $connect)" }
       if (connect) {
          knownDevice.connect()
       } else {
@@ -57,7 +57,7 @@ class HomeViewModel(
    }
 
    fun forgetDevice(knownDevice: KnownPebbleDevice) {
-      actionLogger.logAction { "HomeViewModel.forgetDevice(knownDevice = ${knownDevice.name})" }
+      actionLogger.logAction { "WatchListViewModel.forgetDevice(knownDevice = ${knownDevice.name})" }
       knownDevice.forget()
    }
 }

@@ -1,24 +1,22 @@
-package com.matejdro.micropebble.home.fakes
+package com.matejdro.micropebble.bluetooth.watches.fakes
 
-import io.rebble.libpebblecommon.connection.ConnectingKnownPebbleDevice
 import io.rebble.libpebblecommon.connection.ConnectionFailureInfo
+import io.rebble.libpebblecommon.connection.KnownPebbleDevice
 import io.rebble.libpebblecommon.connection.PebbleBleIdentifier
 import io.rebble.libpebblecommon.connection.PebbleIdentifier
 import io.rebble.libpebblecommon.metadata.WatchColor
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import kotlin.time.Instant
 
-class FakeKnownConnectingDevice(
+class FakeDisconnectedKnownDevice(
    override val name: String,
    override val nickname: String? = null,
    override val color: WatchColor = WatchColor.Pebble2DuoBlack,
    override val watchType: WatchHardwarePlatform = WatchHardwarePlatform.CORE_ASTERIX,
    override val identifier: PebbleIdentifier = PebbleBleIdentifier(""),
    override val lastConnected: Instant = Instant.DISTANT_PAST,
-   override val negotiating: Boolean = false,
-   override val rebootingAfterFirmwareUpdate: Boolean = false,
    override val connectionFailureInfo: ConnectionFailureInfo? = null,
-) : ConnectingKnownPebbleDevice {
+) : KnownPebbleDevice {
    override val runningFwVersion: String = "v1.2.3-core"
    override val serial: String = "XXXXXXXXXXXX"
 
@@ -27,6 +25,4 @@ class FakeKnownConnectingDevice(
    }
 
    override fun connect() {}
-
-   override fun disconnect() {}
 }

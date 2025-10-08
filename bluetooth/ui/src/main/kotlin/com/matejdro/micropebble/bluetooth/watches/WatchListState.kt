@@ -1,7 +1,7 @@
-package com.matejdro.micropebble.home
+package com.matejdro.micropebble.bluetooth.watches
 
 import io.rebble.libpebblecommon.connection.KnownPebbleDevice
 
-data class HomeState(
+data class WatchListState(
    val pairedDevices: List<KnownPebbleDevice>,
 )
