@@ -175,7 +175,7 @@ private fun App(app: AppWithCount, setAppEnabled: (Boolean) -> Unit) {
    ) {
       AppIcon(app.app.packageName)
 
-      Text(app.app.name, style = MaterialTheme.typography.headlineSmall)
+      Text(app.app.name)
 
       Spacer(Modifier.weight(1f))
       Switch(app.app.muteState == MuteState.Never, onCheckedChange = setAppEnabled)
