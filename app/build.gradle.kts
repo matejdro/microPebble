@@ -136,6 +136,7 @@ dependencies {
    implementation(projects.notification.data)
    implementation(projects.notification.ui)
    implementation(projects.home.ui)
+   implementation(projects.logging.api)
    implementation(projects.logging.data)
    implementation(projects.sharedResources)
 

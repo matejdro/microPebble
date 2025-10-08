@@ -17,11 +17,14 @@ android {
 dependencies {
    api(projects.notification.api)
    api(projects.common)
+   api(projects.logging.api)
+   api(libs.androidx.core)
    api(libs.kotlinova.core)
    api(libs.kotlinova.navigation)
    implementation(projects.commonCompose)
    implementation(libs.accompanist.permissions)
    implementation(libs.kotlin.coroutines)
+   implementation(libs.dispatch)
    implementation(libs.androidx.compose.material3.sizeClasses)
    implementation(libs.libpebble3)
 }

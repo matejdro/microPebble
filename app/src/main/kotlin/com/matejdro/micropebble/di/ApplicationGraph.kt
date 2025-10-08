@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.Service
 import android.content.BroadcastReceiver
 import com.matejdro.micropebble.MainViewModel
+import com.matejdro.micropebble.logging.FileLoggingController
 import com.matejdro.micropebble.notifications.NotificationChannelManager
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
@@ -44,6 +45,7 @@ interface ApplicationGraph {
    fun initLibPebble(): LibPebble
    fun initNotificationChannels(): NotificationChannelManager
    fun getDefaultScope(): DefaultCoroutineScope
+   fun getFileLoggingController(): FileLoggingController
 
    @Multibinds(allowEmpty = true)
    fun provideEmptyConditionalMultibinds(): Map<KClass<*>, ConditionalNavigationHandler>
