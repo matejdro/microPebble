@@ -41,6 +41,7 @@ import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import si.inova.kotlinova.core.activity.requireActivity
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
+import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 
@@ -76,15 +77,16 @@ class HomeScreen(
    }
 
    @Composable
-   private fun MainContent(tab: HomeScreenKey.Screen) {
+   private fun MainContent(tab: ScreenKey) {
       val stateHolder = rememberSaveableStateHolder()
       // We must provide name here, not the enum, because name stays the same after process kill, while enum object is different
-      stateHolder.SaveableStateProvider(tab) {
+      stateHolder.SaveableStateProvider(tab.javaClass.name) {
          when (tab) {
-            HomeScreenKey.Screen.WATCHES -> watchesScreen.Content(WatchListKey)
-            HomeScreenKey.Screen.APPS -> watchappsScreen.Content(WatchappListKey)
-            HomeScreenKey.Screen.NOTIFICATIONS -> notificationsScreen.Content(NotificationAppListKey)
-            HomeScreenKey.Screen.TOOLS -> toolsScreen.Content(ToolsScreenKey)
+            is WatchListKey -> watchesScreen.Content(tab)
+            is WatchappListKey -> watchappsScreen.Content(tab)
+            is NotificationAppListKey -> notificationsScreen.Content(tab)
+            is ToolsScreenKey -> toolsScreen.Content(tab)
+            else -> error("Unhandled screen type $tab")
          }
       }
    }
@@ -92,10 +94,10 @@ class HomeScreen(
 
 @Composable
 private fun HomeScreenContent(
-   selectedScreen: HomeScreenKey.Screen,
+   selectedScreen: ScreenKey,
    tabletMode: Boolean,
    mainContent: @Composable () -> Unit,
-   switchScreen: (HomeScreenKey.Screen) -> Unit,
+   switchScreen: (ScreenKey) -> Unit,
 ) {
    if (tabletMode) {
       NavigationRailContent(mainContent, selectedScreen, switchScreen)
@@ -107,8 +109,8 @@ private fun HomeScreenContent(
 @Composable
 private fun NavigationBarContent(
    mainContent: @Composable () -> Unit,
-   selectedScreen: HomeScreenKey.Screen,
-   switchScreen: (HomeScreenKey.Screen) -> Unit,
+   selectedScreen: ScreenKey,
+   switchScreen: (ScreenKey) -> Unit,
 ) {
    Column {
       Box(
@@ -121,29 +123,29 @@ private fun NavigationBarContent(
 
       NavigationBar {
          NavigationBarItem(
-            selected = selectedScreen == HomeScreenKey.Screen.WATCHES,
-            onClick = { switchScreen(HomeScreenKey.Screen.WATCHES) },
+            selected = selectedScreen is WatchListKey,
+            onClick = { switchScreen(WatchListKey) },
             icon = { Icon(painter = painterResource(id = R.drawable.watches), contentDescription = null) },
             label = { Text(stringResource(R.string.watches)) }
          )
 
          NavigationBarItem(
-            selected = selectedScreen == HomeScreenKey.Screen.APPS,
-            onClick = { switchScreen(HomeScreenKey.Screen.APPS) },
+            selected = selectedScreen is WatchappListKey,
+            onClick = { switchScreen(WatchappListKey) },
             icon = { Icon(painter = painterResource(id = R.drawable.watchapps), contentDescription = null) },
             label = { Text(stringResource(R.string.watch_apps)) }
          )
 
          NavigationBarItem(
-            selected = selectedScreen == HomeScreenKey.Screen.NOTIFICATIONS,
-            onClick = { switchScreen(HomeScreenKey.Screen.NOTIFICATIONS) },
+            selected = selectedScreen is NotificationAppListKey,
+            onClick = { switchScreen(NotificationAppListKey) },
             icon = { Icon(painter = painterResource(id = R.drawable.notifications), contentDescription = null) },
             label = { Text(stringResource(R.string.notifications)) }
          )
 
          NavigationBarItem(
-            selected = selectedScreen == HomeScreenKey.Screen.TOOLS,
-            onClick = { switchScreen(HomeScreenKey.Screen.TOOLS) },
+            selected = selectedScreen is ToolsScreenKey,
+            onClick = { switchScreen(ToolsScreenKey) },
             icon = { Icon(painter = painterResource(id = R.drawable.tools), contentDescription = null) },
             label = { Text(stringResource(R.string.tools)) }
          )
@@ -154,35 +156,35 @@ private fun NavigationBarContent(
 @Composable
 private fun NavigationRailContent(
    mainContent: @Composable () -> Unit,
-   selectedScreen: HomeScreenKey.Screen,
-   switchScreen: (HomeScreenKey.Screen) -> Unit,
+   selectedScreen: ScreenKey,
+   switchScreen: (ScreenKey) -> Unit,
 ) {
    Row {
       NavigationRail {
          NavigationRailItem(
-            selected = selectedScreen == HomeScreenKey.Screen.WATCHES,
-            onClick = { switchScreen(HomeScreenKey.Screen.WATCHES) },
+            selected = selectedScreen is WatchListKey,
+            onClick = { switchScreen(WatchListKey) },
             icon = { Icon(painter = painterResource(id = R.drawable.watches), contentDescription = null) },
             label = { Text(stringResource(R.string.watches)) }
          )
 
          NavigationRailItem(
-            selected = selectedScreen == HomeScreenKey.Screen.APPS,
-            onClick = { switchScreen(HomeScreenKey.Screen.APPS) },
+            selected = selectedScreen is WatchappListKey,
+            onClick = { switchScreen(WatchappListKey) },
             icon = { Icon(painter = painterResource(id = R.drawable.watchapps), contentDescription = null) },
             label = { Text(stringResource(R.string.watch_apps)) }
          )
 
          NavigationRailItem(
-            selected = selectedScreen == HomeScreenKey.Screen.NOTIFICATIONS,
-            onClick = { switchScreen(HomeScreenKey.Screen.NOTIFICATIONS) },
+            selected = selectedScreen is NotificationAppListKey,
+            onClick = { switchScreen(NotificationAppListKey) },
             icon = { Icon(painter = painterResource(id = R.drawable.notifications), contentDescription = null) },
             label = { Text(stringResource(R.string.notifications)) }
          )
 
          NavigationRailItem(
-            selected = selectedScreen == HomeScreenKey.Screen.TOOLS,
-            onClick = { switchScreen(HomeScreenKey.Screen.TOOLS) },
+            selected = selectedScreen is ToolsScreenKey,
+            onClick = { switchScreen(ToolsScreenKey) },
             icon = { Icon(painter = painterResource(id = R.drawable.tools), contentDescription = null) },
             label = { Text(stringResource(R.string.tools)) }
          )
@@ -205,7 +207,7 @@ internal fun HomePhonePreview() {
    PreviewTheme {
       HomeScreenContent(
          tabletMode = false,
-         selectedScreen = HomeScreenKey.Screen.APPS,
+         selectedScreen = WatchappListKey,
          mainContent = {
             Box(
                Modifier
@@ -225,7 +227,7 @@ internal fun HomeTabletPreview() {
    PreviewTheme {
       HomeScreenContent(
          tabletMode = true,
-         selectedScreen = HomeScreenKey.Screen.APPS,
+         selectedScreen = WatchappListKey,
          mainContent = {
             Box(
                Modifier
