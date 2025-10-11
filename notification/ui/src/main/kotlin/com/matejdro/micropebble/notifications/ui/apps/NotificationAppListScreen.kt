@@ -75,7 +75,8 @@ class NotificationAppListScreen(
             viewModel::setNotificationsPhoneMute,
             viewModel::setCallsPhoneMute,
             viewModel::setRespectDoNotDisturb,
-            viewModel::setSendNotifications
+            viewModel::setSendNotifications,
+            viewModel::setSendCalendarReminders
          )
       }
    }
@@ -89,6 +90,7 @@ private fun NotificationAppListScreenContent(
    setCallsPhoneMute: (Boolean) -> Unit,
    setRespectDoNotDisturb: (Boolean) -> Unit,
    setSendNotifications: (Boolean) -> Unit,
+   setSendCalendarReminders: (Boolean) -> Unit,
 ) {
    LazyColumn(
       Modifier.fillMaxSize(),
@@ -153,6 +155,21 @@ private fun NotificationAppListScreenContent(
                   .weight(1f)
             )
             Switch(state.respectDoNotDisturb, onCheckedChange = setRespectDoNotDisturb)
+         }
+
+         Row(
+            Modifier
+               .fillMaxWidth()
+               .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+         ) {
+            Text(
+               stringResource(R.string.show_calendar_reminders),
+               Modifier
+                  .padding(end = 16.dp)
+                  .weight(1f)
+            )
+            Switch(state.sendCalendarReminders, onCheckedChange = setSendCalendarReminders)
          }
       }
 
@@ -238,12 +255,14 @@ internal fun NotificationAppListScreenContentPreview() {
          true,
          false,
          false,
+         true,
          true
       )
 
       NotificationAppListScreenContent(
          state,
          { _, _ -> },
+         {},
          {},
          {},
          {},

@@ -10,8 +10,6 @@ import io.rebble.libpebblecommon.database.entity.MuteState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.services.ContributesScopedService
@@ -33,17 +31,21 @@ class NotificationAppListViewModel(
       actionLogger.logAction { "NotificationAppListViewModel.onServiceRegistered()" }
 
       resources.launchResourceControlTask(_uiState) {
-         val notificationsConfigFlow = libPebble.config.map { it.notificationConfig }.distinctUntilChanged()
+         val configFlow = libPebble.config
          val appsFlow = notificationApps.notificationApps()
 
-         val combinedFlow = combine(appsFlow, notificationsConfigFlow) { apps, notificationsConfig ->
+         val combinedFlow = combine(appsFlow, configFlow) { apps, config ->
+            val notificationsConfig = config.notificationConfig
+            val watchConfig = config.watchConfig
+
             Outcome.Success(
                NotificationAppListState(
                   apps,
                   notificationsConfig.mutePhoneNotificationSoundsWhenConnected,
                   notificationsConfig.mutePhoneCallSoundsWhenConnected,
                   notificationsConfig.respectDoNotDisturb,
-                  notificationsConfig.sendNotifications
+                  notificationsConfig.sendNotifications,
+                  watchConfig.calendarReminders,
                )
             )
          }
@@ -101,6 +103,18 @@ class NotificationAppListViewModel(
          libPebble.config.value.copy(
             notificationConfig = libPebble.config.value.notificationConfig.copy(
                sendNotifications = send
+            )
+         )
+      )
+   }
+
+   fun setSendCalendarReminders(send: Boolean) {
+      actionLogger.logAction { "NotificationAppListViewModel.setSendCalendarReminders(send = $send)" }
+
+      libPebble.updateConfig(
+         libPebble.config.value.copy(
+            watchConfig = libPebble.config.value.watchConfig.copy(
+               calendarReminders = send
             )
          )
       )
