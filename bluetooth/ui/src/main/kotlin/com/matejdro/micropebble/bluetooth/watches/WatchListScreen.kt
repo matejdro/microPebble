@@ -33,11 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.ColorUtils
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.bluetooth.ui.R
 import com.matejdro.micropebble.bluetooth.watches.fakes.FakeDisconnectedKnownDevice
@@ -136,7 +138,7 @@ private fun Watch(
    forget: (KnownPebbleDevice) -> Unit,
 ) {
    val deviceVariant = device.color
-   val watchColor = deviceVariant?.color ?: MaterialTheme.colorScheme.surface
+   val watchColor = deviceVariant?.color?.reduceSaturation() ?: MaterialTheme.colorScheme.surface
    val textColor: Color = if (watchColor.luminance() > LUMINANCE_HALF_BRIGHT) {
       Color.Black
    } else {
@@ -180,6 +182,16 @@ private fun Watch(
          }
       }
    }
+}
+
+@Suppress("MagicNumber") // Array indexes
+private fun Color.reduceSaturation(): Color {
+   // Too high saturation stands out too much in contrast to the background. Reduce it, while still preserving the watch hue.
+
+   val hslArray = FloatArray(3)
+   ColorUtils.colorToHSL(toArgb(), hslArray)
+   hslArray[1] = hslArray[1].coerceAtMost(0.5f)
+   return Color(ColorUtils.HSLToColor(hslArray))
 }
 
 private const val LUMINANCE_HALF_BRIGHT = 0.5
