@@ -10,4 +10,5 @@
     <string name="no_connected_watch">No connected watch</string>
     <string name="enable_developer_connection">Enable Developer Connection</string>
     <string name="ip">IP</string>
+    <string name="install_confirmation">Do you want to install %1$s?</string>
 </resources>

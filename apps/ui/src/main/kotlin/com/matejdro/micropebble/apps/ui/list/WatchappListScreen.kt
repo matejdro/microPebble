@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -27,6 +28,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -42,6 +44,7 @@ import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.apps.ui.R
 import com.matejdro.micropebble.apps.ui.errors.installUserFriendlyErrorMessage
 import com.matejdro.micropebble.apps.ui.webviewconfig.AppConfigScreenKey
+import com.matejdro.micropebble.navigation.keys.HomeScreenKey
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
 import com.matejdro.micropebble.ui.components.ErrorAlertDialog
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
@@ -57,10 +60,12 @@ import si.inova.kotlinova.core.exceptions.NoNetworkException
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.di.ContributesScreenBinding
 import si.inova.kotlinova.navigation.instructions.navigateTo
+import si.inova.kotlinova.navigation.instructions.replaceTopWith
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 import kotlin.uuid.Uuid
+import com.matejdro.micropebble.sharedresources.R as sharedR
 
 @InjectNavigationScreen
 @ContributesScreenBinding
@@ -93,6 +98,38 @@ class WatchappListScreen(
             deleteApp = viewModel::deleteApp,
             openConfiguration = { appUuid ->
                navigator.navigateTo(AppConfigScreenKey(appUuid))
+            }
+         )
+      }
+
+      PbwInstallDialog(key)
+   }
+
+   @Composable
+   private fun PbwInstallDialog(key: WatchappListKey) {
+      val pbwInstallUri = key.pbwInstallUri
+      if (pbwInstallUri != null) {
+         fun closeDialog() {
+            navigator.replaceTopWith(HomeScreenKey(key.copy(pbwInstallUri = null)))
+         }
+
+         AlertDialog(
+            onDismissRequest = ::closeDialog,
+            confirmButton = {
+               TextButton(onClick = {
+                  closeDialog()
+                  viewModel.startInstall(pbwInstallUri)
+               }) { Text(stringResource(sharedR.string.ok)) }
+            },
+            dismissButton = {
+               TextButton(onClick = { closeDialog() }) { Text(stringResource(sharedR.string.cancel)) }
+            },
+            title = {
+               Text(stringResource(R.string.install_from_pbw))
+            },
+            text = {
+               val filename = pbwInstallUri.lastPathSegment.orEmpty()
+               Text(stringResource(R.string.install_confirmation, filename))
             }
          )
       }

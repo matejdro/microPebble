@@ -45,14 +45,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- PBW Install -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="demoapp" />
-            </intent-filter>
 
+                <data android:scheme="content" tools:ignore="AppLinkUrlError" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.pbw" />
+            </intent-filter>
             <property
                 android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
                 android:value="true" />

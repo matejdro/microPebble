@@ -22,6 +22,7 @@ dependencies {
 
    implementation(projects.commonCompose)
    implementation(projects.commonNavigation)
+   implementation(projects.sharedResources)
    implementation(libs.androidx.activity.compose)
    implementation(libs.androidx.core)
    implementation(libs.composeWebview)

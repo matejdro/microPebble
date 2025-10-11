@@ -131,7 +131,7 @@ private fun NavigationBarContent(
 
          NavigationBarItem(
             selected = selectedScreen is WatchappListKey,
-            onClick = { switchScreen(WatchappListKey) },
+            onClick = { switchScreen(WatchappListKey()) },
             icon = { Icon(painter = painterResource(id = R.drawable.watchapps), contentDescription = null) },
             label = { Text(stringResource(R.string.watch_apps)) }
          )
@@ -170,7 +170,7 @@ private fun NavigationRailContent(
 
          NavigationRailItem(
             selected = selectedScreen is WatchappListKey,
-            onClick = { switchScreen(WatchappListKey) },
+            onClick = { switchScreen(WatchappListKey()) },
             icon = { Icon(painter = painterResource(id = R.drawable.watchapps), contentDescription = null) },
             label = { Text(stringResource(R.string.watch_apps)) }
          )
@@ -207,7 +207,7 @@ internal fun HomePhonePreview() {
    PreviewTheme {
       HomeScreenContent(
          tabletMode = false,
-         selectedScreen = WatchappListKey,
+         selectedScreen = WatchappListKey(),
          mainContent = {
             Box(
                Modifier
@@ -227,7 +227,7 @@ internal fun HomeTabletPreview() {
    PreviewTheme {
       HomeScreenContent(
          tabletMode = true,
-         selectedScreen = WatchappListKey,
+         selectedScreen = WatchappListKey(),
          mainContent = {
             Box(
                Modifier
