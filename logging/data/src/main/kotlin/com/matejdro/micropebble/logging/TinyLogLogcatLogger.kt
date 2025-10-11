@@ -1,13 +1,11 @@
 package com.matejdro.micropebble.logging
 
 import org.tinylog.Level
-import org.tinylog.provider.LoggingProvider
-import org.tinylog.provider.ProviderRegistry
 import si.inova.kotlinova.core.logging.LogPriority
 import si.inova.kotlinova.core.logging.LogcatLogger
 
 class TinyLogLogcatLogger(
-   private val provider: LoggingProvider = ProviderRegistry.getLoggingProvider(),
+   private val tinyLogLoggingThread: TinyLogLoggingThread,
 ) : LogcatLogger {
    override fun log(priority: LogPriority, tag: String, message: String) {
       val tinylogLevel = when (priority) {
@@ -18,6 +16,6 @@ class TinyLogLogcatLogger(
          LogPriority.ERROR, LogPriority.ASSERT -> Level.ERROR
       }
 
-      provider.log(1, tag, tinylogLevel, null, null, message)
+      tinyLogLoggingThread.log(1, tag, tinylogLevel, message)
    }
 }

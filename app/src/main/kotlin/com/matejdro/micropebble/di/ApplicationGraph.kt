@@ -5,6 +5,7 @@ import android.app.Service
 import android.content.BroadcastReceiver
 import com.matejdro.micropebble.MainViewModel
 import com.matejdro.micropebble.logging.FileLoggingController
+import com.matejdro.micropebble.logging.TinyLogLoggingThread
 import com.matejdro.micropebble.notifications.NotificationChannelManager
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
@@ -33,7 +34,7 @@ interface MainApplicationGraph : ApplicationGraph {
    }
 }
 
-@Suppress("ComplexInterface") // DI
+@Suppress("ComplexInterface", "TooManyFunctions") // DI
 interface ApplicationGraph {
    fun getErrorReporter(): ErrorReporter
    fun getDefaultCoroutineScope(): DefaultCoroutineScope
@@ -46,6 +47,7 @@ interface ApplicationGraph {
    fun initNotificationChannels(): NotificationChannelManager
    fun getDefaultScope(): DefaultCoroutineScope
    fun getFileLoggingController(): FileLoggingController
+   fun getTinyLogLoggingThread(): TinyLogLoggingThread
 
    @Multibinds(allowEmpty = true)
    fun provideEmptyConditionalMultibinds(): Map<KClass<*>, ConditionalNavigationHandler>

@@ -3,11 +3,9 @@ package com.matejdro.micropebble.logging
 import co.touchlab.kermit.LogWriter
 import co.touchlab.kermit.Severity
 import org.tinylog.Level
-import org.tinylog.provider.LoggingProvider
-import org.tinylog.provider.ProviderRegistry
 
 class TinyLogKermitWriter(
-   private val provider: LoggingProvider = ProviderRegistry.getLoggingProvider(),
+   private val tinyLogLoggingThread: TinyLogLoggingThread,
 ) : LogWriter() {
    override fun log(
       severity: Severity,
@@ -23,6 +21,6 @@ class TinyLogKermitWriter(
          Severity.Error, Severity.Assert -> Level.ERROR
       }
 
-      provider.log(1, "LibPebble-$tag", tinylogLevel, throwable, null, message)
+      tinyLogLoggingThread.log(1, "LibPebble-$tag", tinylogLevel, message, throwable)
    }
 }

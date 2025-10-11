@@ -2,10 +2,11 @@ package com.matejdro.micropebble.di
 
 import com.matejdro.micropebble.BuildConfig
 import com.matejdro.micropebble.common.exceptions.CrashOnDebugException
+import com.matejdro.micropebble.logging.TinyLogLoggingThread
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
-import org.tinylog.kotlin.Logger
+import org.tinylog.Level
 import si.inova.kotlinova.core.exceptions.UnknownCauseException
 import si.inova.kotlinova.core.outcome.CauseException
 import si.inova.kotlinova.core.reporting.ErrorReporter
@@ -14,7 +15,7 @@ import si.inova.kotlinova.core.reporting.ErrorReporter
 @ContributesTo(AppScope::class)
 interface ErrorReportingProviders {
    @Provides
-   fun provideErrorReporter(): ErrorReporter {
+   fun provideErrorReporter(tinyLogLoggingThread: TinyLogLoggingThread): ErrorReporter {
       return object : ErrorReporter {
          override fun report(throwable: Throwable) {
             if (throwable !is CauseException) {
@@ -24,7 +25,7 @@ interface ErrorReportingProviders {
 
             if (throwable.shouldReport) {
                throwable.printStackTrace()
-               Logger.error(throwable)
+               tinyLogLoggingThread.log(1, "ErrorReporter", Level.ERROR, null, throwable)
             } else if (BuildConfig.DEBUG) {
                if (throwable is CrashOnDebugException) {
                   throw throwable
