@@ -199,4 +199,5 @@ private val STRICT_MODE_EXCLUSIONS = listOf(
    "SurfaceControl.finalize", // https://issuetracker.google.com/issues/167533582
    "InsetsSourceControl", // https://issuetracker.google.com/issues/307473789
    "io.rebble.libpebblecommon.di.LibPebbleModuleKt.initKoin", // libPebble init is doing a lot of main thread reads
+   "readFromParcel", // Likely originating somewhere from within the framework. Not enough info to diagnose it.
 )
