@@ -131,7 +131,7 @@ class WatchappListViewModel(
                errorCollection.consume { receive() }
             }
                ?.let { LibPebbleError(it.message) }
-               ?: UnknownCauseException()
+               ?: UnknownCauseException("Unknown watchapp install error")
 
             throw error
          }
