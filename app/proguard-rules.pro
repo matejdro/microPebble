@@ -20,6 +20,10 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+-dontobfuscate
+-dontoptimize
+-keepattributes SourceFile,LineNumberTable
+
 -dontwarn javax.inject.*
 
 # Tinylog
