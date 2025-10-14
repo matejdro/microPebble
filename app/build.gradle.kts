@@ -137,6 +137,7 @@ dependencies {
    implementation(projects.notification.ui)
    implementation(projects.home.ui)
    implementation(projects.logging.api)
+   implementation(projects.logging.crashreport)
    implementation(projects.logging.data)
    implementation(projects.sharedResources)
 
@@ -163,8 +164,6 @@ dependencies {
    implementation(libs.androidx.datastore.preferences)
 
    runtimeOnly(libs.ktor.okhttp)
-
-   debugImplementation(libs.whatTheStack)
 
    keeperR8(libs.androidx.r8)
 }
