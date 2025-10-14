@@ -7,9 +7,8 @@ plugins {
 configure<DependencyAnalysisSubExtension> {
    issues {
       onAny {
-         // Rebugger and WhatTheStack are always included as a convenience, so it can immediately be used. It's debug only anyway
+         // Rebugger is always included as a convenience, so it can immediately be used. It's debug only anyway
          exclude("io.github.theapache64:rebugger")
-         exclude("com.github.fvito:WhatTheStack")
 
          // Included by kotlin automatically, we can't affect it
          exclude("org.jetbrains.kotlin:kotlin-stdlib")

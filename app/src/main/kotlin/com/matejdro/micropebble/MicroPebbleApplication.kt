@@ -112,12 +112,6 @@ open class MicroPebbleApplication : Application() {
    }
 
    private fun enableStrictMode() {
-      // Also check on staging release build, if applicable
-      // penaltyListener only supports P and newer, so we are forced to only enable StrictMode on those devices
-      if (!BuildConfig.DEBUG) {
-         return
-      }
-
       StrictMode.setVmPolicy(
          VmPolicy.Builder()
             .detectActivityLeaks()
@@ -199,4 +193,5 @@ private val STRICT_MODE_EXCLUSIONS = listOf(
    "SurfaceControl.finalize", // https://issuetracker.google.com/issues/167533582
    "InsetsSourceControl", // https://issuetracker.google.com/issues/307473789
    "io.rebble.libpebblecommon.di.LibPebbleModuleKt.initKoin", // libPebble init is doing a lot of main thread reads
+   "readFromParcel", // Likely originating somewhere from within the framework. Not enough info to diagnose it.
 )

@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Required for WhatTheStack -->
+    <!-- Required for crash reporting -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- For developer connection Wi-Fi access -->
@@ -52,9 +52,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="content" tools:ignore="AppLinkUrlError" />
-                <data android:mimeType="*/*" />
-                <data android:pathPattern=".*\\.pbw" />
+                <data android:scheme="content"
+                      android:host="*"
+                      android:mimeType="*/*"
+                      android:pathPattern=".*\\.pbw" />
             </intent-filter>
             <property
                 android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"

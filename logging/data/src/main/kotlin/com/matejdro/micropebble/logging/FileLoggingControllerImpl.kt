@@ -24,8 +24,13 @@ class FileLoggingControllerImpl(
    }
 
    override fun getDeviceInfo(): String {
-      return "Device: ${android.os.Build.DEVICE}\n" +
+      val pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0)
+
+      return "Manufacturer: ${android.os.Build.MANUFACTURER}\n" +
+         "Device: ${android.os.Build.MODEL} (${android.os.Build.DEVICE})\n" +
          "OS: ${android.os.Build.VERSION.RELEASE}\n" +
-         "SDK: ${android.os.Build.VERSION.SDK_INT}"
+         "OS Build: ${android.os.Build.FINGERPRINT}\n" +
+         "SDK: ${android.os.Build.VERSION.SDK_INT}\n" +
+         "App version: ${pInfo.versionName.orEmpty()} (${pInfo.longVersionCode})"
    }
 }

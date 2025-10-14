@@ -1,7 +1,9 @@
 package com.matejdro.micropebble.di
 
+import android.content.Context
 import com.matejdro.micropebble.BuildConfig
 import com.matejdro.micropebble.common.exceptions.CrashOnDebugException
+import com.matejdro.micropebble.crashreport.CrashReportService
 import com.matejdro.micropebble.logging.TinyLogLoggingThread
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
@@ -15,7 +17,7 @@ import si.inova.kotlinova.core.reporting.ErrorReporter
 @ContributesTo(AppScope::class)
 interface ErrorReportingProviders {
    @Provides
-   fun provideErrorReporter(tinyLogLoggingThread: TinyLogLoggingThread): ErrorReporter {
+   fun provideErrorReporter(tinyLogLoggingThread: TinyLogLoggingThread, context: Context): ErrorReporter {
       return object : ErrorReporter {
          override fun report(throwable: Throwable) {
             if (throwable !is CauseException) {
@@ -26,6 +28,7 @@ interface ErrorReportingProviders {
             if (throwable.shouldReport) {
                throwable.printStackTrace()
                tinyLogLoggingThread.log(1, "ErrorReporter", Level.ERROR, null, throwable)
+               CrashReportService.showCrashNotification(throwable.stackTraceToString(), context)
             } else if (BuildConfig.DEBUG) {
                if (throwable is CrashOnDebugException) {
                   throw throwable
