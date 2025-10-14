@@ -194,4 +194,5 @@ private val STRICT_MODE_EXCLUSIONS = listOf(
    "InsetsSourceControl", // https://issuetracker.google.com/issues/307473789
    "io.rebble.libpebblecommon.di.LibPebbleModuleKt.initKoin", // libPebble init is doing a lot of main thread reads
    "readFromParcel", // Likely originating somewhere from within the framework. Not enough info to diagnose it.
+   "MainDispatcherLoader", // Needs to class load main dispatcher class from disk
 )
