@@ -97,7 +97,7 @@ class CrashReportService : Service() {
       /**
        * Binder can only send a limited amount of text between components. Ensure we only send up to this characters.
        */
-      const val CRASH_TEXT_LIMIT = 2_000
+      const val CRASH_TEXT_LIMIT = 10_000
 
       fun getStartupCrashFile(context: Context): File {
          return File(context.cacheDir, "lastCrash.txt")
@@ -131,6 +131,8 @@ class CrashReportService : Service() {
             return
          }
 
+         val id = CRASH_REQUEST_CODE xor System.currentTimeMillis().toInt()
+
          val notification = NotificationCompat.Builder(context, CHANNEL_ID_CRASHES)
             .setContentTitle(
                context.getString(
@@ -143,7 +145,7 @@ class CrashReportService : Service() {
             .setContentIntent(
                PendingIntent.getActivity(
                   context,
-                  CRASH_REQUEST_CODE,
+                  id,
                   Intent(context, CrashReportActivity::class.java).putExtra(
                      CrashReportActivity.EXTRA_TEXT,
                      crashData.take(CRASH_TEXT_LIMIT)
@@ -152,7 +154,7 @@ class CrashReportService : Service() {
                ),
             ).build()
 
-         notificationManager.notify(CRASH_REQUEST_CODE xor System.currentTimeMillis().toInt(), notification)
+         notificationManager.notify(id, notification)
       }
    }
 }
