@@ -92,11 +92,11 @@ open class MicroPebbleApplication : Application() {
       // Both logcat and Kermit log into the Android's Logcat log, here we just need to wire them to also log
       // into Tinylog
 
-      val loggingThread = applicationGraph.getTinyLogLoggingThread()
-
       val directoryForLogs: File = applicationGraph.getFileLoggingController().getLogFolder()
          .also { it.mkdirs() }
       System.setProperty("tinylog.directory", directoryForLogs.getAbsolutePath())
+
+      val loggingThread = applicationGraph.getTinyLogLoggingThread()
 
       val logcatLoggers = listOfNotNull(
          TinyLogLogcatLogger(loggingThread),
