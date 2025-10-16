@@ -112,6 +112,12 @@ open class MicroPebbleApplication : Application() {
    }
 
    private fun enableStrictMode() {
+      // Also check on staging release build, if applicable
+      // penaltyListener only supports P and newer, so we are forced to only enable StrictMode on those devices
+      if (!BuildConfig.DEBUG) {
+         return
+      }
+
       StrictMode.setVmPolicy(
          VmPolicy.Builder()
             .detectActivityLeaks()
