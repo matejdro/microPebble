@@ -124,8 +124,12 @@ class BluetoothScanScreen(
          object : CompanionDeviceManager.Callback() {
             override fun onFailure(error: CharSequence?) {}
 
-            override fun onAssociationPending(intentSender: IntentSender) {
-               super.onAssociationPending(intentSender)
+            // New method is only available in the SDK 33, so we
+            // have to use the old one for now.
+            @Suppress("DEPRECATION")
+            @Deprecated("Deprecated in Java")
+            override fun onDeviceFound(intentSender: IntentSender) {
+               super.onDeviceFound(intentSender)
                context.startIntentSender(intentSender, null, 0, 0, 0)
             }
 
