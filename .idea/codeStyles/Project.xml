@@ -6,6 +6,7 @@
       <option name="PACKAGES_TO_USE_STAR_IMPORTS">
         <value />
       </option>
+      <option name="INDENT_BEFORE_ARROW_ON_NEW_LINE" value="false" />
       <option name="NAME_COUNT_TO_USE_STAR_IMPORT" value="2147483647" />
       <option name="NAME_COUNT_TO_USE_STAR_IMPORT_FOR_MEMBERS" value="2147483647" />
       <option name="ALLOW_TRAILING_COMMA" value="true" />
