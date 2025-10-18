@@ -202,4 +202,5 @@ private val STRICT_MODE_EXCLUSIONS = listOf(
    "readFromParcel", // Likely originating somewhere from within the framework. Not enough info to diagnose it.
    "MainDispatcherLoader", // Needs to class load main dispatcher class from disk
    "miui", // MIUI sometimes makes disk access calls on the OS side. We cannot control those.
+   "TurboSchedMonitorImpl", // Part of some OS distributions, such as MIUI. We cannot control those, so exclude them.
 )
