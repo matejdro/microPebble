@@ -139,6 +139,7 @@ private fun ColumnScope.OnboardingScrollContent(state: OnboardingState, requestN
    LocationPermission()
    NotificationListenerPermission(state, requestNotificationListenerPermission)
    CalendarPermission()
+   VoicePermission()
 }
 
 @Composable
@@ -298,6 +299,32 @@ private fun CalendarPermission() {
 }
 
 @Composable
+private fun VoicePermission() {
+   var rejectedPermission by remember { mutableStateOf(false) }
+   val permissionState = rememberMultiplePermissionsState(
+      listOf(
+         Manifest.permission.RECORD_AUDIO,
+      )
+   ) { permissions ->
+      if (!permissions.values.all { granted -> granted }) {
+         rejectedPermission = true
+      }
+   }
+
+   Card(Modifier.fillMaxWidth()) {
+      Column(
+         Modifier.padding(8.dp),
+         verticalArrangement = Arrangement.spacedBy(8.dp)
+      ) {
+         Text(stringResource(R.string.voice_permission_title), style = MaterialTheme.typography.headlineSmall)
+         Text(stringResource(R.string.voice_permission_description))
+
+         MultiPermissionButton(permissionState, rejectedPermission)
+      }
+   }
+}
+
+@Composable
 private fun SinglePermissionButton(
    permissionState: PermissionState,
    rejectedPermission: Boolean,
@@ -354,7 +381,7 @@ internal fun OnboardingContentWithWatchPairedPreview() {
    }
 }
 
-@Preview
+@Preview(heightDp = 1200)
 @Composable
 private fun OnboardingWholeListPreview() {
    PreviewTheme {
