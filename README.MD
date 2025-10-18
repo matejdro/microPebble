@@ -13,7 +13,7 @@ Supported features:
 * Music control
 * Calendar sync
 * PebbleKit Android (for Notification Center, Music Boss etc.),
-  albeit [it's slow](https://github.com/coredevices/libpebble3/issues/17).
+  albeit it's slower on the Pre-P2 watches
 * Developer connection
 
 ![docs/home1.png](docs/home1.png) ![docs/home2.png](docs/home2.png) ![docs/home3.png](docs/home3.png)
