@@ -140,6 +140,7 @@ dependencies {
    implementation(projects.logging.crashreport)
    implementation(projects.logging.data)
    implementation(projects.sharedResources)
+   implementation(projects.voice.data)
 
    implementation(libs.androidx.activity.compose)
    implementation(libs.androidx.core)

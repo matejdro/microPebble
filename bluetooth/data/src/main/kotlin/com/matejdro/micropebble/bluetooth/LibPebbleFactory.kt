@@ -28,6 +28,7 @@ interface LibPebbleFactory {
    @SingleIn(AppScope::class)
    fun createLibPebble(
       context: Context,
+      transcriptionProvider: TranscriptionProvider
    ): LibPebble {
       val dummyWebServices = object : WebServices {
          override suspend fun fetchLocker(): LockerModel? {
@@ -55,19 +56,6 @@ interface LibPebbleFactory {
          }
       }
 
-      val dummyTranscriptionProvider = object : TranscriptionProvider {
-         override suspend fun transcribe(
-            encoderInfo: VoiceEncoderInfo,
-            audioFrames: Flow<UByteArray>,
-         ): TranscriptionResult {
-            return TranscriptionResult.Disabled
-         }
-
-         override suspend fun canServeSession(): Boolean {
-            return false
-         }
-      }
-
       return LibPebble3.create(
          LibPebbleConfig(
             watchConfig = WatchConfig(lanDevConnection = true)
@@ -76,7 +64,7 @@ interface LibPebbleFactory {
          AppContext(context),
          dummyTokenProvider,
          MutableStateFlow(null),
-         dummyTranscriptionProvider
+         transcriptionProvider
       ).also { it.init() }
    }
 }

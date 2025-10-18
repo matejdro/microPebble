@@ -1,3 +1,12 @@
 [submodule "libpebble3"]
 	path = libpebble3
 	url = git@github.com:matejdro/libpebble3.git
+[submodule "voice/speex_codec/src/main/cpp/speex"]
+	path = voice/speex_codec/src/main/cpp/speex
+	url = git@github.com:xiph/speex.git
+[submodule "voice/speex_codec/src/main/cpp/speexdsp"]
+	path = voice/speex_codec/src/main/cpp/speexdsp
+	url = git@github.com:xiph/speexdsp.git
+[submodule "voice/speex_codec/src/main/cpp/kissfft"]
+	path = voice/speex_codec/src/main/cpp/kissfft
+	url = git@github.com:mborgerding/kissfft.git
