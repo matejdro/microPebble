@@ -10,6 +10,9 @@
     <!-- For developer connection Wi-Fi access -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!-- Voice transcription -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:name=".MicroPebbleApplication"
         android:allowBackup="true"

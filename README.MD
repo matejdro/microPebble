@@ -15,6 +15,7 @@ Supported features:
 * PebbleKit Android (for Notification Center, Music Boss etc.),
   albeit it's slower on the Pre-P2 watches
 * Developer connection
+* Voice recognition (on Android 13+)
 
 ![docs/home1.png](docs/home1.png) ![docs/home2.png](docs/home2.png) ![docs/home3.png](docs/home3.png)
 

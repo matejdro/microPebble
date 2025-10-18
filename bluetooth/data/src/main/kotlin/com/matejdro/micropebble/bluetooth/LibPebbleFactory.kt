@@ -15,10 +15,7 @@ import io.rebble.libpebblecommon.connection.TokenProvider
 import io.rebble.libpebblecommon.connection.WebServices
 import io.rebble.libpebblecommon.services.WatchInfo
 import io.rebble.libpebblecommon.voice.TranscriptionProvider
-import io.rebble.libpebblecommon.voice.TranscriptionResult
-import io.rebble.libpebblecommon.voice.VoiceEncoderInfo
 import io.rebble.libpebblecommon.web.LockerModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.uuid.Uuid
 
@@ -28,6 +25,7 @@ interface LibPebbleFactory {
    @SingleIn(AppScope::class)
    fun createLibPebble(
       context: Context,
+      transcriptionProvider: TranscriptionProvider,
    ): LibPebble {
       val dummyWebServices = object : WebServices {
          override suspend fun fetchLocker(): LockerModel? {
@@ -55,19 +53,6 @@ interface LibPebbleFactory {
          }
       }
 
-      val dummyTranscriptionProvider = object : TranscriptionProvider {
-         override suspend fun transcribe(
-            encoderInfo: VoiceEncoderInfo,
-            audioFrames: Flow<UByteArray>,
-         ): TranscriptionResult {
-            return TranscriptionResult.Disabled
-         }
-
-         override suspend fun canServeSession(): Boolean {
-            return false
-         }
-      }
-
       return LibPebble3.create(
          LibPebbleConfig(
             watchConfig = WatchConfig(lanDevConnection = true)
@@ -76,7 +61,7 @@ interface LibPebbleFactory {
          AppContext(context),
          dummyTokenProvider,
          MutableStateFlow(null),
-         dummyTranscriptionProvider
+         transcriptionProvider
       ).also { it.init() }
    }
 }
