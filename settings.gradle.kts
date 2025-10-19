@@ -33,6 +33,13 @@ includeBuild("libs/libpebble3") {
    }
 }
 
+includeBuild("libs/kotlin-speex") {
+   dependencySubstitution {
+      substitute(module("com.coredevices:speex"))
+         .using(project(":library"))
+   }
+}
+
 include(":app")
 include(":app-screenshot-tests")
 include(":bluetooth:api")

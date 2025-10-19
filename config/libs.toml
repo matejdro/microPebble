@@ -52,6 +52,7 @@ kotlinova = "4.0.0-alpha06"
 ksp = "2.2.0-2.0.2"
 ktor = "3.2.3"
 libpebble3 = "0.0.0"
+speex = "0.0.0"
 metro = "0.5.5"
 moduleGraphAssert = "2.7.3"
 moshi = "1.15.2"
@@ -174,6 +175,8 @@ retrofit-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.re
 showkase = { module = "com.airbnb.android:showkase", version.ref = "showkase" }
 showkase-processor = { module = "com.airbnb.android:showkase-processor", version.ref = "showkase" }
 simpleStack = { module = "com.github.Zhuinden:simple-stack", version.ref = "simpleStack" }
+# Synthetic library declaration that then gets replaced with the included kotlin-speex
+speex = { module = "com.coredevices:speex", version.ref = "speex" }
 tinylog-api = { module = "org.tinylog:tinylog-api-kotlin", version.ref = "tinylog" }
 tinylog-impl = { module = "org.tinylog:tinylog-impl", version.ref = "tinylog" }
 tomlj = { module = "org.tomlj:tomlj", version.ref = "tomlj" }

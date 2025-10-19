@@ -34,7 +34,9 @@ Ignore unknown issue id to allow us to configure issues in this file  that
     <!-- We use custom AppComponentFactory -->
     <issue id="Instantiatable" severity="ignore" />
 
+    <!-- Ignore issues in the 3rd party libraries -->
     <issue id="all">
         <ignore path="**/libpebble3/**" />
+        <ignore path="**/kotlin-speex/**" />
     </issue>
 </lint>

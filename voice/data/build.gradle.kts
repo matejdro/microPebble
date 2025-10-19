@@ -14,6 +14,6 @@ dependencies {
    api(libs.kotlinova.core)
    api(libs.libpebble3)
    api(libs.kotlin.coroutines)
-   implementation(projects.voice.speexCodec)
+   implementation(libs.speex)
    implementation(libs.androidx.annotation)
 }

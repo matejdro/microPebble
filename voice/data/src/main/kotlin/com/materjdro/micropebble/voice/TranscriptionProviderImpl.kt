@@ -8,11 +8,11 @@ import android.os.ParcelFileDescriptor
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.annotation.RequiresApi
+import coredevices.speex.SpeexCodec
+import coredevices.speex.SpeexDecodeResult
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
-import io.rebble.cobble.speexcodec.SpeexCodec
-import io.rebble.cobble.speexcodec.SpeexDecodeResult
 import io.rebble.libpebblecommon.voice.TranscriptionProvider
 import io.rebble.libpebblecommon.voice.TranscriptionResult
 import io.rebble.libpebblecommon.voice.VoiceEncoderInfo
@@ -21,8 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import si.inova.kotlinova.core.reporting.ErrorReporter
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import kotlin.coroutines.cancellation.CancellationException
 
 @Inject
@@ -46,7 +44,6 @@ class TranscriptionProviderImpl(
             speexInfo.sampleRate,
             speexInfo.bitRate,
             speexInfo.frameSize,
-            setOf(SpeexCodec.Preprocessor.DENOISE, SpeexCodec.Preprocessor.AGC)
          ).use { speexDecoder ->
             val (readPipe, writePipe) = ParcelFileDescriptor.createPipe()
 
@@ -99,8 +96,7 @@ class TranscriptionProviderImpl(
       writeStream: ParcelFileDescriptor.AutoCloseOutputStream,
    ) {
       val targetBufferSize = Short.SIZE_BYTES * speexInfo.frameSize
-      val targetBuffer = ByteBuffer.allocateDirect(targetBufferSize)
-      targetBuffer.order(ByteOrder.nativeOrder())
+      val targetBuffer = ByteArray(targetBufferSize)
 
       audioFrames.collect {
          val result = speexDecoder.decodeFrame(it.asByteArray(), targetBuffer, hasHeaderByte = true)
@@ -108,9 +104,7 @@ class TranscriptionProviderImpl(
             error("Speex decoding failed: $result")
          }
 
-         targetBuffer.rewind()
-
-         writeStream.write(targetBuffer.array(), 0, targetBufferSize)
+         writeStream.write(targetBuffer, 0, targetBufferSize)
       }
       writeStream.close()
    }
