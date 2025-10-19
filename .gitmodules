@@ -1,5 +1,5 @@
 [submodule "libpebble3"]
-	path = libpebble3
+	path = libs/libpebble3
 	url = git@github.com:matejdro/libpebble3.git
 [submodule "voice/speex_codec/src/main/cpp/speex"]
 	path = voice/speex_codec/src/main/cpp/speex

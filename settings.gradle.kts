@@ -26,7 +26,7 @@ dependencyResolutionManagement {
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "MicroPebble"
-includeBuild("libpebble3") {
+includeBuild("libs/libpebble3") {
    dependencySubstitution {
       substitute(module("com.coredevices:libpebble3"))
          .using(project(":libpebble3"))
