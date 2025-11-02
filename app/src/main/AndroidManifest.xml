@@ -67,7 +67,7 @@
 
         <provider
             android:authorities="com.getpebble.android.provider.basalt"
-            android:name="io.rebble.libpebblecommon.pebblekit.PebbleKitProvider"
+            android:name="io.rebble.libpebblecommon.pebblekit.classic.PebbleKitProvider"
             tools:ignore="ExportedContentProvider"
             android:exported="true" />
 
