@@ -31,4 +31,5 @@
     <string name="save_logs">Save logs</string>
     <string name="voice_permission_title">Voice recording</string>
     <string name="voice_permission_description">Needed for the voice recognition from the watch</string>
+    <string name="calendar">Calendar</string>
 </resources>

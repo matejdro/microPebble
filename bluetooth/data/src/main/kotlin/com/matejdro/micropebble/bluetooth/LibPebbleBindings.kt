@@ -3,6 +3,7 @@ package com.matejdro.micropebble.bluetooth
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Binds
 import dev.zacsweers.metro.ContributesTo
+import io.rebble.libpebblecommon.connection.Calendar
 import io.rebble.libpebblecommon.connection.Errors
 import io.rebble.libpebblecommon.connection.LibPebble
 import io.rebble.libpebblecommon.connection.LockerApi
@@ -36,4 +37,9 @@ interface LibPebbleBindings {
    fun bindToErrors(
       libPebble: LibPebble,
    ): Errors
+
+   @Binds
+   fun bindToCalendar(
+      libPebble: LibPebble,
+   ): Calendar
 }

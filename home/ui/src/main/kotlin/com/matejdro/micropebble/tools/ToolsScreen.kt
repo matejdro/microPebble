@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.home.ui.R
+import com.matejdro.micropebble.navigation.keys.CalendarListScreenKey
 import com.matejdro.micropebble.navigation.keys.DeveloperConnectionScreenKey
 import com.matejdro.micropebble.navigation.keys.OnboardingKey
 import com.matejdro.micropebble.ui.components.ErrorAlertDialog
@@ -62,6 +63,7 @@ class ToolsScreen(
             logSaveStatus,
             { navigator.navigateTo(OnboardingKey) },
             { navigator.navigateTo(DeveloperConnectionScreenKey) },
+            { navigator.navigateTo(CalendarListScreenKey) },
             viewModel::getLogs,
             viewModel::resetLog,
          )
@@ -75,6 +77,7 @@ private fun ToolsScreenContent(
    loggingTransmissionState: Outcome<Uri?>?,
    openPermissions: () -> Unit,
    openDevConnection: () -> Unit,
+   openCalendarSettings: () -> Unit,
    startLogSaving: () -> Unit,
    notifyLogIntentSent: () -> Unit,
 ) {
@@ -124,6 +127,10 @@ private fun ToolsScreenContent(
          }
       }
 
+      item {
+         ToolButton(openCalendarSettings, R.drawable.calendar_settings, R.string.calendar)
+      }
+
       item(span = { GridItemSpan(maxLineSpan) }) {
          Text(
             stringResource(R.string.version, appVersion),
@@ -160,8 +167,8 @@ internal fun ToolsScreenPreview() {
          loggingTransmissionState = Outcome.Success(null),
          openPermissions = {},
          openDevConnection = {},
-         startLogSaving = {},
-         notifyLogIntentSent = {}
-      )
+         openCalendarSettings = {},
+         startLogSaving = {}
+      ) {}
    }
 }
