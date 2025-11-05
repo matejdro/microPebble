@@ -9,7 +9,6 @@ import android.companion.CompanionDeviceManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
-import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -122,14 +121,7 @@ class BluetoothScanScreen(
                   .setAddress(device.identifier.asString)
                   .build()
             )
-            .run {
-               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                  setDeviceProfile(AssociationRequest.DEVICE_PROFILE_WATCH)
-               } else {
-                  this
-               }
-            }
-
+            .setDeviceProfile(AssociationRequest.DEVICE_PROFILE_WATCH)
             .build(),
          object : CompanionDeviceManager.Callback() {
             override fun onFailure(error: CharSequence?) {}
