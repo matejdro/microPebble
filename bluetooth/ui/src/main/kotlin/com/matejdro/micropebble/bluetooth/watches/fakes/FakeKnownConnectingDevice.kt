@@ -19,6 +19,7 @@ class FakeKnownConnectingDevice(
    override val rebootingAfterFirmwareUpdate: Boolean = false,
    override val connectionFailureInfo: ConnectionFailureInfo? = null,
    override val serial: String = "XXXXXXXXXXXX",
+   override val usingBtClassic: Boolean = false,
 ) : ConnectingKnownPebbleDevice {
    override val runningFwVersion: String = "v1.2.3-core"
 

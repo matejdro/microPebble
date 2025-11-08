@@ -253,6 +253,8 @@ internal fun ScanStartedWithDevicesPreview() {
                      get() = null
 
                   override fun disconnect() {}
+                  override val usingBtClassic: Boolean
+                     get() = false
 
                   override fun connect() {}
                },

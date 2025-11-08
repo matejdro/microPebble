@@ -36,8 +36,8 @@ interface LibPebbleFactory {
             return true
          }
 
-         override suspend fun checkForFirmwareUpdate(watch: WatchInfo): FirmwareUpdateCheckResult? {
-            return null
+         override suspend fun checkForFirmwareUpdate(watch: WatchInfo): FirmwareUpdateCheckResult {
+            return FirmwareUpdateCheckResult.FoundNoUpdate
          }
 
          override suspend fun uploadMemfaultChunk(
