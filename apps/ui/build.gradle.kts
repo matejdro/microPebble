@@ -25,6 +25,7 @@ dependencies {
    implementation(projects.sharedResources)
    implementation(libs.androidx.activity.compose)
    implementation(libs.androidx.core)
+   implementation(libs.composeDnd)
    implementation(libs.composeWebview)
    implementation(libs.dispatch)
    implementation(libs.kotlin.io)

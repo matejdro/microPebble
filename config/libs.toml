@@ -26,6 +26,7 @@ androidx-test-uiautomator = "2.3.0"
 androidx-startup = "1.2.0"
 certificateTransparency = "2.8.4"
 coil = "3.3.0"
+composeDnd = "0.4.0"
 composeGuard = "2.4.0"
 composeWebview = "0.33.6"
 dependencyAnalysis = "3.0.1"
@@ -117,6 +118,7 @@ certificateTransparency = { module = "com.appmattus.certificatetransparency:cert
 certificateTransparency-android = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificateTransparency" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+composeDnd = { module = "com.mohamedrejeb.dnd:compose-dnd", version.ref = "composeDnd" }
 composeGuard = { module = "com.joetr.compose.guard:com.joetr.compose.guard.gradle.plugin", version.ref = "composeGuard" }
 composeWebview = { module = "io.github.kevinnzou:compose-webview", version.ref = "composeWebview" }
 dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }

@@ -17,6 +17,7 @@ Supported features:
 * Developer connection
 * Voice recognition (on Android 13+)
 * Calendar filtering
+* Watch menu reordering
 
 ![docs/home1.png](docs/home1.png) ![docs/home2.png](docs/home2.png) ![docs/home3.png](docs/home3.png)
 

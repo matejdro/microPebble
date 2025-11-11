@@ -64,7 +64,7 @@ class WatchappListViewModel(
                Outcome.Success(
                   WatchappListState(
                      watchfaces.filterIsInstance<LockerWrapper.NormalApp>(),
-                     watchapps.filterIsInstance<LockerWrapper.NormalApp>()
+                     watchapps
                   )
                )
             }
@@ -113,6 +113,13 @@ class WatchappListViewModel(
 
          emit(Outcome.Success(Unit))
       }
+   }
+
+   fun reorderApp(uuid: Uuid, index: Int) = resources.launchResourceControlTask(_actionStatus) {
+      actionLogger.logAction { "WatchappListViewModel.reorderApp($uuid, $index)" }
+      lockerApi.setAppOrder(uuid, index)
+
+      emit(Outcome.Success(Unit))
    }
 
    private suspend inline fun <reified E : UserFacingError> runLibPebbleActionWithErrorConversion(
