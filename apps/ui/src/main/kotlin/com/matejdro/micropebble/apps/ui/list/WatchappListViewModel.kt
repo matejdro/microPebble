@@ -29,7 +29,6 @@ import kotlinx.io.files.Path
 import okio.buffer
 import okio.sink
 import okio.source
-import si.inova.kotlinova.core.exceptions.UnknownCauseException
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.services.ContributesScopedService
@@ -131,9 +130,10 @@ class WatchappListViewModel(
                errorCollection.consume { receive() }
             }
                ?.let { LibPebbleError(it.message) }
-               ?: UnknownCauseException("Unknown watchapp install error")
 
-            throw error
+            if (error != null) {
+               throw error
+            }
          }
 
          errorCollection.cancel()
