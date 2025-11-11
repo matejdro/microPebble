@@ -21,6 +21,11 @@ Supported features:
 
 ![docs/home1.png](docs/home1.png) ![docs/home2.png](docs/home2.png) ![docs/home3.png](docs/home3.png)
 
+# Install
+
+[<img src="docs/badge_obtainium.png" alt="Get it on Obtainium" height="80">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/matejdro/microPebble)
+[<img src="docs/badge_github.png" alt="Get it on GitHub" height="80">](../../releases/latest)
+
 # Contributing
 
 ## Checking out project
