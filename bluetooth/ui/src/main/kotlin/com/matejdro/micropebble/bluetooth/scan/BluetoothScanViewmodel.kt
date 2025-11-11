@@ -5,6 +5,7 @@ import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.BluetoothScanScreenKey
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.connection.ActiveDevice
+import io.rebble.libpebblecommon.connection.KnownPebbleDevice
 import io.rebble.libpebblecommon.connection.PebbleDevice
 import io.rebble.libpebblecommon.connection.Scanning
 import io.rebble.libpebblecommon.connection.Watches
@@ -12,6 +13,7 @@ import io.rebble.libpebblecommon.connection.bt.BluetoothState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
@@ -36,6 +38,8 @@ class BluetoothScanViewmodel(
       resources.launchResourceControlTask(_uiState) {
          val watchesFlow = watches.watches
 
+         val existingWatches = watchesFlow.first().filterIsInstance<KnownPebbleDevice>().map { it.serial }
+
          val bluetoothFlow = scanning.bluetoothEnabled.map { it == BluetoothState.Enabled }
 
          val scanningFlow = scanning.isScanningBle
@@ -45,7 +49,11 @@ class BluetoothScanViewmodel(
             scanningFlow,
             bluetoothFlow,
          ) { watchList, scanning, bluetoothOn ->
-            ScanState(bluetoothOn, scanning, watchList)
+            val filteredWatchList = watchList.filter {
+               it !is KnownPebbleDevice || !existingWatches.contains(it.serial)
+            }
+
+            ScanState(bluetoothOn, scanning, filteredWatchList)
          }.map {
             Outcome.Success(it)
          }
