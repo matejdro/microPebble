@@ -11,4 +11,5 @@
     <string name="enable_developer_connection">Enable Developer Connection</string>
     <string name="ip">IP</string>
     <string name="install_confirmation">Do you want to install %1$s?</string>
+    <string name="no_calendars_found">No calendars found on your device</string>
 </resources>

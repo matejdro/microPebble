@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -24,8 +25,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.matejdro.micropebble.apps.ui.R
 import com.matejdro.micropebble.navigation.keys.CalendarListScreenKey
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
@@ -62,6 +66,18 @@ private fun CalendarListScreenContent(calendarsOwners: List<CalendarOwner>, setC
          contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
          verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
+         if (calendarsOwners.isEmpty()) {
+            item {
+               Text(
+                  stringResource(R.string.no_calendars_found),
+                  Modifier
+                     .fillParentMaxSize()
+                     .wrapContentSize(Alignment.Center),
+                  style = MaterialTheme.typography.titleSmall
+               )
+            }
+         }
+
          for (owner in calendarsOwners) {
             item(key = "header-${owner.title}") {
                Text(owner.title, Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp))
@@ -162,6 +178,17 @@ internal fun CalendarListScreenPreview() {
                )
             )
          ),
+         { _, _ -> }
+      )
+   }
+}
+
+@Preview
+@Composable
+internal fun CalendarListEmptyScreenPreview() {
+   PreviewTheme {
+      CalendarListScreenContent(
+         calendarsOwners = emptyList(),
          { _, _ -> }
       )
    }
