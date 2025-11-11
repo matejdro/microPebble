@@ -76,9 +76,16 @@ open class MicroPebbleApplication : Application() {
       applicationGraph.initLibPebble().apply {
          applicationGraph.getDefaultCoroutineScope().launch {
             val config = config.first()
-            if (!config.watchConfig.lanDevConnection) {
-               updateConfig(config.copy(watchConfig = config.watchConfig.copy(lanDevConnection = true)))
-            }
+            updateConfig(
+               config.copy(
+                  watchConfig = config.watchConfig.copy(
+                     lanDevConnection = true,
+                     preferBtClassicV2 = true,
+                     verboseWatchManagerLogging = true
+                  ),
+                  bleConfig = config.bleConfig.copy(verbosePpogLogging = false)
+               )
+            )
          }
       }
       applicationGraph.initNotificationChannels()

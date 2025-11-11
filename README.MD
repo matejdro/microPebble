@@ -6,7 +6,7 @@ features that I care about.
 
 Supported features:
 
-* Connecting to the LE watches
+* Connecting to the watches
 * Installing / uninstalling watch apps via PBW
 * PebbleKit JS (including configuration pages)
 * Basic notification config
