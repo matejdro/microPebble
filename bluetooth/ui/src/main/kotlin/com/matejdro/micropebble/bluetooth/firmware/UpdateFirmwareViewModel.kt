@@ -58,11 +58,11 @@ class UpdateFirmwareViewModel(
       resources.launchResourceControlTask(_watchInfo) {
          val watch = watches.watches.first()
             .filterIsInstance<ConnectedPebbleDevice>()
-            .filter { key.watchSerial != null && key.watchSerial == it.serial }
+            .filter { key.watchSerial == null || key.watchSerial == it.serial }
             .firstOrNull()
             ?: throw WatchDisconnectedException()
 
-         emit(Outcome.Success(UpdateFirmwareState(watch, null)))
+         emit(Outcome.Success(UpdateFirmwareState(watch, key.pbzUri)))
       }
    }
 
