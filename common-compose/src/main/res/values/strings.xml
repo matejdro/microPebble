@@ -5,4 +5,5 @@
     <string name="error_unknown">Something went wrong</string>
     <string name="ok">OK</string>
     <string name="error">Error</string>
+    <string name="error_watch_not_connected">Watch not connected</string>
 </resources>

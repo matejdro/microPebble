@@ -26,7 +26,10 @@ dependencies {
    implementation(libs.androidx.core)
    implementation(libs.accompanist.permissions)
    implementation(libs.androidx.activity.compose)
+   implementation(libs.dispatch)
    implementation(libs.libpebble3)
    implementation(libs.kotlin.coroutines)
+   implementation(libs.kotlin.io)
    implementation(libs.kotlinova.core)
+   implementation(libs.okio)
 }

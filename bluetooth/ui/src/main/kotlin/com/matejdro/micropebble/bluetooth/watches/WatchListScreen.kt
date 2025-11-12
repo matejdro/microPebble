@@ -45,6 +45,7 @@ import com.matejdro.micropebble.bluetooth.ui.R
 import com.matejdro.micropebble.bluetooth.watches.fakes.FakeDisconnectedKnownDevice
 import com.matejdro.micropebble.bluetooth.watches.fakes.FakeKnownConnectingDevice
 import com.matejdro.micropebble.navigation.keys.BluetoothScanScreenKey
+import com.matejdro.micropebble.navigation.keys.FirmwareUpdateScreenKey
 import com.matejdro.micropebble.navigation.keys.WatchListKey
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
@@ -75,12 +76,13 @@ class WatchListScreen(
       val state = viewModel.state.collectAsStateWithLifecycleAndBlinkingPrevention().value
 
       Surface {
-         ProgressErrorSuccessScaffold(state, Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
+         ProgressErrorSuccessScaffold(state, Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) { state ->
             WatchListScreenContent(
-               it,
-               { navigator.navigateTo(BluetoothScanScreenKey) },
-               viewModel::setDeviceConnect,
-               viewModel::forgetDevice
+               state = state,
+               startPairing = { navigator.navigateTo(BluetoothScanScreenKey) },
+               updateFirmware = { navigator.navigateTo(FirmwareUpdateScreenKey(it.serial)) },
+               setConnect = viewModel::setDeviceConnect,
+               forget = viewModel::forgetDevice,
             )
          }
       }
@@ -92,6 +94,7 @@ private fun WatchListScreenContent(
    state: WatchListState,
    startPairing: () -> Unit,
    setConnect: (KnownPebbleDevice, connect: Boolean) -> Unit,
+   updateFirmware: (KnownPebbleDevice) -> Unit,
    forget: (KnownPebbleDevice) -> Unit,
 ) {
    Box {
@@ -100,7 +103,7 @@ private fun WatchListScreenContent(
          contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
       ) {
          items(state.pairedDevices, key = { it.serial }) { device ->
-            Watch(device, setConnect, forget)
+            Watch(device, setConnect, updateFirmware, forget)
          }
 
          item {
@@ -135,6 +138,7 @@ private fun WatchListScreenContent(
 private fun Watch(
    device: KnownPebbleDevice,
    setConnect: (KnownPebbleDevice, Boolean) -> Unit,
+   updateFirmware: (KnownPebbleDevice) -> Unit,
    forget: (KnownPebbleDevice) -> Unit,
 ) {
    val deviceVariant = device.color
@@ -177,6 +181,12 @@ private fun Watch(
             })
          }
 
+         if (device is ConnectedPebbleDevice) {
+            Button(onClick = { updateFirmware(device) }) {
+               Text(stringResource(R.string.update_firmwrare))
+            }
+         }
+
          Button(onClick = { forget(device) }) {
             Text(stringResource(R.string.forget))
          }
@@ -201,7 +211,7 @@ private const val LUMINANCE_HALF_BRIGHT = 0.5
 @ShowkaseComposable(group = "Test")
 internal fun WatchListBlankPreview() {
    PreviewTheme {
-      WatchListScreenContent(WatchListState(emptyList()), {}, { _, _ -> }, {})
+      WatchListScreenContent(WatchListState(emptyList()), {}, { _, _ -> }, {}, {})
    }
 }
 
@@ -213,7 +223,7 @@ internal fun WatchListWithDevicesPreview() {
       FakeConnectedDevice(
          PebbleBleIdentifier(""),
          null,
-         FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle,
+         FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
          "Red PT",
          null,
          serial = "1",
@@ -223,7 +233,7 @@ internal fun WatchListWithDevicesPreview() {
       FakeConnectedDevice(
          PebbleBleIdentifier(""),
          null,
-         FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle,
+         FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
          "Black P2D",
          null,
          serial = "2",
@@ -243,6 +253,6 @@ internal fun WatchListWithDevicesPreview() {
    )
 
    PreviewTheme {
-      WatchListScreenContent(WatchListState(deviceList), {}, { _, _ -> }, {})
+      WatchListScreenContent(WatchListState(deviceList), {}, { _, _ -> }, {}, {})
    }
 }

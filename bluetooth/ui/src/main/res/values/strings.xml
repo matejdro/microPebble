@@ -15,4 +15,14 @@
     <string name="forget">Forget</string>
     <string name="connect">"Connect: "</string>
     <string name="no_paired_watches_yet">No paired watches yet</string>
+    <string name="select_pbz_file">Select pbz file</string>
+    <string name="this_is_not_a_valid_pbz_file">This is not a valid Pbz file</string>
+    <string name="current_firmware">Current firmware: %1$s</string>
+    <string name="you_can_get_firmware_files_from">You can get firmware files from:</string>
+    <string name="original_pebble_watches">Original Pebble watches:</string>
+    <string name="core_watches">Core watches:</string>
+    <string name="selected_firmware">Selected firmware: %1$s</string>
+    <string name="start_installation">Start installation</string>
+    <string name="update_completed">Update completed</string>
+    <string name="update_firmwrare">Update firmwrare</string>
 </resources>

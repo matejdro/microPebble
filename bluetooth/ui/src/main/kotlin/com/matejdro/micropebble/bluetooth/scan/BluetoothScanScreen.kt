@@ -261,7 +261,7 @@ internal fun ScanStartedWithDevicesPreview() {
                FakeConnectedDevice(
                   PebbleBleIdentifier(""),
                   null,
-                  FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle,
+                  FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
                   "Connected watch",
                   null,
                   connectionFailureInfo = null
