@@ -11,7 +11,7 @@ import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.FirmwareUpdateScreenKey
 import dev.zacsweers.metro.Inject
 import dispatch.core.withDefault
-import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
+import io.rebble.libpebblecommon.connection.CommonConnectedDevice
 import io.rebble.libpebblecommon.connection.Watches
 import io.rebble.libpebblecommon.connection.endpointmanager.FirmwareUpdateException
 import io.rebble.libpebblecommon.connection.endpointmanager.FirmwareUpdater
@@ -57,7 +57,7 @@ class UpdateFirmwareViewModel(
       actionLogger.logAction { "UpdateFirmwareViewModel.onServiceRegistered()" }
       resources.launchResourceControlTask(_watchInfo) {
          val watch = watches.watches.first()
-            .filterIsInstance<ConnectedPebbleDevice>()
+            .filterIsInstance<CommonConnectedDevice>()
             .filter { key.watchSerial == null || key.watchSerial == it.serial }
             .firstOrNull()
             ?: throw WatchDisconnectedException()
@@ -81,7 +81,7 @@ class UpdateFirmwareViewModel(
       _watchInfo.update { outcome -> outcome.mapData { it.copy(pendingFirmwareUrl = null) } }
 
       val statusFlow = watches.watches.map { allWatches ->
-         allWatches.filterIsInstance<ConnectedPebbleDevice>().firstOrNull { it.serial == watchSerial }?.firmwareUpdateState
+         allWatches.filterIsInstance<CommonConnectedDevice>().firstOrNull { it.serial == watchSerial }?.firmwareUpdateState
       }
 
       withDefault {
@@ -93,7 +93,7 @@ class UpdateFirmwareViewModel(
          val statusChannel = statusFlow.buffer(Channel.BUFFERED).produceIn(this)
 
          try {
-            val watch = watches.watches.first().filterIsInstance<ConnectedPebbleDevice>().firstOrNull { it.serial == watchSerial }
+            val watch = watches.watches.first().filterIsInstance<CommonConnectedDevice>().firstOrNull { it.serial == watchSerial }
                ?: throw WatchDisconnectedException()
             watch.sideloadFirmware(Path(tmpFile.absolutePath))
 
@@ -182,6 +182,6 @@ class UpdateFirmwareViewModel(
 }
 
 data class UpdateFirmwareState(
-   val watch: ConnectedPebbleDevice,
+   val watch: CommonConnectedDevice,
    val pendingFirmwareUrl: Uri? = null,
 )

@@ -42,7 +42,7 @@ import com.matejdro.micropebble.navigation.keys.BluetoothScanScreenKey
 import com.matejdro.micropebble.notifications.NotificationsStatus
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
-import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
+import io.rebble.libpebblecommon.connection.CommonConnectedDevice
 import io.rebble.libpebblecommon.connection.ConnectingPebbleDevice
 import io.rebble.libpebblecommon.connection.ConnectionFailureInfo
 import io.rebble.libpebblecommon.connection.DiscoveredPebbleDevice
@@ -183,7 +183,7 @@ private fun ScanScreenContent(
                      Text(stringResource(R.string.cancel))
                   }
                }
-            } else if (watch is ConnectedPebbleDevice) {
+            } else if (watch is CommonConnectedDevice) {
                Icon(
                   painterResource(R.drawable.outline_check_24),
                   contentDescription = stringResource(R.string.pairing_successful)

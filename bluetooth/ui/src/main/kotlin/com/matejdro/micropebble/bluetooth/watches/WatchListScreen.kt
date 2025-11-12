@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -50,9 +51,11 @@ import com.matejdro.micropebble.navigation.keys.WatchListKey
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
-import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
+import io.rebble.libpebblecommon.connection.CommonConnectedDevice
+import io.rebble.libpebblecommon.connection.ConnectedPebbleDeviceInRecovery
 import io.rebble.libpebblecommon.connection.ConnectingPebbleDevice
 import io.rebble.libpebblecommon.connection.FakeConnectedDevice
+import io.rebble.libpebblecommon.connection.FakeConnectedDeviceInRecovery
 import io.rebble.libpebblecommon.connection.KnownPebbleDevice
 import io.rebble.libpebblecommon.connection.PebbleBleIdentifier
 import io.rebble.libpebblecommon.connection.endpointmanager.FirmwareUpdater
@@ -165,7 +168,7 @@ private fun Watch(
          Text(deviceVariant?.uiDescription ?: "Unknown watch variant")
 
          Text(
-            if (device is ConnectedPebbleDevice) {
+            if (device is CommonConnectedDevice) {
                stringResource(R.string.connected)
             } else if (device is ConnectingPebbleDevice) {
                stringResource(sharedR.string.connecting)
@@ -174,14 +177,18 @@ private fun Watch(
             }
          )
 
+         if (device is ConnectedPebbleDeviceInRecovery) {
+            Text("IN RECOVERY\nUpdate firmware before use", fontWeight = FontWeight.Bold)
+         }
+
          Row(verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.connect), Modifier.padding(end = 16.dp))
-            Switch(checked = device is ConnectingPebbleDevice || device is ConnectedPebbleDevice, onCheckedChange = {
+            Switch(checked = device is ConnectingPebbleDevice || device is CommonConnectedDevice, onCheckedChange = {
                setConnect(device, it)
             })
          }
 
-         if (device is ConnectedPebbleDevice) {
+         if (device is CommonConnectedDevice) {
             Button(onClick = { updateFirmware(device) }) {
                Text(stringResource(R.string.update_firmwrare))
             }
@@ -230,7 +237,7 @@ internal fun WatchListWithDevicesPreview() {
          color = WatchColor.TimeRed,
          connectionFailureInfo = null
       ),
-      FakeConnectedDevice(
+      FakeConnectedDeviceInRecovery(
          PebbleBleIdentifier(""),
          null,
          FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
@@ -238,7 +245,7 @@ internal fun WatchListWithDevicesPreview() {
          null,
          serial = "2",
          color = WatchColor.Pebble2DuoBlack,
-         connectionFailureInfo = null
+         connectionFailureInfo = null,
       ),
       FakeKnownConnectingDevice(
          name = "White P2D",

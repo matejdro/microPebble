@@ -5,4 +5,4 @@ import kotlinx.parcelize.Parcelize
 import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 
 @Parcelize
-data class HomeScreenKey(val selectedScreen: ScreenKey) : BaseSingleTopScreenKey()
+data class HomeScreenKey(val selectedScreen: ScreenKey = WatchListKey) : BaseSingleTopScreenKey()

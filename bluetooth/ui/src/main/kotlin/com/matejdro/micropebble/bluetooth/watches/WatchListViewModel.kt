@@ -6,7 +6,7 @@ import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.WatchListKey
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.connection.ActiveDevice
-import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
+import io.rebble.libpebblecommon.connection.CommonConnectedDevice
 import io.rebble.libpebblecommon.connection.ConnectingPebbleDevice
 import io.rebble.libpebblecommon.connection.KnownPebbleDevice
 import io.rebble.libpebblecommon.connection.Watches
@@ -37,7 +37,7 @@ class WatchListViewModel(
       resources.launchResourceControlTask(_state) {
          emitAll(
             watches.watches.onEach { deviceList ->
-               if (deviceList.any { it is ConnectedPebbleDevice || it is ConnectingPebbleDevice }) {
+               if (deviceList.any { it is CommonConnectedDevice || it is ConnectingPebbleDevice }) {
                   serviceStarter.start()
                }
             }.map {
