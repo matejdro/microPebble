@@ -34,7 +34,7 @@ jobs:
       - name: "Wait for cancel to stick"
         run: "sleep 99999"
         if: "${{ steps.version-check.outputs.version == env.OLD_VERSION }}"
-      - run: "./bump_version.sh ${{ steps.version-check.outputs.version }}"
+      - run: "./config/bump_version.sh ${{ steps.version-check.outputs.version }}"
       - run: "v=$(cat version.txt);echo \"VERSION=$v\" > $GITHUB_ENV"
       - run: "echo \"# Release version ${{ env.VERSION }}\" > $GITHUB_STEP_SUMMARY"
 
