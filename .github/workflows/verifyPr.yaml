@@ -30,6 +30,7 @@ jobs:
         with:
           lfs: true
           submodules: recursive
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-java@v4
         with:
           java-version: '21'
