@@ -1,6 +1,6 @@
 # microPebble
 
-A small scrappy open source Pebble companion app, based on the [libpebble3](https://github.com/coredevices/libpebble3). 
+A small scrappy open source Pebble companion app, based on the [libpebble3](https://github.com/coredevices/libpebble3).
 It's not meant as a grand replacement for the original app, but as a small app with the functional UI and the
 features that I care about.
 
@@ -28,12 +28,32 @@ Supported features:
 
 # Contributing
 
-## Checking out project
+To contribute to this project:
 
 1. Install [Git LFS](https://git-lfs.com/)
-2. Checkout the repo
+2. Checkout `main`
 3. Pull submodules `git submodule update --init --recursive`
-3. Run `git lfs fetch` in the repo
+4. Run `git lfs fetch` in the repo
+5. Create a new branch for your contribution
+6. Commit your work. While commiting, use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/). Scope tag should
+   be the name of the module you are updating.
+7. Try to avoid breaking changes, but if they cannot be avoided, you must put `BREAKING CHANGE` in the footer of the commit
+   mesasage
+   and explain the change.
+8. Create a merge request
+9. After your PR is merged, new release will be generated automatically every day
+
+## libpebble3 changes
+
+This app uses libpebble3 version from the
+[micropebble branch of the matejdro/libpebble fork](https://github.com/matejdro/libpebble3/tree/micropebble).
+
+If your changes need changes to the libpebble:
+
+1. Make the PR for the [matejdro/libpebble](https://github.com/matejdro/libpebble3) first
+2. Consider also upstreaming all your changes to the  [original libpebble repo](https://github.com/coredevices/libpebble3) -
+   ideally we shouldn't stray too far from them
+2. Once those are merged, make the PR on this repo
 
 ## Updating versions
 
