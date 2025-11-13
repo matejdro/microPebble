@@ -3,6 +3,7 @@ package com.matejdro.micropebble.bluetooth.firmware
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import com.matejdro.micropebble.bluetooth.errors.InvalidPbzFileException
 import com.matejdro.micropebble.common.exceptions.LibPebbleError
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.io.files.Path
-import okio.buffer
 import okio.sink
 import okio.source
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
@@ -181,6 +181,7 @@ class UpdateFirmwareViewModel(
    }
 }
 
+@Immutable
 data class UpdateFirmwareState(
    val watch: CommonConnectedDevice,
    val pendingFirmwareUrl: Uri? = null,
