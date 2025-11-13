@@ -17,7 +17,7 @@ jobs:
       - name: Globally enable build cache and parallel execution
         run: |
           mkdir -p ~/.gradle
-          echo -e 'org.gradle.caching=true\norg.gradle.parallel=true' > ~/.gradle/gradle.properties"
+          echo -e 'org.gradle.caching=true\norg.gradle.parallel=true' > ~/.gradle/gradle.properties
       - name: Force all tasks to be rerun when debug mode is on
         # This allows us to force rerun the build if cache has gotten corrupted
         run: 'if [[ "${{ runner.debug }}" == "1" ]]; then
