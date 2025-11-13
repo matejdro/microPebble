@@ -55,14 +55,16 @@ android {
 
          val baseVersionName = defaultConfig.versionName
          val buildNumberProvider = providers.environmentVariable("BUILD_NUMBER")
-
-         // A bit weird syntax as a workaround for the https://github.com/gradle/gradle/issues/30792
-         val appendedVersionName = buildNumberProvider.map { "$baseVersionName-$it" }
-            .orElse(gitHashProvider.map { gitHash -> "$baseVersionName-local-$gitHash" })
+         val overrideVersionName = providers.environmentVariable("VERSION")
+            .orElse(
+               // A bit weird syntax as a workaround for the https://github.com/gradle/gradle/issues/30792
+               buildNumberProvider.map { "$baseVersionName-$it" }
+                  .orElse(gitHashProvider.map { gitHash -> "$baseVersionName-local-$gitHash" })
+            )
 
          variant.buildConfigFields?.put(
             "VERSION_NAME",
-            appendedVersionName.map {
+            overrideVersionName.map {
                BuildConfigField(
                   "String",
                   "\"$it\"",
@@ -71,7 +73,7 @@ android {
             }
          )
 
-         mainOutput.versionName.set(appendedVersionName)
+         mainOutput.versionName.set(overrideVersionName)
          mainOutput.versionCode.set(buildNumberProvider.orElse("1").map { it.toInt() })
       }
    }
