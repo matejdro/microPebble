@@ -1,11 +1,16 @@
 name: develop-build
 run-name: Develop build of the app
 on:
-  schedule:
-    - cron: "0 7 * * *"
   workflow_dispatch:
+    inputs:
+      versionName:
+        description: 'Version to publish'
+        required: true
+      versionCode:
+        description: 'Version code to publish'
+        required: true
 env:
-  BUILD_NUMBER: ${{ github.run_number }}
+  BUILD_NUMBER: ${{ github.event.inputs.versionCode }}
 jobs:
   build-app:
     concurrency:
@@ -21,20 +26,7 @@ jobs:
 
       # Determine new version
 
-      - run: "v=$(cat version.txt);echo \"OLD_VERSION=$v\" > $GITHUB_ENV"
-      - name: Check if there were any new fix or feature commits
-        id: version-check
-        uses: inovait/actions-common/bump-version-since-last-build@v11
-        with:
-          version: '${{ env.OLD_VERSION }}'
-      - run: "echo \"No feature or fix commits. Skipping build...\""
-        if: "${{ steps.version-check.outputs.version == env.OLD_VERSION }}"
-      - uses: andymckay/cancel-action@0.3
-        if: "${{ steps.version-check.outputs.version == env.OLD_VERSION }}"
-      - name: "Wait for cancel to stick"
-        run: "sleep 99999"
-        if: "${{ steps.version-check.outputs.version == env.OLD_VERSION }}"
-      - run: "./bump_version.sh ${{ steps.version-check.outputs.version }}"
+      - run: "./bump_version.sh ${{ github.event.inputs.versionName }}"
       - run: "v=$(cat version.txt);echo \"VERSION=$v\" > $GITHUB_ENV"
       - run: "echo \"# Release version ${{ env.VERSION }}\" > $GITHUB_STEP_SUMMARY"
 
@@ -100,13 +92,13 @@ jobs:
         with:
           name: release-apk
           path: app/build/outputs/**/*-release.apk
-      - name: Create a Release
-        uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          name: ${{ env.VERSION }}
-          tag: ${{ env.VERSION }}
-          body: ${{ steps.changelog.outputs.changelog }}
-          artifacts: app/build/outputs/apk/release/micropebble-release.apk
-          generateReleaseNotes: false
+#      - name: Create a Release
+#        uses: ncipollo/release-action@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          name: ${{ env.VERSION }}
+#          tag: ${{ env.VERSION }}
+#          body: ${{ steps.changelog.outputs.changelog }}
+#          artifacts: app/build/outputs/apk/release/micropebble-release.apk
+#          generateReleaseNotes: false
