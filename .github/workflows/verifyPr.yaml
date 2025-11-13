@@ -1,0 +1,83 @@
+name: pull-request-build
+run-name: "#${{ github.event.pull_request.number}} ${{ github.event.pull_request.title}}"
+on:
+  pull_request:
+    types: [ 'opened', 'reopened', 'synchronize' ]
+jobs:
+  build-app:
+    runs-on: "ubuntu-latest"
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
+    steps:
+      # Preparation
+
+      - name: Install screenshot test dependencies
+        run: "sudo apt-get install -y libfreetype6 fontconfig fonts-dejavu"
+      - name: Globally enable build cache and parallel execution
+        run: "echo -e 'org.gradle.caching=true\norg.gradle.parallel=true' >> ~/.gradle/gradle.properties"
+      - name: Force all tasks to be rerun when debug mode is on
+        # This allows us to force rerun the build if cache has gotten corrupted
+        run: 'if [[ "${{ runner.debug }}" == "1" ]]; then
+                  echo "GLOBAL_FLAGS= --rerun-tasks" >> "$GITHUB_ENV";
+              else
+                  echo "GLOBAL_FLAGS=" >> "$GITHUB_ENV";
+              fi
+            '
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: temurin
+          cache: gradle
+      - run: sdkmanager "platforms;android-33" "platforms;android-34"
+
+      # Build
+
+      - name: Compile app
+        run: "./gradlew compileReleaseKotlin assembleDebug$GLOBAL_FLAGS"
+        env:
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+
+      # Tests
+
+      - name: Lint
+        run: "./gradlew lintRelease detektMain detektTest -x detektDebug -x detektDebugUnitTest assertModuleGraph buildHealth detectTooManyFiles debugComposeCompilerCheck reportMerge --continue"
+      - name: Compile Unit Tests
+        run: "./gradlew compileDebugUnitTestSources compileReleaseUnitTestSources"
+      - name: Run Unit Tests
+        run: "./gradlew test -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest"
+      - name: "Generate new Screenshot Tests"
+        run: "config/generate-screenshots.sh ${{ github.event.pull_request.head.ref }}"
+      - name: "Run Screenshot Tests"
+        run: "./gradlew --continue verifyPaparazziDebug"
+      - name: "Remove unused Screenshot Tests"
+        run: "config/remove-unused-screenshots.sh ${{ github.event.pull_request.head.ref }}"
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action/linux@v2
+        if: always()
+        with:
+          comment_mode: failures
+          junit_files: |
+            **/build/outputs/*-results/**/*.xml
+            **/build/*-results/**/*.xml
+      - name: Post SARIF findings as comments in the pull request
+        if: always()
+        uses: inovait/sarif-to-comment-action/composite@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          branch: ${{ github.head_ref }}
+          pr-number: ${{ github.event.number }}
+          title: Lint report
+          show-rule-details: false
+          sarif-file: 'merge.sarif'
+      - name: "Upload Screenshot test failures"
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: failed-screenshot-tests
+          path: app-screenshot-tests/out
