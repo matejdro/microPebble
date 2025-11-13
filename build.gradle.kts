@@ -98,6 +98,10 @@ dependencyAnalysis {
       bundle("tinylog") {
          includeGroup("org.tinylog")
       }
+
+      bundle("kable") {
+         includeGroup("com.juul.kable")
+      }
    }
 }
 

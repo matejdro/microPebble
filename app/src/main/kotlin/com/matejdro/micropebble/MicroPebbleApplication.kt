@@ -13,6 +13,7 @@ import coil3.SingletonImageLoader
 import com.matejdro.micropebble.di.ApplicationGraph
 import com.matejdro.micropebble.di.ComponentFactory
 import com.matejdro.micropebble.di.MainApplicationGraph
+import com.matejdro.micropebble.logging.ErrorReportingKermitWriter
 import com.matejdro.micropebble.logging.MultiLogcatLogger
 import com.matejdro.micropebble.logging.TinyLogKermitWriter
 import com.matejdro.micropebble.logging.TinyLogLogcatLogger
@@ -116,6 +117,10 @@ open class MicroPebbleApplication : Application() {
       LogcatLogger.install(MultiLogcatLogger(logcatLoggers))
 
       KermitLogger.addLogWriter(TinyLogKermitWriter(loggingThread))
+      if (BuildConfig.DEBUG) {
+         // There are still many false positives from Kermit, so this should only be debug-only for now
+         KermitLogger.addLogWriter(ErrorReportingKermitWriter(applicationGraph.getErrorReporter()))
+      }
    }
 
    private fun enableStrictMode() {

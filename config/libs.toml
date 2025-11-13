@@ -41,6 +41,7 @@ junit4 = "4.13.2"
 junit4-parameterinjector = "1.18"
 junit5 = "5.13.4"
 junit5-launcher = "1.13.4"
+kable = "0.40.0"
 kermit = "2.0.4"
 keeperPlugin = "0.16.1"
 koin = "4.1.1"
@@ -136,6 +137,7 @@ junit4-parameterinjector = { module = "com.google.testparameterinjector:test-par
 junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
 junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
 junit5-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit5-launcher" }
+kable = { module = "com.juul.kable:kable-core", version.ref = "kable" }
 keeperPlugin = { module = "com.slack.keeper:keeper", version.ref = "keeperPlugin" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
