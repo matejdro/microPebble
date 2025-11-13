@@ -91,6 +91,14 @@ jobs:
         with:
           git_commit_url_prefix: 'https://github.com/matejdro/microPebble/commit/'
           jira_url: 'https://github.com/matejdro/microPebble'
+      - name: 'Add version'
+        run: 'git add version.txt'
+      - run: 'git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"'
+      - run: 'git config --global user.name "github-actions[bot]"'
+      - name: 'Commit version'
+        run: 'git commit -m "chore: release ${{ env.VERSION }}"'
+      - name: 'Push version'
+        run: 'git push'
       - name: Tag build
         run: |
           git tag ${{ env.VERSION }}
