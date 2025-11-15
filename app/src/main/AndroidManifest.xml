@@ -72,6 +72,18 @@
                       android:mimeType="*/*"
                       android:pathPattern=".*\\.pbz" />
             </intent-filter>
+            <!-- PBW/PBZ Install from non-direct content file providers -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="application/zip" />
+                <data android:mimeType="application/x-zip-compressed" />
+                <data android:mimeType="binary/octet-stream" />
+            </intent-filter>
             <property
                 android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
                 android:value="true" />

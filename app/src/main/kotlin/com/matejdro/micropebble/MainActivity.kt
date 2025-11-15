@@ -1,5 +1,7 @@
 package com.matejdro.micropebble
 
+import android.app.ComponentCaller
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,12 +16,13 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.matejdro.micropebble.ui.theme.MicroPebbleTheme
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
+import com.zhuinden.simplestack.Backstack
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -44,6 +47,8 @@ class MainActivity : ComponentActivity() {
    private lateinit var dateFormatter: AndroidDateTimeFormatter
    private lateinit var mainViewModelFactory: MainViewModel.Factory
 
+   private var backstack: Backstack? = null
+
    private val viewModel by viewModels<MainViewModel>() { ViewModelFactory() }
    private var initComplete = false
 
@@ -63,11 +68,26 @@ class MainActivity : ComponentActivity() {
       splashScreen.setKeepOnScreenCondition { !initComplete }
 
       beginInitialisation(savedInstanceState == null)
+
+      lifecycleScope.launch {
+         viewModel.navigationTarget.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .collect {
+               val backstack = backstack ?: return@collect
+               val navigator = NavigationInjection.fromBackstack(backstack).navigator()
+               navigator.navigate(it)
+            }
+      }
+   }
+
+   override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
+      super.onNewIntent(intent, caller)
+
+      viewModel.onNewIntent(intent)
    }
 
    private fun beginInitialisation(startup: Boolean) {
       lifecycleScope.launch {
-         val initialHistory: ImmutableList<ScreenKey> = persistentListOf(viewModel.startingScreen.filterNotNull().first())
+         val initialHistory: List<ScreenKey> = viewModel.startingScreens.filterNotNull().first()
 
          val deepLinkTarget = if (startup) {
             intent?.data?.let { mainDeepLinkHandler.handleDeepLink(it, startup = true) }
@@ -90,7 +110,7 @@ class MainActivity : ComponentActivity() {
    }
 
    @Composable
-   private fun NavigationRoot(initialHistory: ImmutableList<ScreenKey>) {
+   private fun NavigationRoot(initialHistory: List<ScreenKey>) {
       MicroPebbleTheme {
          // A surface container using the 'background' color from the theme
          Surface(
@@ -111,6 +131,8 @@ class MainActivity : ComponentActivity() {
                   }
                )
 
+               this.backstack = backstack
+
                mainDeepLinkHandler.HandleNewIntentDeepLinks(this@MainActivity, backstack)
             }
          }
@@ -120,7 +142,7 @@ class MainActivity : ComponentActivity() {
    private inner class ViewModelFactory : ViewModelProvider.Factory {
       override fun <T : ViewModel> create(modelClass: Class<T>): T {
          @Suppress("UNCHECKED_CAST")
-         return mainViewModelFactory.create() as T
+         return mainViewModelFactory.create(intent) as T
       }
    }
 }

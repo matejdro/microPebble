@@ -10,6 +10,7 @@ import com.matejdro.micropebble.common.exceptions.LibPebbleError
 import com.matejdro.micropebble.common.exceptions.WatchDisconnectedException
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.FirmwareUpdateScreenKey
+import com.matejdro.micropebble.navigation.keys.common.InputFile
 import dev.zacsweers.metro.Inject
 import dispatch.core.withDefault
 import io.rebble.libpebblecommon.connection.CommonConnectedDevice
@@ -63,39 +64,42 @@ class UpdateFirmwareViewModel(
             .firstOrNull()
             ?: throw WatchDisconnectedException()
 
-         emit(Outcome.Success(UpdateFirmwareState(watch, key.pbzUri)))
+         emit(Outcome.Success(UpdateFirmwareState(watch, key.pbzFile)))
       }
    }
 
    fun selectPbz(pbzUri: Uri) {
       actionLogger.logAction { "UpdateFirmwareViewModel.selectPbz(pbzUri = $pbzUri)" }
-      _watchInfo.update { outcome -> outcome.mapData { it.copy(pendingFirmwareUrl = pbzUri) } }
+      _watchInfo.update { outcome ->
+         outcome.mapData { it.copy(pendingFirmware = InputFile(pbzUri, getFileName(pbzUri).orEmpty())) }
+      }
    }
 
    fun startInstall() = resources.launchResourceControlTask(_updateStatus) {
       actionLogger.logAction { "UpdateFirmwareViewModel.startInstall()" }
 
       val watchSerial = watchInfo.value.data?.watch?.serial ?: throw IllegalArgumentException("Got null watch")
-      val uri = watchInfo.value.data?.pendingFirmwareUrl ?: throw IllegalArgumentException("Got null firmware")
+      val file = watchInfo.value.data?.pendingFirmware ?: throw IllegalArgumentException("Got null firmware")
 
       // Reset the PBZ so user can re-select a different one
-      _watchInfo.update { outcome -> outcome.mapData { it.copy(pendingFirmwareUrl = null) } }
+      _watchInfo.update { outcome -> outcome.mapData { it.copy(pendingFirmware = null) } }
 
       val statusFlow = watches.watches.map { allWatches ->
          allWatches.filterIsInstance<CommonConnectedDevice>().firstOrNull { it.serial == watchSerial }?.firmwareUpdateState
       }
 
       withDefault {
-         if (getFileName(uri)?.endsWith(".pbz") != true) {
+         if (file.filename.endsWith(".pbz") != true) {
             throw InvalidPbzFileException()
          }
 
-         val tmpFile = copyFirmwareToTempFile(uri)
+         val tmpFile = copyFirmwareToTempFile(file.uri)
          val statusChannel = statusFlow.buffer(Channel.BUFFERED).produceIn(this)
 
          try {
-            val watch = watches.watches.first().filterIsInstance<CommonConnectedDevice>().firstOrNull { it.serial == watchSerial }
-               ?: throw WatchDisconnectedException()
+            val watch =
+               watches.watches.first().filterIsInstance<CommonConnectedDevice>().firstOrNull { it.serial == watchSerial }
+                  ?: throw WatchDisconnectedException()
             watch.sideloadFirmware(Path(tmpFile.absolutePath))
 
             observeFirmwareUpdateStatus(statusChannel, this@withDefault, this@launchResourceControlTask)
@@ -185,5 +189,5 @@ class UpdateFirmwareViewModel(
 @Immutable
 data class UpdateFirmwareState(
    val watch: CommonConnectedDevice,
-   val pendingFirmwareUrl: Uri? = null,
+   val pendingFirmware: InputFile? = null,
 )

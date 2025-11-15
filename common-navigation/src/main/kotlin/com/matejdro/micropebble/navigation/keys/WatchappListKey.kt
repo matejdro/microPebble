@@ -1,10 +1,10 @@
 package com.matejdro.micropebble.navigation.keys
 
-import android.net.Uri
+import com.matejdro.micropebble.navigation.keys.common.InputFile
 import kotlinx.parcelize.Parcelize
 import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 
 @Parcelize
 data class WatchappListKey(
-   val pbwInstallUri: Uri? = null,
+   val pbwFile: InputFile? = null,
 ) : ScreenKey()

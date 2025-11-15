@@ -119,10 +119,10 @@ class WatchappListScreen(
 
    @Composable
    private fun PbwInstallDialog(key: WatchappListKey) {
-      val pbwInstallUri = key.pbwInstallUri
-      if (pbwInstallUri != null) {
+      val pbwFile = key.pbwFile
+      if (pbwFile != null) {
          fun closeDialog() {
-            navigator.replaceTopWith(HomeScreenKey(key.copy(pbwInstallUri = null)))
+            navigator.replaceTopWith(HomeScreenKey(key.copy(pbwFile = null)))
          }
 
          AlertDialog(
@@ -130,7 +130,7 @@ class WatchappListScreen(
             confirmButton = {
                TextButton(onClick = {
                   closeDialog()
-                  viewModel.startInstall(pbwInstallUri)
+                  viewModel.startInstall(pbwFile.uri)
                }) { Text(stringResource(sharedR.string.ok)) }
             },
             dismissButton = {
@@ -140,8 +140,7 @@ class WatchappListScreen(
                Text(stringResource(R.string.install_from_pbw))
             },
             text = {
-               val filename = pbwInstallUri.lastPathSegment.orEmpty()
-               Text(stringResource(R.string.install_confirmation, filename))
+               Text(stringResource(R.string.install_confirmation, pbwFile.filename))
             }
          )
       }

@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matejdro.micropebble.bluetooth.errors.bluetoothUserFriendlyErrorMessage
 import com.matejdro.micropebble.bluetooth.ui.R
 import com.matejdro.micropebble.navigation.keys.FirmwareUpdateScreenKey
+import com.matejdro.micropebble.navigation.keys.common.InputFile
 import com.matejdro.micropebble.ui.components.ErrorAlertDialog
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
@@ -77,7 +78,7 @@ class UpdateFirmwareScreen(
                context.startActivity(Intent(Intent.ACTION_VIEW, it))
             },
             {
-               if (updateFirmwareState.pendingFirmwareUrl == null) {
+               if (updateFirmwareState.pendingFirmware == null) {
                   selectPwbResult.launch(arrayOf("*/*"))
                } else {
                   viewModel.startInstall()
@@ -135,15 +136,15 @@ private fun FirmwareUpdateScreenContent(
          }
       } else {
          if (updateState?.data == null) {
-            val pendingFirmwareUrl = watchInfo.pendingFirmwareUrl
-            if (pendingFirmwareUrl == null) {
+            val pendingFirmware = watchInfo.pendingFirmware
+            if (pendingFirmware == null) {
                Button(
                   onClick = { start() },
                   Modifier.align(Alignment.CenterHorizontally)
                ) { Text(stringResource(R.string.select_pbz_file)) }
             } else {
                Text(
-                  stringResource(R.string.selected_firmware, pendingFirmwareUrl.lastPathSegment.orEmpty()),
+                  stringResource(R.string.selected_firmware, pendingFirmware.filename),
                   Modifier.padding(bottom = 8.dp)
                )
                Button(
@@ -210,7 +211,7 @@ internal fun FirmwareUpdatePendingPreview() {
                watchType = WatchHardwarePlatform.PEBBLE_ONE_EV_1
 
             ),
-            pendingFirmwareUrl = "content://folder/my_firmware.pbz".toUri()
+            pendingFirmware = InputFile("content://folder/my_firmware.pbz".toUri(), "my_firmware.pbz")
          ),
          { Outcome.Success(null) },
          {},
@@ -235,7 +236,7 @@ internal fun FirmwareUpdateCompletePreview() {
                watchType = WatchHardwarePlatform.PEBBLE_ONE_EV_1
 
             ),
-            pendingFirmwareUrl = "content://folder/my_firmware.pbz".toUri()
+            pendingFirmware = InputFile("content://folder/my_firmware.pbz".toUri(), "my_firmware.pbz")
          ),
          { Outcome.Success(Unit) },
          {},
@@ -260,7 +261,7 @@ internal fun FirmwareUpdateProgressPreview() {
                watchType = WatchHardwarePlatform.PEBBLE_ONE_EV_1
 
             ),
-            pendingFirmwareUrl = "content://folder/my_firmware.pbz".toUri()
+            pendingFirmware = InputFile("content://folder/my_firmware.pbz".toUri(), "my_firmware.pbz")
          ),
          { Outcome.Progress(progress = 0.5f) },
          {},
