@@ -11,7 +11,7 @@ import com.matejdro.micropebble.common.notifications.NotificationKeys
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
-import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
+import io.rebble.libpebblecommon.connection.CommonConnectedDevice
 import io.rebble.libpebblecommon.connection.ConnectingPebbleDevice
 import io.rebble.libpebblecommon.connection.Watches
 import kotlinx.coroutines.Job
@@ -44,7 +44,7 @@ class WatchConnectionService(
                finishTimer?.cancel()
             }
 
-            if (deviceList.none { it is ConnectedPebbleDevice || it is ConnectingPebbleDevice }) {
+            if (deviceList.none { it is CommonConnectedDevice || it is ConnectingPebbleDevice }) {
                // Stop the service when we have no watches to connect to
                stopSelf()
             } else if (deviceList.any { it is ConnectingPebbleDevice }) {

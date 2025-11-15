@@ -60,6 +60,18 @@
                       android:mimeType="*/*"
                       android:pathPattern=".*\\.pbw" />
             </intent-filter>
+            <!-- PBZ Install -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="content"
+                      android:host="*"
+                      android:mimeType="*/*"
+                      android:pathPattern=".*\\.pbz" />
+            </intent-filter>
             <property
                 android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
                 android:value="true" />

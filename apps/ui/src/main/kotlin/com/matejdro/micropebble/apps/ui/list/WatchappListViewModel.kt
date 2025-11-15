@@ -5,7 +5,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.compose.runtime.Stable
 import com.matejdro.micropebble.apps.ui.errors.InvalidPbwFileException
-import com.matejdro.micropebble.apps.ui.errors.LibPebbleError
+import com.matejdro.micropebble.common.exceptions.LibPebbleError
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
 import dev.zacsweers.metro.Inject

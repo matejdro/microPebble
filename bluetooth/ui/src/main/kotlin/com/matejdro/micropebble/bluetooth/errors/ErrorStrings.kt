@@ -1,17 +1,17 @@
-package com.matejdro.micropebble.apps.ui.errors
+package com.matejdro.micropebble.bluetooth.errors
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.matejdro.micropebble.apps.ui.R
+import com.matejdro.micropebble.bluetooth.ui.R
 import com.matejdro.micropebble.ui.errors.commonUserFriendlyMessage
 import si.inova.kotlinova.core.outcome.CauseException
 
 @Composable
-fun CauseException.installUserFriendlyErrorMessage(
+fun CauseException.bluetoothUserFriendlyErrorMessage(
    hasExistingData: Boolean = false,
 ): String {
-   return if (this is InvalidPbwFileException) {
-      stringResource(R.string.this_is_not_a_valid_pbw_file)
+   return if (this is InvalidPbzFileException) {
+      stringResource(R.string.this_is_not_a_valid_pbz_file)
    } else {
       commonUserFriendlyMessage(hasExistingData)
    }

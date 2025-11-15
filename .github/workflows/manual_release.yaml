@@ -1,5 +1,5 @@
-name: develop-build
-run-name: Develop build of the app
+name: manual-release
+run-name: Manual release with any version number
 on:
   workflow_dispatch:
     inputs:

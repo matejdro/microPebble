@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -45,13 +46,16 @@ import com.matejdro.micropebble.bluetooth.ui.R
 import com.matejdro.micropebble.bluetooth.watches.fakes.FakeDisconnectedKnownDevice
 import com.matejdro.micropebble.bluetooth.watches.fakes.FakeKnownConnectingDevice
 import com.matejdro.micropebble.navigation.keys.BluetoothScanScreenKey
+import com.matejdro.micropebble.navigation.keys.FirmwareUpdateScreenKey
 import com.matejdro.micropebble.navigation.keys.WatchListKey
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
-import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
+import io.rebble.libpebblecommon.connection.CommonConnectedDevice
+import io.rebble.libpebblecommon.connection.ConnectedPebbleDeviceInRecovery
 import io.rebble.libpebblecommon.connection.ConnectingPebbleDevice
 import io.rebble.libpebblecommon.connection.FakeConnectedDevice
+import io.rebble.libpebblecommon.connection.FakeConnectedDeviceInRecovery
 import io.rebble.libpebblecommon.connection.KnownPebbleDevice
 import io.rebble.libpebblecommon.connection.PebbleBleIdentifier
 import io.rebble.libpebblecommon.connection.endpointmanager.FirmwareUpdater
@@ -75,12 +79,13 @@ class WatchListScreen(
       val state = viewModel.state.collectAsStateWithLifecycleAndBlinkingPrevention().value
 
       Surface {
-         ProgressErrorSuccessScaffold(state, Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
+         ProgressErrorSuccessScaffold(state, Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) { state ->
             WatchListScreenContent(
-               it,
-               { navigator.navigateTo(BluetoothScanScreenKey) },
-               viewModel::setDeviceConnect,
-               viewModel::forgetDevice
+               state = state,
+               startPairing = { navigator.navigateTo(BluetoothScanScreenKey) },
+               updateFirmware = { navigator.navigateTo(FirmwareUpdateScreenKey(it.serial)) },
+               setConnect = viewModel::setDeviceConnect,
+               forget = viewModel::forgetDevice,
             )
          }
       }
@@ -92,6 +97,7 @@ private fun WatchListScreenContent(
    state: WatchListState,
    startPairing: () -> Unit,
    setConnect: (KnownPebbleDevice, connect: Boolean) -> Unit,
+   updateFirmware: (KnownPebbleDevice) -> Unit,
    forget: (KnownPebbleDevice) -> Unit,
 ) {
    Box {
@@ -100,7 +106,7 @@ private fun WatchListScreenContent(
          contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
       ) {
          items(state.pairedDevices, key = { it.serial }) { device ->
-            Watch(device, setConnect, forget)
+            Watch(device, setConnect, updateFirmware, forget)
          }
 
          item {
@@ -135,6 +141,7 @@ private fun WatchListScreenContent(
 private fun Watch(
    device: KnownPebbleDevice,
    setConnect: (KnownPebbleDevice, Boolean) -> Unit,
+   updateFirmware: (KnownPebbleDevice) -> Unit,
    forget: (KnownPebbleDevice) -> Unit,
 ) {
    val deviceVariant = device.color
@@ -161,7 +168,7 @@ private fun Watch(
          Text(deviceVariant?.uiDescription ?: "Unknown watch variant")
 
          Text(
-            if (device is ConnectedPebbleDevice) {
+            if (device is CommonConnectedDevice) {
                stringResource(R.string.connected)
             } else if (device is ConnectingPebbleDevice) {
                stringResource(sharedR.string.connecting)
@@ -170,11 +177,21 @@ private fun Watch(
             }
          )
 
+         if (device is ConnectedPebbleDeviceInRecovery) {
+            Text("IN RECOVERY\nUpdate firmware before use", fontWeight = FontWeight.Bold)
+         }
+
          Row(verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.connect), Modifier.padding(end = 16.dp))
-            Switch(checked = device is ConnectingPebbleDevice || device is ConnectedPebbleDevice, onCheckedChange = {
+            Switch(checked = device is ConnectingPebbleDevice || device is CommonConnectedDevice, onCheckedChange = {
                setConnect(device, it)
             })
+         }
+
+         if (device is CommonConnectedDevice) {
+            Button(onClick = { updateFirmware(device) }) {
+               Text(stringResource(R.string.update_firmwrare))
+            }
          }
 
          Button(onClick = { forget(device) }) {
@@ -201,7 +218,7 @@ private const val LUMINANCE_HALF_BRIGHT = 0.5
 @ShowkaseComposable(group = "Test")
 internal fun WatchListBlankPreview() {
    PreviewTheme {
-      WatchListScreenContent(WatchListState(emptyList()), {}, { _, _ -> }, {})
+      WatchListScreenContent(WatchListState(emptyList()), {}, { _, _ -> }, {}, {})
    }
 }
 
@@ -213,22 +230,22 @@ internal fun WatchListWithDevicesPreview() {
       FakeConnectedDevice(
          PebbleBleIdentifier(""),
          null,
-         FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle,
+         FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
          "Red PT",
          null,
          serial = "1",
          color = WatchColor.TimeRed,
          connectionFailureInfo = null
       ),
-      FakeConnectedDevice(
+      FakeConnectedDeviceInRecovery(
          PebbleBleIdentifier(""),
          null,
-         FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle,
+         FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
          "Black P2D",
          null,
          serial = "2",
          color = WatchColor.Pebble2DuoBlack,
-         connectionFailureInfo = null
+         connectionFailureInfo = null,
       ),
       FakeKnownConnectingDevice(
          name = "White P2D",
@@ -243,6 +260,6 @@ internal fun WatchListWithDevicesPreview() {
    )
 
    PreviewTheme {
-      WatchListScreenContent(WatchListState(deviceList), {}, { _, _ -> }, {})
+      WatchListScreenContent(WatchListState(deviceList), {}, { _, _ -> }, {}, {})
    }
 }

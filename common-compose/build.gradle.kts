@@ -14,6 +14,7 @@ android {
 }
 
 dependencies {
+   implementation(projects.common)
    implementation(libs.kotlinova.core)
    implementation(libs.kotlinova.compose)
    implementation(libs.kotlin.coroutines)

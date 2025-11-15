@@ -15,7 +15,9 @@ jobs:
       - name: Install screenshot test dependencies
         run: "sudo apt-get install -y libfreetype6 fontconfig fonts-dejavu"
       - name: Globally enable build cache and parallel execution
-        run: "echo -e 'org.gradle.caching=true\norg.gradle.parallel=true' >> ~/.gradle/gradle.properties"
+        run: |
+          mkdir -p ~/.gradle
+          echo -e 'org.gradle.caching=true\norg.gradle.parallel=true' > ~/.gradle/gradle.properties
       - name: Force all tasks to be rerun when debug mode is on
         # This allows us to force rerun the build if cache has gotten corrupted
         run: 'if [[ "${{ runner.debug }}" == "1" ]]; then
@@ -27,11 +29,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
+          submodules: recursive
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
       - uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: temurin
           cache: gradle
+      - uses: android-actions/setup-android@7c5672355aaa8fde5f97a91aa9a99616d1ace6bc
       - run: sdkmanager "platforms;android-33" "platforms;android-34"
 
       # Build

@@ -5,7 +5,7 @@ import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.OnboardingKey
 import com.matejdro.micropebble.notifications.NotificationsStatus
 import dev.zacsweers.metro.Inject
-import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
+import io.rebble.libpebblecommon.connection.CommonConnectedDevice
 import io.rebble.libpebblecommon.connection.ConnectingPebbleDevice
 import io.rebble.libpebblecommon.connection.Watches
 import kotlinx.coroutines.currentCoroutineContext
@@ -41,7 +41,7 @@ class OnboardingScreenViewModel(
 
       emitAll(
          combine(
-            watches.watches.map { watches -> watches.any { it is ConnectedPebbleDevice || it is ConnectingPebbleDevice } },
+            watches.watches.map { watches -> watches.any { it is CommonConnectedDevice || it is ConnectingPebbleDevice } },
             pollForNotificationListenerPermission()
          ) { anyPairedWatch, hasListenerPermission ->
             Outcome.Success(
