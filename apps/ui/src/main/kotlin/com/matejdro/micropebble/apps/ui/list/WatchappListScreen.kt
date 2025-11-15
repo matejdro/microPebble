@@ -1,7 +1,5 @@
 package com.matejdro.micropebble.apps.ui.list
 
-import android.os.VibrationEffect
-import android.os.Vibrator
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -35,25 +33,17 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.getSystemService
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.apps.ui.R
 import com.matejdro.micropebble.apps.ui.errors.installUserFriendlyErrorMessage
-import com.matejdro.micropebble.apps.ui.util.handleLazyListScroll
 import com.matejdro.micropebble.apps.ui.webviewconfig.AppConfigScreenKey
 import com.matejdro.micropebble.navigation.keys.HomeScreenKey
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
@@ -61,14 +51,11 @@ import com.matejdro.micropebble.ui.components.ErrorAlertDialog
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
-import com.mohamedrejeb.compose.dnd.reorder.ReorderContainer
-import com.mohamedrejeb.compose.dnd.reorder.ReorderableItem
-import com.mohamedrejeb.compose.dnd.reorder.rememberReorderState
+import com.matejdro.micropebble.ui.lists.ReorderableListContainer
 import io.rebble.libpebblecommon.locker.AppProperties
 import io.rebble.libpebblecommon.locker.AppType
 import io.rebble.libpebblecommon.locker.LockerWrapper
 import io.rebble.libpebblecommon.locker.SystemApps
-import kotlinx.coroutines.launch
 import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.exceptions.NoNetworkException
@@ -162,21 +149,13 @@ private fun WatchappListScreenContent(
 ) {
    ErrorAlertDialog(actionStatus, errorText = { it.installUserFriendlyErrorMessage() })
    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+   val listState = rememberLazyListState()
 
-   val reorderState = rememberReorderState<LockerWrapper>(dragAfterLongPress = true)
-   val scope = rememberCoroutineScope()
-   val density = LocalDensity.current
-   val vibrator = LocalContext.current.getSystemService<Vibrator>()
-
-   ReorderContainer(
-      reorderState,
+   ReorderableListContainer(
+      if (selectedTab == 0) state.watchfaces else state.watchapps,
+      listState,
       enabled = selectedTab == 1
-   ) {
-      val displayedItems = if (selectedTab == 0) state.watchfaces else state.watchapps
-      var reorderingList by remember(displayedItems) { mutableStateOf(displayedItems) }
-      val listState = rememberLazyListState()
-      var dragging by remember { mutableStateOf(false) }
-
+   ) { displayedItems ->
       LazyColumn(
          state = listState,
          modifier = Modifier.fillMaxSize(),
@@ -225,66 +204,26 @@ private fun WatchappListScreenContent(
          }
 
          itemsWithDivider(
-            reorderingList,
+            displayedItems,
             key = { it.properties.id.toString() },
             contentType = { "app" },
             modifier = { Modifier.animateItem() }
          ) { app ->
-            ReorderableItem(
-               state = reorderState,
+            ReorderableListItem(
                key = app.properties.id,
                data = app,
-               onDragEnter = { state ->
-                  reorderingList = reorderingList.toMutableList().apply {
-                     val index = indexOf(app)
-                     if (index == -1) return@ReorderableItem
-                     remove(state.data)
-                     add(index, state.data)
-
-                     vibrator?.vibrate(
-                        VibrationEffect.createPredefined(
-                           if (dragging) {
-                              VibrationEffect.EFFECT_TICK
-                           } else {
-                              VibrationEffect.EFFECT_CLICK
-                           }
-                        )
-                     )
-                     dragging = true
-
-                     scope.launch {
-                        handleLazyListScroll(
-                           lazyListState = listState,
-                           dropIndex = index + 3,
-                           density = density,
-                        )
-                     }
-                  }
-               },
-               onDrop = {
-                  vibrator?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK))
-                  dragging = false
-                  setOrder(it.data.properties.id, reorderingList.indexOf(it.data))
-               },
-               draggableContent = {
-                  App(
-                     app,
-                     actionStatus !is Outcome.Progress,
-                     delete = { deleteApp(app.properties.id) },
-                     openConfiguration = { openConfiguration(app.properties.id) }
-                  )
+               setOrder = {
+                  setOrder(app.properties.id, it)
                },
                modifier = Modifier
                   .fillMaxWidth()
-            ) {
+            ) { modifier ->
                App(
                   app,
                   actionStatus !is Outcome.Progress,
                   delete = { deleteApp(app.properties.id) },
                   openConfiguration = { openConfiguration(app.properties.id) },
-                  Modifier.graphicsLayer {
-                     alpha = if (isDragging) 0f else 1f
-                  }
+                  modifier
                )
             }
          }

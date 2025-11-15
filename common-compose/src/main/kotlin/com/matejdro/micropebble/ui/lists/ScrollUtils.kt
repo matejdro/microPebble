@@ -1,4 +1,4 @@
-package com.matejdro.micropebble.apps.ui.util
+package com.matejdro.micropebble.ui.lists
 
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.lazy.LazyListState
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
  * Adapted from https://github.com/MohamedRejeb/compose-dnd/blob/65d48ed0f0bd83a0b01263b7e046864bdd4a9048/sample/common/src/commonMain/kotlin/utils/ScrollUtils.kt
  * by MohamedRejeb
  */
-suspend fun handleLazyListScroll(
+internal suspend fun handleLazyListScroll(
    lazyListState: LazyListState,
    density: Density,
    dropIndex: Int,

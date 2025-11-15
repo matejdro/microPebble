@@ -18,6 +18,8 @@ dependencies {
    implementation(libs.kotlinova.core)
    implementation(libs.kotlinova.compose)
    implementation(libs.kotlin.coroutines)
+   implementation(libs.androidx.core)
    implementation(libs.coil)
    implementation(libs.coil.okhttp)
+   implementation(libs.composeDnd)
 }
