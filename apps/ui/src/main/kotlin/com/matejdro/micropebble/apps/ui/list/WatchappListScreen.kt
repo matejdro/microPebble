@@ -1,5 +1,7 @@
 package com.matejdro.micropebble.apps.ui.list
 
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -41,11 +43,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.getSystemService
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.apps.ui.R
 import com.matejdro.micropebble.apps.ui.errors.installUserFriendlyErrorMessage
@@ -162,6 +166,7 @@ private fun WatchappListScreenContent(
    val reorderState = rememberReorderState<LockerWrapper>(dragAfterLongPress = true)
    val scope = rememberCoroutineScope()
    val density = LocalDensity.current
+   val vibrator = LocalContext.current.getSystemService<Vibrator>()
 
    ReorderContainer(
       reorderState,
@@ -170,6 +175,7 @@ private fun WatchappListScreenContent(
       val displayedItems = if (selectedTab == 0) state.watchfaces else state.watchapps
       var reorderingList by remember(displayedItems) { mutableStateOf(displayedItems) }
       val listState = rememberLazyListState()
+      var dragging by remember { mutableStateOf(false) }
 
       LazyColumn(
          state = listState,
@@ -235,6 +241,17 @@ private fun WatchappListScreenContent(
                      remove(state.data)
                      add(index, state.data)
 
+                     vibrator?.vibrate(
+                        VibrationEffect.createPredefined(
+                           if (dragging) {
+                              VibrationEffect.EFFECT_TICK
+                           } else {
+                              VibrationEffect.EFFECT_CLICK
+                           }
+                        )
+                     )
+                     dragging = true
+
                      scope.launch {
                         handleLazyListScroll(
                            lazyListState = listState,
@@ -245,6 +262,8 @@ private fun WatchappListScreenContent(
                   }
                },
                onDrop = {
+                  vibrator?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK))
+                  dragging = false
                   setOrder(it.data.properties.id, reorderingList.indexOf(it.data))
                },
                draggableContent = {

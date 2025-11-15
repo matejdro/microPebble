@@ -13,6 +13,9 @@
     <!-- Voice transcription -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
+    <!-- List reordering effects -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:name=".MicroPebbleApplication"
         android:allowBackup="true"
