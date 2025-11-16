@@ -4,6 +4,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -111,6 +112,7 @@ fun <T> ReorderableListContainer(
    }
 }
 
+@Stable
 interface ReorderableListScope<T> {
    @Composable
    fun ReorderableListItem(
