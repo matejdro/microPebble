@@ -1,0 +1,8 @@
+fun ReorderableListItem(
+  unstable key: Any
+  data: T
+  stable setOrder: Function1<@[ParameterName(name = 'toIndex')] Int, Unit>
+  stable modifier: Modifier
+  stable content: Function3<Modifier, Composer, Int, Unit>
+  stable <this>: <no name provided><T>
+)
