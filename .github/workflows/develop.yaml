@@ -2,7 +2,7 @@ name: develop-build
 run-name: Develop build of the app
 on:
   schedule:
-    - cron: "10 20 * * *"
+    - cron: "48 20 * * *"
 env:
   BUILD_NUMBER: ${{ github.run_number }}
 jobs:
@@ -41,11 +41,6 @@ jobs:
           increment: 'auto'
           from: '${{ env.NX_BASE }}'
           to: '${{ env.NX_HEAD }}'
-      - name: Check if there were any new fix or feature commits
-        id: version-check
-        uses: inovait/actions-common/bump-version-since-last-build@v11
-        with:
-          version: ''
       - run: "echo \"No feature or fix commits. Skipping build...\""
         if: "${{ steps.version-check.outputs.version == env.OLD_VERSION }}"
       - uses: andymckay/cancel-action@0.3
