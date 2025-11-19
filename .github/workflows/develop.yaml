@@ -2,7 +2,7 @@ name: develop-build
 run-name: Develop build of the app
 on:
   schedule:
-    - cron: "07 11 * * *"
+    - cron: "0 7 * * *"
 env:
   BUILD_NUMBER: ${{ github.run_number }}
 jobs:
