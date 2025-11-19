@@ -2,7 +2,7 @@ name: develop-build
 run-name: Develop build of the app
 on:
   schedule:
-    - cron: "28 9 * * *"
+    - cron: "48 10 * * *"
 env:
   BUILD_NUMBER: ${{ github.run_number }}
 jobs:
@@ -35,6 +35,7 @@ jobs:
           main-branch-name: "${{ env.CURRENT_BRANCH }}"
           last-successful-event: "schedule"
       - name: Get version
+        id: version-check
         uses: inovait/actions-common/bump-version@v10
         with:
           version: '${{ env.OLD_VERSION }}'
