@@ -12,6 +12,7 @@ import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.FirmwareUpdateScreenKey
 import com.matejdro.micropebble.navigation.keys.common.InputFile
 import dev.zacsweers.metro.Inject
+import dispatch.core.dispatcherProvider
 import dispatch.core.withDefault
 import io.rebble.libpebblecommon.connection.CommonConnectedDevice
 import io.rebble.libpebblecommon.connection.Watches
@@ -68,12 +69,13 @@ class UpdateFirmwareViewModel(
       }
    }
 
-   fun selectPbz(pbzUri: Uri) {
-      actionLogger.logAction { "UpdateFirmwareViewModel.selectPbz(pbzUri = $pbzUri)" }
-      _watchInfo.update { outcome ->
-         outcome.mapData { it.copy(pendingFirmware = InputFile(pbzUri, getFileName(pbzUri).orEmpty())) }
+   fun selectPbz(pbzUri: Uri) =
+      resources.launchWithExceptionReporting(coroutineScope.coroutineContext.dispatcherProvider.default) {
+         actionLogger.logAction { "UpdateFirmwareViewModel.selectPbz(pbzUri = $pbzUri)" }
+         _watchInfo.update { outcome ->
+            outcome.mapData { it.copy(pendingFirmware = InputFile(pbzUri, getFileName(pbzUri).orEmpty())) }
+         }
       }
-   }
 
    fun startInstall() = resources.launchResourceControlTask(_updateStatus) {
       actionLogger.logAction { "UpdateFirmwareViewModel.startInstall()" }
