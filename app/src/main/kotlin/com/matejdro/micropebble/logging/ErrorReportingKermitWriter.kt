@@ -5,6 +5,7 @@ import co.touchlab.kermit.Severity
 import com.juul.kable.GattStatusException
 import com.juul.kable.GattWriteException
 import com.juul.kable.NotConnectedException
+import io.rebble.libpebblecommon.connection.ConnectionException
 import io.rebble.libpebblecommon.services.PutBytesService
 import si.inova.kotlinova.core.reporting.ErrorReporter
 
@@ -27,7 +28,8 @@ class ErrorReportingKermitWriter(
 }
 
 private val EXCLUDED_MESSAGES = listOf(
-   "We don't handle resetting PPoG - disconnect and reconnect"
+   "We don't handle resetting PPoG - disconnect and reconnect",
+   "Can't reduce MTU"
 )
 
 // We don't want to report generic BLE disconnections as they are often non-actionable
@@ -37,4 +39,5 @@ private val EXCLUDED_TYPES: List<Class<out Throwable>> = listOf(
    GattWriteException::class.java,
    GattStatusException::class.java,
    PutBytesService.PutBytesException::class.java,
+   ConnectionException::class.java,
 )
