@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.logging
 
+import android.os.OperationCanceledException
 import co.touchlab.kermit.LogWriter
 import co.touchlab.kermit.Severity
 import com.juul.kable.GattStatusException
@@ -29,7 +30,8 @@ class ErrorReportingKermitWriter(
 
 private val EXCLUDED_MESSAGES = listOf(
    "We don't handle resetting PPoG - disconnect and reconnect",
-   "Can't reduce MTU"
+   "Can't reduce MTU",
+   "expected ResetComplete"
 )
 
 // We don't want to report generic BLE disconnections as they are often non-actionable
@@ -40,4 +42,5 @@ private val EXCLUDED_TYPES: List<Class<out Throwable>> = listOf(
    GattStatusException::class.java,
    PutBytesService.PutBytesException::class.java,
    ConnectionException::class.java,
+   OperationCanceledException::class.java,
 )
