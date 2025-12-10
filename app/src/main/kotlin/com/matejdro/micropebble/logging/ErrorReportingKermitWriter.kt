@@ -31,7 +31,8 @@ class ErrorReportingKermitWriter(
 private val EXCLUDED_MESSAGES = listOf(
    "We don't handle resetting PPoG - disconnect and reconnect",
    "Can't reduce MTU",
-   "expected ResetComplete"
+   "expected ResetComplete",
+   "Couldn't send packet",
 )
 
 // We don't want to report generic BLE disconnections as they are often non-actionable
