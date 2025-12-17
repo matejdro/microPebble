@@ -24,5 +24,5 @@
     <string name="selected_firmware">Selected firmware: %1$s</string>
     <string name="start_installation">Start installation</string>
     <string name="update_completed">Update completed</string>
-    <string name="update_firmwrare">Update firmwrare</string>
+    <string name="update_firmware">Update firmware</string>
 </resources>
