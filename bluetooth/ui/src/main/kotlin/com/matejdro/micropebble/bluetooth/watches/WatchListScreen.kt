@@ -190,7 +190,7 @@ private fun Watch(
 
          if (device is CommonConnectedDevice) {
             Button(onClick = { updateFirmware(device) }) {
-               Text(stringResource(R.string.update_firmwrare))
+               Text(stringResource(R.string.update_firmware))
             }
          }
 
