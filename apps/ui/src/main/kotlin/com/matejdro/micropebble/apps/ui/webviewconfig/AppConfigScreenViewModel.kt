@@ -16,7 +16,6 @@ import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
-import java.net.URLDecoder
 
 @Stable
 @Inject
@@ -50,7 +49,7 @@ class AppConfigScreenViewModel(
    fun save(data: String) {
       actionLogger.logAction { "AppConfigScreenViewModel.save()" }
       if (data.isNotBlank()) {
-         session?.triggerOnWebviewClosed(URLDecoder.decode(data, "utf-8"))
+         session?.triggerOnWebviewClosed(data)
       }
       _configUrl.value = Outcome.Success(AppConfigScreenState.Close)
    }

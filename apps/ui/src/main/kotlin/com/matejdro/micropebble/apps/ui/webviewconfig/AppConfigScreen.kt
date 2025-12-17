@@ -67,9 +67,9 @@ private class CustomWebViewClient(
 ) : AccompanistWebViewClient() {
 
    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-      val url = request.url.toString()
-      return if (url.startsWith("pebblejs://close")) {
-         submit(url.removePrefix("pebblejs://close").removePrefix("#"))
+      val url = request.url
+      return if (url.toString().startsWith("pebblejs://close")) {
+         submit(url.fragment.orEmpty())
          false
       } else {
          false
