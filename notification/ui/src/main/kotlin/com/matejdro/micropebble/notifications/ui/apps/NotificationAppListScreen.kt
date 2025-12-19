@@ -244,7 +244,10 @@ internal fun NotificationAppListScreenContentPreview() {
                MuteState.Never,
                emptyList(),
                MillisecondInstant(Instant.DISTANT_PAST),
-               MillisecondInstant(Instant.DISTANT_PAST)
+               MillisecondInstant(Instant.DISTANT_PAST),
+               null,
+               null,
+               null
             ),
             0
          )
