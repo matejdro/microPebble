@@ -102,6 +102,10 @@ dependencyAnalysis {
       bundle("kable") {
          includeGroup("com.juul.kable")
       }
+
+      bundle("speex") {
+         includeGroup("io.github.coredevices.speex")
+      }
    }
 }
 
