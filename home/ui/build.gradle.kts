@@ -23,6 +23,7 @@ dependencies {
    api(libs.kotlinova.navigation)
    implementation(projects.commonCompose)
    implementation(libs.accompanist.permissions)
+   implementation(libs.composePreference)
    implementation(libs.kotlin.coroutines)
    implementation(libs.dispatch)
    implementation(libs.androidx.compose.material3.sizeClasses)

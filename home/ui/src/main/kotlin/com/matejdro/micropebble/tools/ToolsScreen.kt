@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -22,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,8 +38,12 @@ import com.matejdro.micropebble.navigation.keys.CalendarListScreenKey
 import com.matejdro.micropebble.navigation.keys.DeveloperConnectionScreenKey
 import com.matejdro.micropebble.navigation.keys.OnboardingKey
 import com.matejdro.micropebble.ui.components.ErrorAlertDialog
+import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
+import me.zhanghai.compose.preference.LocalPreferenceTheme
+import me.zhanghai.compose.preference.SwitchPreference
+import me.zhanghai.compose.preference.preferenceTheme
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.di.ContributesScreenBinding
@@ -54,90 +60,110 @@ class ToolsScreen(
 ) : Screen<ToolsScreenKey>() {
    @Composable
    override fun Content(key: ToolsScreenKey) {
-      val appVersion = viewModel.appVersion.collectAsStateWithLifecycle().value
+      val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
       val logSaveStatus = viewModel.logSave.collectAsStateWithLifecycleAndBlinkingPrevention().value
 
       Surface {
-         ToolsScreenContent(
-            appVersion,
-            logSaveStatus,
-            { navigator.navigateTo(OnboardingKey) },
-            { navigator.navigateTo(DeveloperConnectionScreenKey) },
-            { navigator.navigateTo(CalendarListScreenKey) },
-            viewModel::getLogs,
-            viewModel::resetLog,
-         )
+         ProgressErrorSuccessScaffold(
+            uiState,
+            Modifier
+               .fillMaxSize()
+               .safeDrawingPadding(),
+         ) { state ->
+            ToolsScreenContent(
+               state,
+               logSaveStatus,
+               { navigator.navigateTo(OnboardingKey) },
+               { navigator.navigateTo(DeveloperConnectionScreenKey) },
+               { navigator.navigateTo(CalendarListScreenKey) },
+               viewModel::getLogs,
+               viewModel::resetLog,
+               viewModel::changeMusicAlwaysPaused
+            )
+         }
       }
    }
 }
 
 @Composable
 private fun ToolsScreenContent(
-   appVersion: String,
+   state: ToolsState,
    loggingTransmissionState: Outcome<Uri?>?,
    openPermissions: () -> Unit,
    openDevConnection: () -> Unit,
    openCalendarSettings: () -> Unit,
    startLogSaving: () -> Unit,
    notifyLogIntentSent: () -> Unit,
+   changeMusicAlwaysPaused: (newValue: Boolean) -> Unit,
 ) {
-   LazyVerticalGrid(
-      GridCells.Adaptive(175.dp),
-      horizontalArrangement = Arrangement.spacedBy(16.dp),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-      contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
-      modifier = Modifier
-         .padding(horizontal = 16.dp)
-         .fillMaxSize()
-   ) {
-      item {
-         ToolButton(openDevConnection, R.drawable.developer_connection, R.string.developer_connection)
-      }
+   CompositionLocalProvider(LocalPreferenceTheme provides preferenceTheme()) {
+      LazyVerticalGrid(
+         GridCells.Adaptive(175.dp),
+         horizontalArrangement = Arrangement.spacedBy(16.dp),
+         verticalArrangement = Arrangement.spacedBy(16.dp),
+         contentPadding = WindowInsets.safeDrawing.asPaddingValues(),
+         modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxSize()
+      ) {
+         item {
+            ToolButton(openDevConnection, R.drawable.developer_connection, R.string.developer_connection)
+         }
 
-      item {
-         ToolButton(openPermissions, R.drawable.permissions, R.string.permissions)
-      }
+         item {
+            ToolButton(openPermissions, R.drawable.permissions, R.string.permissions)
+         }
 
-      item {
-         ErrorAlertDialog(loggingTransmissionState)
+         item {
+            ErrorAlertDialog(loggingTransmissionState)
 
-         if (loggingTransmissionState is Outcome.Progress<*>) {
-            CircularProgressIndicator(
-               Modifier
-                  .size(60.dp)
-                  .wrapContentWidth()
-            )
-         } else {
-            ToolButton(startLogSaving, R.drawable.logs, R.string.save_logs)
+            if (loggingTransmissionState is Outcome.Progress<*>) {
+               CircularProgressIndicator(
+                  Modifier
+                     .size(60.dp)
+                     .wrapContentWidth()
+               )
+            } else {
+               ToolButton(startLogSaving, R.drawable.logs, R.string.save_logs)
 
-            val context = LocalContext.current
-            SideEffect {
-               loggingTransmissionState?.data?.let { targetUri ->
-                  val activityIntent = Intent(Intent.ACTION_SEND)
-                  activityIntent.putExtra(Intent.EXTRA_STREAM, targetUri)
-                  activityIntent.setType("application/zip")
+               val context = LocalContext.current
+               SideEffect {
+                  loggingTransmissionState?.data?.let { targetUri ->
+                     val activityIntent = Intent(Intent.ACTION_SEND)
+                     activityIntent.putExtra(Intent.EXTRA_STREAM, targetUri)
+                     activityIntent.setType("application/zip")
 
-                  activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                  activityIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                     activityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                     activityIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
-                  context.startActivity(Intent.createChooser(activityIntent, null))
-                  notifyLogIntentSent()
+                     context.startActivity(Intent.createChooser(activityIntent, null))
+                     notifyLogIntentSent()
+                  }
                }
             }
          }
-      }
 
-      item {
-         ToolButton(openCalendarSettings, R.drawable.calendar_settings, R.string.calendar)
-      }
+         item {
+            ToolButton(openCalendarSettings, R.drawable.calendar_settings, R.string.calendar)
+         }
 
-      item(span = { GridItemSpan(maxLineSpan) }) {
-         Text(
-            stringResource(R.string.version, appVersion),
-            Modifier
-               .fillMaxWidth()
-               .wrapContentWidth(Alignment.CenterHorizontally)
-         )
+         item(span = { GridItemSpan(maxLineSpan) }) {
+            SwitchPreference(
+               state.alwaysSendPausedMusic,
+               { changeMusicAlwaysPaused(it) },
+               title = { Text("Always show music as paused") },
+               summary = { Text("This prevents music app from jumping at the top of the menu") }
+            )
+         }
+
+         item(span = { GridItemSpan(maxLineSpan) }) {
+            Text(
+               stringResource(R.string.version, state.appVersion),
+               Modifier
+                  .fillMaxWidth()
+                  .wrapContentWidth(Alignment.CenterHorizontally)
+            )
+         }
       }
    }
 }
@@ -163,12 +189,14 @@ private fun ToolButton(onClick: () -> Unit, icon: Int, text: Int) {
 internal fun ToolsScreenPreview() {
    PreviewTheme {
       ToolsScreenContent(
-         appVersion = "1.0.0-alpha07",
+         state = ToolsState("1.0.0-alpha07", false),
          loggingTransmissionState = Outcome.Success(null),
          openPermissions = {},
          openDevConnection = {},
          openCalendarSettings = {},
-         startLogSaving = {}
-      ) {}
+         startLogSaving = {},
+         notifyLogIntentSent = {},
+         changeMusicAlwaysPaused = {},
+      )
    }
 }

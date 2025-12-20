@@ -8,8 +8,10 @@ import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.logging.FileLoggingController
 import dev.zacsweers.metro.Inject
 import dispatch.core.withDefault
+import io.rebble.libpebblecommon.connection.LibPebble
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.services.ContributesScopedService
@@ -28,19 +30,40 @@ class ToolsViewModel(
    private val actionLogger: ActionLogger,
    private val context: Context,
    private val fileLoggingController: FileLoggingController,
+   private val libPebble: LibPebble,
 ) : SingleScreenViewModel<ToolsScreenKey>(resources.scope) {
-   private val _appVersion = MutableStateFlow<String>("")
-   val appVersion: StateFlow<String>
-      get() = _appVersion
+   private val _uiState = MutableStateFlow<Outcome<ToolsState>>(Outcome.Progress())
+   val uiState: StateFlow<Outcome<ToolsState>>
+      get() = _uiState
 
    private val _logSave = MutableStateFlow<Outcome<Uri?>>(Outcome.Success(null))
    val logSave: StateFlow<Outcome<Uri?>> = _logSave
 
-   override fun onServiceRegistered() {
+   override fun onServiceRegistered() = resources.launchResourceControlTask(_uiState) {
       actionLogger.logAction { "ToolsViewModel.onServiceRegistered()" }
 
       val pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0)
-      _appVersion.value = pInfo.versionName.orEmpty()
+      val appVersion = pInfo.versionName.orEmpty()
+
+      emitAll(
+         libPebble.config.map { config ->
+            Outcome.Success(
+               ToolsState(
+                  appVersion,
+                  config.watchConfig.alwaysSendMusicPaused
+               )
+            )
+         }
+      )
+   }
+
+   fun changeMusicAlwaysPaused(newValue: Boolean) = resources.launchWithExceptionReporting {
+      actionLogger.logAction { "ToolsViewModel.changeMusicAlwaysPaused($newValue)" }
+      libPebble.updateConfig(
+         libPebble.config.value.let { config ->
+            config.copy(watchConfig = config.watchConfig.copy(alwaysSendMusicPaused = newValue))
+         }
+      )
    }
 
    fun getLogs() = resources.launchResourceControlTask(_logSave) {
@@ -88,5 +111,10 @@ class ToolsViewModel(
       _logSave.value = Outcome.Success(null)
    }
 }
+
+data class ToolsState(
+   val appVersion: String,
+   val alwaysSendPausedMusic: Boolean,
+)
 
 private const val ZIP_BUFFER_SIZE = 1024
