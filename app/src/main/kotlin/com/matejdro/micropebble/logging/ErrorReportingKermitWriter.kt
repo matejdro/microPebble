@@ -33,6 +33,7 @@ private val EXCLUDED_MESSAGES = listOf(
    "Can't reduce MTU",
    "expected ResetComplete",
    "Couldn't send packet",
+   "Cannot connect peripheral that has been cancelled",
 )
 
 // We don't want to report generic BLE disconnections as they are often non-actionable
