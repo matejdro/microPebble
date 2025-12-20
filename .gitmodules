@@ -1,6 +1,3 @@
 [submodule "libpebble3"]
 	path = libs/libpebble3
 	url = git@github.com:matejdro/libpebble3.git
-[submodule "libs/kotlin-speex"]
-	path = libs/kotlin-speex
-	url = git@github.com:matejdro/kotlin-speex.git
