@@ -20,6 +20,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import si.inova.kotlinova.core.logging.logcat
 import si.inova.kotlinova.core.reporting.ErrorReporter
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -33,8 +34,10 @@ class TranscriptionProviderImpl(
       encoderInfo: VoiceEncoderInfo,
       audioFrames: Flow<UByteArray>,
    ): TranscriptionResult {
+      logcat { "Start transcribe" }
       // SpeechRecognizer's audio source is only supported on 13+
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+         logcat { "Android version fail" }
          return TranscriptionResult.Error("Voice Requires Android 13 or above")
       }
 
@@ -50,11 +53,17 @@ class TranscriptionProviderImpl(
             readPipe.use {
                ParcelFileDescriptor.AutoCloseOutputStream(writePipe).use { writeStream ->
                   val finishedReceiver = CompletableDeferred<TranscriptionResult>()
+                  this@TranscriptionProviderImpl.logcat { "Attempt to create speech recognizer" }
                   val speechRecognizer = createSpeechRecognizer(readPipe, speexInfo, finishedReceiver)
+                  this@TranscriptionProviderImpl.logcat { "Created speech recognizer" }
 
                   return try {
                      decodeWatchAudioIntoSpeechRecognizerStream(speexInfo, audioFrames, speexDecoder, writeStream)
+                     this@TranscriptionProviderImpl.logcat { "Submitted all the audio, awaiting completed recognition" }
                      finishedReceiver.await()
+                        .also {
+                           this@TranscriptionProviderImpl.logcat { "Recognition completed" }
+                        }
                   } finally {
                      speechRecognizer.destroy()
                   }
@@ -103,6 +112,7 @@ class TranscriptionProviderImpl(
          if (result != SpeexDecodeResult.Success) {
             error("Speex decoding failed: $result")
          }
+         this@TranscriptionProviderImpl.logcat { "Wrote audio stream packet" }
 
          writeStream.write(targetBuffer, 0, targetBufferSize)
       }
