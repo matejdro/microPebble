@@ -58,7 +58,13 @@ class TranscriptionProviderImpl(
                   this@TranscriptionProviderImpl.logcat { "Created speech recognizer" }
 
                   return try {
-                     decodeWatchAudioIntoSpeechRecognizerStream(speexInfo, audioFrames, speexDecoder, writeStream)
+                     decodeWatchAudioIntoSpeechRecognizerStream(
+                        speexInfo,
+                        audioFrames,
+                        speexDecoder,
+                        writeStream,
+                        finishedReceiver
+                     )
                      this@TranscriptionProviderImpl.logcat { "Submitted all the audio, awaiting completed recognition" }
                      finishedReceiver.await()
                         .also {
@@ -98,11 +104,13 @@ class TranscriptionProviderImpl(
       speechRecognizer
    }
 
+   @Suppress("BlockingMethodInNonBlockingContext") // We already are on IO
    private suspend fun decodeWatchAudioIntoSpeechRecognizerStream(
       speexInfo: VoiceEncoderInfo.Speex,
       audioFrames: Flow<UByteArray>,
       speexDecoder: SpeexCodec,
       writeStream: ParcelFileDescriptor.AutoCloseOutputStream,
+      finishedReceiver: CompletableDeferred<TranscriptionResult>,
    ) {
       val targetBufferSize = Short.SIZE_BYTES * speexInfo.frameSize
       val targetBuffer = ByteArray(targetBufferSize)
@@ -114,7 +122,11 @@ class TranscriptionProviderImpl(
          }
          this@TranscriptionProviderImpl.logcat { "Wrote audio stream packet" }
 
-         writeStream.write(targetBuffer, 0, targetBufferSize)
+         if (finishedReceiver.isCompleted) {
+            // Speech recognizer has already finished. We cannot write more data to it
+         } else {
+            writeStream.write(targetBuffer, 0, targetBufferSize)
+         }
       }
       writeStream.close()
    }
