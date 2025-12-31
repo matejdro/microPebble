@@ -9,6 +9,7 @@ import com.juul.kable.NotConnectedException
 import io.rebble.libpebblecommon.connection.ConnectionException
 import io.rebble.libpebblecommon.services.PutBytesService
 import si.inova.kotlinova.core.reporting.ErrorReporter
+import java.io.IOException
 
 class ErrorReportingKermitWriter(
    private val errorReporter: ErrorReporter,
@@ -45,4 +46,5 @@ private val EXCLUDED_TYPES: List<Class<out Throwable>> = listOf(
    PutBytesService.PutBytesException::class.java,
    ConnectionException::class.java,
    OperationCanceledException::class.java,
+   IOException::class.java,
 )
