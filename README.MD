@@ -55,7 +55,7 @@ If your changes need changes to the libpebble:
 1. Make the PR for the [matejdro/libpebble](https://github.com/matejdro/libpebble3) first
 2. Consider also upstreaming all your changes to the  [original libpebble repo](https://github.com/coredevices/libpebble3) -
    ideally we shouldn't stray too far from them
-2. Once those are merged, make the PR on this repo
+3. Once those are merged, make the PR on this repo
 
 ## Updating versions
 
