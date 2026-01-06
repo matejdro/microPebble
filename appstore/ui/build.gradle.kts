@@ -9,13 +9,14 @@ plugins {
 
 android {
 
-   namespace = "com.matejdro.micropebble.appstore"
+   namespace = "com.matejdro.micropebble.appstore.ui"
    buildFeatures {
       androidResources = true
    }
 }
 
 dependencies {
+   api(projects.appstore.api)
    api(projects.common)
    api(libs.kotlinova.navigation)
    api(libs.kotlin.coroutines)
