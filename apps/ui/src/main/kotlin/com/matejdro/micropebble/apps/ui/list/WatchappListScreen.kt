@@ -45,6 +45,7 @@ import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.apps.ui.R
 import com.matejdro.micropebble.apps.ui.errors.installUserFriendlyErrorMessage
 import com.matejdro.micropebble.apps.ui.webviewconfig.AppConfigScreenKey
+import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import com.matejdro.micropebble.navigation.keys.HomeScreenKey
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
 import com.matejdro.micropebble.ui.components.ErrorAlertDialog
@@ -85,7 +86,7 @@ class WatchappListScreen(
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
       ) {
-         val selectPwbResult = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { pbwUri ->
+         val selectPbwResult = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { pbwUri ->
             if (pbwUri != null) {
                viewModel.startInstall(pbwUri)
             }
@@ -95,7 +96,10 @@ class WatchappListScreen(
             it,
             viewModel.actionStatus.collectAsStateWithLifecycleAndBlinkingPrevention().value,
             installFromPbw = {
-               selectPwbResult.launch(arrayOf("*/*"))
+               selectPbwResult.launch(arrayOf("*/*"))
+            },
+            installFromAppstore = {
+               navigator.navigateTo(AppstoreScreenKey)
             },
             deleteApp = viewModel::deleteApp,
             setOrder = viewModel::reorderApp,
@@ -143,6 +147,7 @@ private fun WatchappListScreenContent(
    state: WatchappListState,
    actionStatus: Outcome<Unit>?,
    installFromPbw: () -> Unit,
+   installFromAppstore: () -> Unit,
    deleteApp: (Uuid) -> Unit,
    setOrder: (Uuid, Int) -> Unit,
    openConfiguration: (Uuid) -> Unit,
@@ -165,13 +170,23 @@ private fun WatchappListScreenContent(
             if (actionStatus is Outcome.Progress) {
                CircularProgressIndicator(Modifier.padding(8.dp))
             } else {
-               Button(
-                  onClick = installFromPbw,
+               Row(
                   Modifier
                      .fillMaxWidth()
-                     .wrapContentWidth()
+                     .wrapContentWidth(),
+                  horizontalArrangement = Arrangement.spacedBy(16.dp)
                ) {
-                  Text(stringResource(R.string.install_from_pbw))
+                  Button(
+                     onClick = installFromPbw,
+                  ) {
+                     Text(stringResource(R.string.install_from_pbw))
+                  }
+
+                  Button(
+                     onClick = installFromAppstore,
+                  ) {
+                     Text(stringResource(R.string.install_from_store))
+                  }
                }
             }
          }
@@ -281,6 +296,7 @@ internal fun WatchappListScreenContentPreview() {
          Outcome.Success(Unit),
          {},
          {},
+         {},
          { _, _ -> },
          {},
       )
@@ -297,6 +313,7 @@ internal fun WatchappListInstallingPreview() {
       WatchappListScreenContent(
          state,
          Outcome.Progress(Unit),
+         {},
          {},
          {},
          { _, _ -> },
@@ -317,6 +334,7 @@ internal fun WatchappListInstallingErrorPreview() {
          Outcome.Error(NoNetworkException()),
          {},
          {},
+         {},
          { _, _ -> },
          {}
       )
@@ -333,6 +351,7 @@ internal fun WatchappListScreenContentEmptyPreview() {
       WatchappListScreenContent(
          state,
          Outcome.Success(Unit),
+         {},
          {},
          {},
          { _, _ -> },

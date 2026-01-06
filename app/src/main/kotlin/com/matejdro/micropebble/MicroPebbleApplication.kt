@@ -216,4 +216,5 @@ private val STRICT_MODE_EXCLUSIONS = listOf(
    "miui", // MIUI sometimes makes disk access calls on the OS side. We cannot control those.
    "TurboSchedMonitorImpl", // Part of some OS distributions, such as MIUI. We cannot control those, so exclude them.
    "AutofillClientController", // Autofill is starting unsafe intents. Nothing we can do.
+   "mediatek.boostfwk",
 )

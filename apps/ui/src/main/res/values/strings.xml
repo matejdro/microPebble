@@ -5,6 +5,7 @@
     <string name="watchfaces">Watchfaces</string>
     <string name="watchapps">Watchapps</string>
     <string name="install_from_pbw">Install from PBW</string>
+    <string name="install_from_store">Install from appstore</string>
     <string name="configure">Configure</string>
     <string name="active_watch">Active watch</string>
     <string name="no_connected_watch">No connected watch</string>
