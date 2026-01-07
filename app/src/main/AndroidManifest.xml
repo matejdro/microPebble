@@ -101,7 +101,6 @@
         <provider
             android:authorities="com.matejdro.micropebble.pebblekit"
             android:name="io.rebble.libpebblecommon.pebblekit.two.PebbleKitProvider"
-            android:permission="io.rebble.pebblekit2.permission.READ_PROVIDER"
             android:exported="true" />
 
         <provider
