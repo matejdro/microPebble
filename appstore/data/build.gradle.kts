@@ -1,5 +1,6 @@
 plugins {
    androidLibraryModule
+   di
 }
 
 android {
@@ -13,4 +14,7 @@ android {
 dependencies {
    api(projects.appstore.api)
    api(projects.common)
+   implementation(libs.ktor.okhttp)
+   implementation(libs.ktor.contentNegotiation)
+   implementation(libs.ktor.serialization.kotlinx.json)
 }

@@ -18,7 +18,6 @@ android {
 dependencies {
    api(projects.appstore.api)
    api(projects.common)
-   api(libs.kotlinova.navigation)
    api(libs.kotlin.coroutines)
 
    implementation(projects.commonCompose)
@@ -29,6 +28,7 @@ dependencies {
    implementation(libs.dispatch)
    implementation(libs.kotlin.io)
    implementation(libs.kotlinova.core)
+   implementation(libs.kotlinova.navigation)
    implementation(libs.okio)
 
    compileOnly(libs.koin.core)
