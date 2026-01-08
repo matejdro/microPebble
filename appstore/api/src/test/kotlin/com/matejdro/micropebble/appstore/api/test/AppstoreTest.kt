@@ -3,9 +3,13 @@ package com.matejdro.micropebble.appstore.api.test
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 
 class AppstoreTest {
-   val testString = javaClass.getResource("/test-appstore-response.json")!!.readText()
+   val testStrings = listOf(
+      javaClass.getResource("/test-appstore-response.json")!!.readText(),
+      javaClass.getResource("/test-appstore-response-apps.json")!!.readText()
+   )
 
    @Test
    fun testHomepageDeserialization() {
@@ -13,6 +17,10 @@ class AppstoreTest {
          isLenient = true // ignoreUnknownKeys = true
       }
 
-      json.decodeFromString<AppstoreHomePage>(testString)
+      for (string in testStrings) {
+         assertDoesNotThrow {
+            json.decodeFromString<AppstoreHomePage>(string)
+         }
+      }
    }
 }

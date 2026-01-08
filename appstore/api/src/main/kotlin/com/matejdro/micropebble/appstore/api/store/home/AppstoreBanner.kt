@@ -8,5 +8,5 @@ data class AppstoreBanner(
    @SerialName("application_id")
    val appId: String,
    val title: String,
-   val image: String,
+   val image: AppstoreBannerImage,
 )

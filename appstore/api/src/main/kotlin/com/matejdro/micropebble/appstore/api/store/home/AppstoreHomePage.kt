@@ -9,4 +9,6 @@ data class AppstoreHomePage(
    val banners: List<AppstoreBanner>,
    val categories: List<AppstoreCategory>,
    val collections: List<AppstoreCollection>,
-)
+) {
+   val applicationsById by lazy { applications.associateBy { it.id } }
+}

@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.appstore.data
 
+import android.system.Os.accept
 import com.matejdro.micropebble.appstore.api.client.AppstoreClient
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
@@ -34,7 +35,12 @@ class AppstoreClientImpl : AppstoreClient {
    }
 
    override suspend fun getHomePage(type: ApplicationType): AppstoreHomePage {
-      return withContext(Dispatchers.IO) { client }.get("https://appstore-api.rebble.io/api/v1/home/faces?platform=all") {
+      return withContext(Dispatchers.IO) { client }.get(
+         when (type) {
+            ApplicationType.Watchface -> "https://appstore-api.rebble.io/api/v1/home/faces?platform=all"
+            ApplicationType.Watchapp -> "https://appstore-api.rebble.io/api/v1/home/apps?platform=all"
+         }
+      ) {
          accept(ContentType.Application.Json)
       }.body()
    }

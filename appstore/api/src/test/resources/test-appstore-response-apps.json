@@ -1,0 +1,2961 @@
+{
+  "applications": [
+    {
+      "author": "gibbiemonster",
+      "capabilities": [
+        "configurable"
+      ],
+      "category": "Tools & Utilities",
+      "category_color": "fdbf37",
+      "category_id": "5261a8fb3b773043d500000f",
+      "changelog": [
+        {
+          "published_date": "Tue, 23 Sep 2025 05:08:36 GMT",
+          "release_notes": "- Rewrite the config page\r\n  - The config page now opens much faster\r\n  - It now gives you better feedback while logging into Todoist.\r\n- Add the ability to complete and reschedule tasks, via Timeline Actions\r\n  - You can now complete tasks and reschedule tasks right from the Timeline. \r\n  - When rescheduling tasks, you have the same options as the Todoist mobile app: Tomorrow, Later this week, This weekend, and Next Week.\r\n  - You will need to re-log in to Todoist to get the new action support. Users who haven't will not see the new actions on their pins, but they will still get the old style pins. \r\n    - This is required because I need additional scopes from Todoist to complete and reschedule tasks. You can do this from the config page.\r\n- Completed tasks are now removed from the Timeline\r\n- Tasks with no due date can now be configured to any time the task was created.\r\n  - You can configure this in the config page.\r\n- You can now choose whether or not to send tasks with no due date to the timeline at all.\r\n- You can now choose how to handle tasks with a due date but not a due time.\r\n  - This uses the same time selected above. They are handled identically.\r\n- Add the ability to set reminders for tasks\r\n  - You can now set a timeline reminder thirty, fifteen, or at the time of the task.\r\n  - This is configurable in the config page.\r\n\r\nFeature requests, comments, bugs? Report them! https://github.com/blockarchitech/timetodo or on the Rebble discord: https://discord.com/channels/221364737269694464/1375664495262826557\r\n\r\nThank you for using TimeToDo!",
+          "version": "2.0"
+        },
+        {
+          "published_date": "Thu, 29 May 2025 01:21:34 GMT",
+          "release_notes": "Initial Release",
+          "version": "1.0"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Thu, 29 May 2025 01:21:34 GMT",
+      "description": "**This app does not work with the Core Devices mobile app. A Rebble account is required to use TimeToDo.**\n\nSync your Todoist tasks with your timeline!\n\n- Syncs your Todoist tasks with due date and time to the timeline\n- Tasks show up as timeline pins for quick, glanceable reminders\n- Completely free and open source\n\nNote: A Rebble subscription is required for tasks due within the next 2 hours to appear correctly in timeline future. Without it, they may show up in timeline past.\n",
+      "developer_id": "5cdc3a87f518e60001e4c071",
+      "discourse_url": "https://forum.rebble.io/t/125",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/6837b69a7c3a470009af6c55",
+          "orig": "https://assets2.rebble.io/6837b69a7c3a470009af6c55"
+        }
+      ],
+      "hearts": 16,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/6837b69e7c3a470009af6c62",
+        "48x48": "https://assets2.rebble.io/exact/48x48/6837b69e7c3a470009af6c62"
+      },
+      "id": "6837b69b7c3a470009af6c56",
+      "latest_release": {
+        "id": "68d22b54e600e5000995857e",
+        "js_md5": "9a614b4d97825baa30f9c14249365c3f",
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/68d22b54e600e5000995857e.pbw",
+        "published_date": "Tue, 23 Sep 2025 05:08:36 GMT",
+        "release_notes": "- Rewrite the config page\r\n  - The config page now opens much faster\r\n  - It now gives you better feedback while logging into Todoist.\r\n- Add the ability to complete and reschedule tasks, via Timeline Actions\r\n  - You can now complete tasks and reschedule tasks right from the Timeline. \r\n  - When rescheduling tasks, you have the same options as the Todoist mobile app: Tomorrow, Later this week, This weekend, and Next Week.\r\n  - You will need to re-log in to Todoist to get the new action support. Users who haven't will not see the new actions on their pins, but they will still get the old style pins. \r\n    - This is required because I need additional scopes from Todoist to complete and reschedule tasks. You can do this from the config page.\r\n- Completed tasks are now removed from the Timeline\r\n- Tasks with no due date can now be configured to any time the task was created.\r\n  - You can configure this in the config page.\r\n- You can now choose whether or not to send tasks with no due date to the timeline at all.\r\n- You can now choose how to handle tasks with a due date but not a due time.\r\n  - This uses the same time selected above. They are handled identically.\r\n- Add the ability to set reminders for tasks\r\n  - You can now set a timeline reminder thirty, fifteen, or at the time of the task.\r\n  - This is configurable in the config page.\r\n\r\nFeature requests, comments, bugs? Report them! https://github.com/blockarchitech/timetodo or on the Rebble discord: https://discord.com/channels/221364737269694464/1375664495262826557\r\n\r\nThank you for using TimeToDo!",
+        "version": "2.0"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/6837b69b7c3a470009af6c56/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/6837b69b7c3a470009af6c56/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/6837b69b7c3a470009af6c56/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/6837b69b7c3a470009af6c56/remove_heart",
+        "share": "https://apps.rebble.io/application/6837b69b7c3a470009af6c56"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/6837b69e7c3a470009af6c61",
+        "80x80": "https://assets2.rebble.io/exact/80x80/6837b69e7c3a470009af6c61"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/6837b69c7c3a470009af6c59"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/6837b69c7c3a470009af6c5a"
+        }
+      ],
+      "source": "https://github.com/blockarchitech/timetodo",
+      "title": "TimeToDo",
+      "type": "watchapp",
+      "uuid": "2e72e379-70f6-43a9-828c-07d30d0fdf6d",
+      "visible": true,
+      "website": "https://blockarchitech.com"
+    },
+    {
+      "author": "aviation_hacker",
+      "capabilities": [],
+      "category": "Tools & Utilities",
+      "category_color": "fdbf37",
+      "category_id": "5261a8fb3b773043d500000f",
+      "changelog": [
+        {
+          "published_date": "Sun, 16 Jun 2024 06:06:57 GMT",
+          "release_notes": "v1.56 - Fixed Turn Directions, Notification Handler To Pass Correct Data From Google Maps In The Correct Order To The App & Updated Icons To Improve Displayed Turn Direction Accuracy :)",
+          "version": "1.56"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Sun, 16 Jun 2024 06:06:57 GMT",
+      "description": "This is an updated version of the Original Pebble Nav Me App, made by bates.apps (the app is still on the Rebble App Store). The listing serves as a means of providing a link to the updated companion app which can be found in the Reddit Thread linked via the \"Source URL\" below. The changes I've made to the companion app can also be found in the same thread :)\r\n\r\nUnfortunately I had to change the UUID of the .pbw file to upload a new app to the store, but no longer have a Pebble to test the built file with, so hopefully it works! If not, please use the original :)",
+      "developer_id": "5b6faadba423b9000124ad93",
+      "discourse_url": null,
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/666e80fd7568f7000a0b966e",
+          "orig": "https://assets2.rebble.io/666e80fd7568f7000a0b966e"
+        }
+      ],
+      "hearts": 42,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/666e81017568f7000a0b967c",
+        "48x48": "https://assets2.rebble.io/exact/48x48/666e81017568f7000a0b967c"
+      },
+      "id": "666e80ff7568f7000a0b966f",
+      "latest_release": {
+        "id": "666e81017568f7000a0b967d",
+        "js_md5": null,
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/666e81017568f7000a0b967d.pbw",
+        "published_date": "Sun, 16 Jun 2024 06:06:57 GMT",
+        "release_notes": "v1.56 - Fixed Turn Directions, Notification Handler To Pass Correct Data From Google Maps In The Correct Order To The App & Updated Icons To Improve Displayed Turn Direction Accuracy :)",
+        "version": "1.56"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/666e80ff7568f7000a0b966f/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/666e80ff7568f7000a0b966f/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/666e80ff7568f7000a0b966f/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/666e80ff7568f7000a0b966f/remove_heart",
+        "share": "https://apps.rebble.io/application/666e80ff7568f7000a0b966f"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/666e81017568f7000a0b967c",
+        "80x80": "https://assets2.rebble.io/exact/80x80/666e81017568f7000a0b967c"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/666e80ff7568f7000a0b9673"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/666e80ff7568f7000a0b9674"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/666e81007568f7000a0b9675"
+        }
+      ],
+      "source": "https://www.reddit.com/r/pebble/comments/12gcynt/pebblerebble_nav_me_fixed_2023/",
+      "title": "Pebble Nav Me (2023 Edition)",
+      "type": "watchapp",
+      "uuid": "1bdfe435-6a34-42d5-aed7-ace29fec1260",
+      "visible": true,
+      "website": ""
+    },
+    {
+      "author": "matejdro",
+      "capabilities": [],
+      "category": "Remotes",
+      "category_color": "fc4b4b",
+      "category_id": "5261a8fb3b773043d5000008",
+      "changelog": [
+        {
+          "published_date": "Thu, 01 Jan 2026 16:55:05 GMT",
+          "release_notes": "* show more items at once\r\n* fix app not showing error in some cases\r\n* fix statusbar clock covered cut off by display rounded corners\r\n* fix launcher icon transparency",
+          "version": "0.50"
+        },
+        {
+          "published_date": "Sat, 27 Dec 2025 17:20:01 GMT",
+          "release_notes": "Initial Appstore release",
+          "version": "0.10"
+        }
+      ],
+      "companions": {
+        "android": {
+          "icon": "https://assets2.rebble.io/69501541da1501000944b08a",
+          "id": 781,
+          "name": "Catapult",
+          "pebblekit_version": "3",
+          "required": true,
+          "url": "https://github.com/matejdro/PebbleCatapult?tab=readme-ov-file#android-app"
+        },
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": false
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": false
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": false
+        }
+      },
+      "created_at": "Sat, 27 Dec 2025 17:20:01 GMT",
+      "description": "Launch Tasker tasks from your watch\n\nAndroid companion app is needed.\n\nIt allows users to define a list of tasks that then show up on a watch and can be remotely activated. Tasks can also be put into sub-folders for better organisation.\n\nMain goal of this app is speed. It syncs data to the watch, rather than streaming it. Consequently, lists are available immediately upon opening, there is no need to wait for the data to come from the phone:",
+      "developer_id": "52b1ea273beaa0cecb00001f",
+      "discourse_url": "https://forum.rebble.io/t/310",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/6950153fda1501000944b085",
+          "orig": "https://assets2.rebble.io/6950153fda1501000944b085"
+        }
+      ],
+      "hearts": 7,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/69501541da1501000944b08b",
+        "48x48": "https://assets2.rebble.io/exact/48x48/69501541da1501000944b08b"
+      },
+      "id": "69501540da1501000944b086",
+      "latest_release": {
+        "id": "6956a6e939d92d0009bb7469",
+        "js_md5": null,
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/6956a6e939d92d0009bb7469.pbw",
+        "published_date": "Thu, 01 Jan 2026 16:55:05 GMT",
+        "release_notes": "* show more items at once\r\n* fix app not showing error in some cases\r\n* fix statusbar clock covered cut off by display rounded corners\r\n* fix launcher icon transparency",
+        "version": "0.50"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/69501540da1501000944b086/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/69501540da1501000944b086/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/69501540da1501000944b086/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/69501540da1501000944b086/remove_heart",
+        "share": "https://apps.rebble.io/application/69501540da1501000944b086"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/69501541da1501000944b08a",
+        "80x80": "https://assets2.rebble.io/exact/80x80/69501541da1501000944b08a"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/6956a6a3da150100094bb072"
+        }
+      ],
+      "source": "https://github.com/matejdro/PebbleCatapult",
+      "title": "Catapult ",
+      "type": "watchapp",
+      "uuid": "54be2d78-a70c-4573-a73e-5b0f1323d4cd",
+      "visible": true,
+      "website": "https://github.com/matejdro/PebbleCatapult"
+    },
+    {
+      "author": "WearGa",
+      "capabilities": [],
+      "category": "Games",
+      "category_color": "b57ad3",
+      "category_id": "5261a8fb3b773043d5000012",
+      "changelog": [
+        {
+          "published_date": "Mon, 27 Jul 2015 15:47:58 GMT",
+          "release_notes": "\u2022 Updated for the latest Pebble firmware and SDK (v3.2)\r\n\u2022 The game now saves progress just before equipping any new equipment or upgrades. So if you do encounter any issues purchasing or equipping the Mothership, the next time you load the app your progress should be restored and the correct item purchased and equipped.",
+          "version": "2.2"
+        },
+        {
+          "published_date": "Mon, 13 Jul 2015 15:24:30 GMT",
+          "release_notes": "Bug fix:\r\n\u2022 A problem with the Mothership has now been resolved, and you can now purchase it successfully",
+          "version": "2.1"
+        },
+        {
+          "published_date": "Tue, 12 May 2015 12:12:54 GMT",
+          "release_notes": "Pixel Miner v2.0 redesigned and updated with full color support for Pebble Time and Pebble Time Steel",
+          "version": "2.0"
+        },
+        {
+          "published_date": "Thu, 07 May 2015 13:50:35 GMT",
+          "release_notes": "Updated for the new Pebble SDK 2.6.1",
+          "version": "1.1"
+        },
+        {
+          "published_date": "Tue, 29 Jul 2014 16:25:31 GMT",
+          "release_notes": "Contains a bug fix to stop the app crashing when trying to equip some of the later equipment items (e.g. Excavator or Dragon) if the device was running low on memory. The miner now only mines in one direction (from left to right), in order to reduce the memory usage of the app.\r\nKeep mining!",
+          "version": "1.0.4"
+        },
+        {
+          "published_date": "Sun, 27 Jul 2014 13:35:39 GMT",
+          "release_notes": "Bug fixes:\r\n\u2022 Fixed the pixels value decreasing if the value is already close to the maximum number, and you are trying to sell multiple items of treasure at once",
+          "version": "1.0.3"
+        },
+        {
+          "published_date": "Wed, 16 Jul 2014 15:17:02 GMT",
+          "release_notes": "\u2022 Selling Treasure: You can now sell all items of a particular type by pressing and holding the sell button \r\n\u2022 Equipment List: When entering the Equipment menu, it will highlight the next available item to purchase by default \r\n\u2022 Multipliers List: When entering the Multiplier menu, it will highlight the next available item to purchase by default \r\n\r\n*** EXISTING PIXEL MINER PLAYERS PLEASE NOTE *** \r\nIf you upgrade from a previous version of Pixel Miner, you will be required to unload the application and then load this new version. At present this unfortunately causes the game save data to be removed, so if you don't want to start your game from the beginning please don't upgrade yet. We are working with Pebble to find a solution that allows the save data to be maintained with an application upgrade, and will update you as soon as we can! Keep mining!",
+          "version": "1.0.2"
+        },
+        {
+          "published_date": "Thu, 03 Jul 2014 02:53:19 GMT",
+          "release_notes": "First public release",
+          "version": "1.0.1"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": false
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Sun, 15 Jun 2014 22:06:42 GMT",
+      "description": "Become the greatest miner in the Pixelverse. How deep can you go?\r\n\r\nPixel Miner has been redesigned and upgraded with full color support on Pebble Time and Pebble Time Steel.\r\n\r\n\"One of the greatest and most pointless games I have ever had the pleasure or wasting my life on\" \u2013 Ty Gadberry",
+      "developer_id": "539df0108c4cae894b000053",
+      "discourse_url": null,
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/9OeMEdjtSMiwNcjjM589",
+          "orig": "https://assets2.rebble.io/9OeMEdjtSMiwNcjjM589"
+        },
+        {
+          "720x320": "https://assets2.rebble.io/720x320/QN29oo5TQW2YuU9qzC1X",
+          "orig": "https://assets2.rebble.io/QN29oo5TQW2YuU9qzC1X"
+        }
+      ],
+      "hearts": 7750,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/lCC0KGwcTruZCKxA8pFq",
+        "48x48": "https://assets2.rebble.io/exact/48x48/lCC0KGwcTruZCKxA8pFq"
+      },
+      "id": "539e18f21a19dec6ca0000aa",
+      "latest_release": {
+        "id": "55b6528b5e07169e81000069",
+        "js_md5": null,
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/55b6528b5e07169e81000069.pbw",
+        "published_date": "Mon, 27 Jul 2015 15:47:58 GMT",
+        "release_notes": "\u2022 Updated for the latest Pebble firmware and SDK (v3.2)\r\n\u2022 The game now saves progress just before equipping any new equipment or upgrades. So if you do encounter any issues purchasing or equipping the Mothership, the next time you load the app your progress should be restored and the correct item purchased and equipped.",
+        "version": "2.2"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/539e18f21a19dec6ca0000aa/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/539e18f21a19dec6ca0000aa/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/539e18f21a19dec6ca0000aa/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/539e18f21a19dec6ca0000aa/remove_heart",
+        "share": "https://apps.rebble.io/application/539e18f21a19dec6ca0000aa"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/hTysicIRTVWGRmkZ4GyM",
+        "80x80": "https://assets2.rebble.io/exact/80x80/hTysicIRTVWGRmkZ4GyM"
+      },
+      "published_date": "Thu, 03 Jul 2014 02:53:23 GMT",
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/OhQKEUZhRu6LFKrtbXZs"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/gVCDntQGuAlR4KRJoUag"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/WWwuKJpSzOnrGCqI6ciR"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/tfZrFERYaGZ5h4dPEqiw"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/3ceXezvbSkejHMEl8zLG"
+        }
+      ],
+      "source": null,
+      "title": "Pixel Miner",
+      "type": "watchapp",
+      "uuid": "808903cb-fa37-4247-b012-7dfe5c9269e1",
+      "visible": true,
+      "website": null
+    },
+    {
+      "author": "CarlosPC",
+      "capabilities": [],
+      "category": "Tools & Utilities",
+      "category_color": "fdbf37",
+      "category_id": "5261a8fb3b773043d500000f",
+      "changelog": [
+        {
+          "published_date": "Thu, 15 Sep 2016 10:41:47 GMT",
+          "release_notes": "1.5 Set menu icon for OS 4",
+          "version": "1.5"
+        },
+        {
+          "published_date": "Thu, 16 Jun 2016 06:43:26 GMT",
+          "release_notes": "1.4 Fixed operations with negative numbers ",
+          "version": "1.4"
+        },
+        {
+          "published_date": "Tue, 14 Jun 2016 09:21:51 GMT",
+          "release_notes": "1.3 Bugfixes:\r\n- Fixed negative squares;\r\n- Fixed localization",
+          "version": "1.3"
+        },
+        {
+          "published_date": "Tue, 14 Jun 2016 09:03:41 GMT",
+          "release_notes": "1.2: Expansion update!\r\n- Input negative numbers by long-pressing the up button!\r\n- Long press the select button to select last operation!\r\n- Squares and Roots are now supported! (Root support is via Babylon approximation method: is quite precise, but not perfect)",
+          "version": "1.2"
+        },
+        {
+          "published_date": "Fri, 03 Jun 2016 09:05:20 GMT",
+          "release_notes": "1.1: Major update!\r\n- Support colors!\r\n- Added floating point up to 3 decimals!\r\n- New icon!",
+          "version": "1.1"
+        },
+        {
+          "published_date": "Tue, 31 May 2016 07:36:33 GMT",
+          "release_notes": "1.0: First version released!\r\n- Interfaced easy to use with 3 buttons;\r\n- Addition, subtraction, multiplication, division;\r\n- Integer values only;\r\n- Up to 8 figures per operand;",
+          "version": "1.0"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Mon, 30 May 2016 14:55:51 GMT",
+      "description": "Calculabble puts an easy to use calculator on your wrist. It's designed for three-button operation:\r\n\r\n- Click up to increase the current figure; hold down to negate the operand;\r\n- Click down once to add a zero to the right; double click down to remove it; hold down to insert point;\r\n- Click select to choose the operation and start inputting the second operand; hold to select the last operation;\r\n- Click select when you have both numbers to perform the calculation!\r\n\r\nFEATURES:\r\n- Up to 8 figures;\r\n- Floating point up to 3 decimals;\r\n- Addition, subtraction, multiplication, division, squares, roots;\r\n\r\nNOTE: roots are implemented using Babylon method. Results are approximations.\r\n\r\nTODOs:\r\n- Implement memory storage;\r\n- Implement more operations;\r\n- Add customization.",
+      "developer_id": "5572b56e78821113a1000014",
+      "discourse_url": null,
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/SyluICzZRuy1xz8zeEIM",
+          "orig": "https://assets2.rebble.io/SyluICzZRuy1xz8zeEIM"
+        }
+      ],
+      "hearts": 233,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/bs0k0Is2TOq9RveSiqB7",
+        "48x48": "https://assets2.rebble.io/exact/48x48/bs0k0Is2TOq9RveSiqB7"
+      },
+      "id": "574c54772e49dd0ef600000c",
+      "latest_release": {
+        "id": "57da763c2d0cc8dcb400005b",
+        "js_md5": null,
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/57da763c2d0cc8dcb400005b.pbw",
+        "published_date": "Thu, 15 Sep 2016 10:41:47 GMT",
+        "release_notes": "1.5 Set menu icon for OS 4",
+        "version": "1.5"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/574c54772e49dd0ef600000c/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/574c54772e49dd0ef600000c/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/574c54772e49dd0ef600000c/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/574c54772e49dd0ef600000c/remove_heart",
+        "share": "https://apps.rebble.io/application/574c54772e49dd0ef600000c"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/FfAFHkliSGWkG5wX7nwa",
+        "80x80": "https://assets2.rebble.io/exact/80x80/FfAFHkliSGWkG5wX7nwa"
+      },
+      "published_date": "Tue, 31 May 2016 07:46:17 GMT",
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/BaLWwCFUTZuzudyq1PX1"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/u3BKcxhbQNOljcmye8BX"
+        }
+      ],
+      "source": "https://github.com/UnaDeKalamares/Calculabble",
+      "title": "Calculabble",
+      "type": "watchapp",
+      "uuid": "3f6733f5-443a-4ba1-ba5d-b8a70031447c",
+      "visible": true,
+      "website": null
+    },
+    {
+      "author": "Reboot's Ramblings",
+      "capabilities": [],
+      "category": "Remotes",
+      "category_color": "fc4b4b",
+      "category_id": "5261a8fb3b773043d5000008",
+      "changelog": [
+        {
+          "published_date": "Wed, 10 Dec 2025 20:02:19 GMT",
+          "release_notes": "Major release v6.2\r\n\u231a Native Pebble Time 2 UI added\r\n\ud83d\udcc3 Reworked the in app menus for a much better user experience (they make more sense)\r\n\ud83d\udc1e Other under the hood improvements",
+          "version": "6.2"
+        },
+        {
+          "published_date": "Mon, 22 Sep 2025 15:11:12 GMT",
+          "release_notes": "-Fixed action bar not showing the rating bar if the current app has rating disabled. Rating bar still required for Custom Controls (i.e. overriding Thumb Up/Down with user defined actions).\r\n",
+          "version": "5.5"
+        },
+        {
+          "published_date": "Tue, 09 Sep 2025 16:29:08 GMT",
+          "release_notes": "-Added a user requested feature to toggle entering Manual Seek Mode with 2x Up/Down.\r\n-This option is in the in app menu 2x Back Button under OPTIONS / TOGGLES, >>Seek Mode.",
+          "version": "5.4"
+        },
+        {
+          "published_date": "Sat, 23 Aug 2025 15:49:03 GMT",
+          "release_notes": "New: Manual seek mode (except OG Pebble)\r\nPressing 2x Up or Down button enters seek mode. When in seek mode, jump back or ahead based on the value you specify in the companion app. Pressing select/middle sets the current position of the track/podcast/media.\r\n\r\n-Various optimizations and bug fixes.",
+          "version": "5.3"
+        },
+        {
+          "published_date": "Fri, 08 Aug 2025 19:29:01 GMT",
+          "release_notes": "-Added a new Special \u2b50 button function for app specific special controls. ",
+          "version": "5.2"
+        },
+        {
+          "published_date": "Tue, 08 Jul 2025 12:58:05 GMT",
+          "release_notes": "-Updated an icon\r\n-Changed app menu title (MB Classic)",
+          "version": "5.1"
+        },
+        {
+          "published_date": "Wed, 02 Jul 2025 18:21:47 GMT",
+          "release_notes": "Initial test build",
+          "version": "5.0"
+        }
+      ],
+      "companions": {
+        "android": {
+          "icon": "https://assets2.rebble.io/68657e2065207500093d5a9c",
+          "id": 778,
+          "name": "Music Boss Deluxe",
+          "pebblekit_version": "3",
+          "required": true,
+          "url": "https://play.google.com/store/apps/details?id=ca.rebootsramblings.musicbossdeluxe"
+        },
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": false
+        }
+      },
+      "created_at": "Wed, 02 Jul 2025 18:21:46 GMT",
+      "description": "Visit musicboss.ca to get the companion app.\n \nMusic Boss Classic brings powerful media controls to your Pebble. Designed in the original style of Music Boss, it delivers the familiar experience with new features and optimizations.\n\n\ud83c\udfb5 Play, pause, skip, and seek tracks from your Pebble\n\ud83d\udcfa Control apps casting to external displays or audio devices (e.x. Netflix, most music apps)\n\u23e9 Manual Seek Mode* \u2014 jump within songs, podcasts, audiobooks, long tracks (*except OG Pebble)\n\ud83d\udd0a Adjust volume on phone, Bluetooth devices, or while casting\n\u26a1 Assign app-specific custom controls (e.g. Spotify DJ X)\n\ud83d\udc4d Rate songs (YouTube Music, YouTube, Spotify, more being tested) \n\ud83c\udfa8 Dynamic album art & themed UI\n\u2139\ufe0f View album art, title, artist, album, volume, and progress\n\ud83c\udf08 On color Pebbles and Pebble 2, themes adapt to album art\n\nCompatibility\n\u2022 New Core Pebble App, Original Pebble App/Rebble, microPebble and any other companion app using PebbleKit-Android Classic.\n\u2022 Pebble Time, Pebble Time 2, Pebble Time Round, Pebble 2 and Pebble 2 Duo support all features.\n\u2022 The Pebble 2 / Pebble 2 Duo, while a black & white watch, supports full album art functionality and app theming \u2014 just like the color models, but rendered in high-quality black & white. Support all features.\n\u2022 The original Pebble/Pebble Steel are compatible with both Music Boss Classic and Music Boss Time. Album art is only displayed in Music Boss Time. Manual Track Seek Mode does not function on the original Pebble.\n\nThank you for your support\u2014whether you\u2019ve been with Music Boss since the early days or you\u2019re just discovering it now!",
+      "developer_id": "5283d311b65d504095000004",
+      "discourse_url": "https://forum.rebble.io/t/214",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/691e17d2966c150008aba7fb",
+          "orig": "https://assets2.rebble.io/691e17d2966c150008aba7fb"
+        }
+      ],
+      "hearts": 8695,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/68657e29298b8300087efd8d",
+        "48x48": "https://assets2.rebble.io/exact/48x48/68657e29298b8300087efd8d"
+      },
+      "id": "686578b965207500093d5a94",
+      "latest_release": {
+        "id": "6939d1cb173331000941436a",
+        "js_md5": null,
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/6939d1cb173331000941436a.pbw",
+        "published_date": "Wed, 10 Dec 2025 20:02:19 GMT",
+        "release_notes": "Major release v6.2\r\n\u231a Native Pebble Time 2 UI added\r\n\ud83d\udcc3 Reworked the in app menus for a much better user experience (they make more sense)\r\n\ud83d\udc1e Other under the hood improvements",
+        "version": "6.2"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/686578b965207500093d5a94/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/686578b965207500093d5a94/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/686578b965207500093d5a94/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/686578b965207500093d5a94/remove_heart",
+        "share": "https://apps.rebble.io/application/686578b965207500093d5a94"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/68657e2065207500093d5a9c",
+        "80x80": "https://assets2.rebble.io/exact/80x80/68657e2065207500093d5a9c"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/6946ce43828bd90009075f43"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/6946ce58105d0c000955d30d"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/6946ce5ffb639a0009914ea3"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/6946ce65c098f8000a39bae2"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/6946ce6e24ba4b000962b098"
+        }
+      ],
+      "source": "",
+      "title": "Music Boss",
+      "type": "watchapp",
+      "uuid": "5ee42a7a-f173-4026-b522-a8e79393ad25",
+      "visible": true,
+      "website": "https://musicboss.ca"
+    },
+    {
+      "author": "Christophe Jeannette",
+      "capabilities": [],
+      "category": "Daily",
+      "category_color": "3db9e6",
+      "category_id": "5261a8fb3b773043d500000c",
+      "changelog": [
+        {
+          "published_date": "Thu, 08 Jan 2026 08:42:08 GMT",
+          "release_notes": "UI improvements\r\nStability improvements",
+          "version": "1.3"
+        },
+        {
+          "published_date": "Wed, 07 Jan 2026 23:46:32 GMT",
+          "release_notes": "OpenSpritz integration\r\nCustom feeds + 3 presets",
+          "version": "1.2"
+        },
+        {
+          "published_date": "Tue, 06 Jan 2026 18:22:47 GMT",
+          "release_notes": "Speed down a bit.",
+          "version": "1.1"
+        },
+        {
+          "published_date": "Tue, 06 Jan 2026 10:55:51 GMT",
+          "release_notes": "First release",
+          "version": "1.0"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": false
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Tue, 06 Jan 2026 10:55:51 GMT",
+      "description": "A Pebble application that displays Reuters breaking news headlines using RSVP (Rapid Serial Visual Presentation) technique.\r\n\r\nFeatures\r\nDisplays news headlines word by word for fast reading\r\nFetches headlines from Reuters RSS feed\r\nShows 5 headlines per session\r\nPauses at END screen - press any button to exit\r\nCompatible with Aplite, Basalt, and Diorite platforms\r\nHow it works\r\nLaunch the app from the Pebble menu\r\nA splash screen with \"REUTERS Breaking International News\" is shown\r\nHeadlines are displayed one word at a time (~300 WPM)\r\nAfter 5 headlines, the app shows \"END\" and pauses\r\nPress any button to exit the app",
+      "developer_id": "54edf0599e4ff7cbf60000a0",
+      "discourse_url": "https://forum.rebble.io/t/449",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/695cea36ccb618000951b01a",
+          "orig": "https://assets2.rebble.io/695cea36ccb618000951b01a"
+        }
+      ],
+      "hearts": 3,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/695cea37ccb618000951b022",
+        "48x48": "https://assets2.rebble.io/exact/48x48/695cea37ccb618000951b022"
+      },
+      "id": "695cea36ccb618000951b01b",
+      "latest_release": {
+        "id": "695f6de09ce1960009022c69",
+        "js_md5": "d026d1db1e145bd7c42c48e25f55b27d",
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/695f6de09ce1960009022c69.pbw",
+        "published_date": "Thu, 08 Jan 2026 08:42:08 GMT",
+        "release_notes": "UI improvements\r\nStability improvements",
+        "version": "1.3"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/695cea36ccb618000951b01b/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/695cea36ccb618000951b01b/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/695cea36ccb618000951b01b/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/695cea36ccb618000951b01b/remove_heart",
+        "share": "https://apps.rebble.io/application/695cea36ccb618000951b01b"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/695cea37ccb618000951b021",
+        "80x80": "https://assets2.rebble.io/exact/80x80/695cea37ccb618000951b021"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695cea36ccb618000951b01d"
+        }
+      ],
+      "source": "https://github.com/Sichroteph/RSVP-Breaking-News",
+      "title": "RSVP Breaking news",
+      "type": "watchapp",
+      "uuid": "a1b2c3d4-5e6f-7190-ab12-cd34ef567890",
+      "visible": true,
+      "website": ""
+    },
+    {
+      "author": "Chris Lewis",
+      "capabilities": [],
+      "category": "Tools & Utilities",
+      "category_color": "fdbf37",
+      "category_id": "5261a8fb3b773043d500000f",
+      "changelog": [
+        {
+          "published_date": "Thu, 01 Jan 2026 23:02:39 GMT",
+          "release_notes": "- Add initial graph and trend accuracy features",
+          "version": "1.16"
+        },
+        {
+          "published_date": "Sat, 27 Dec 2025 21:10:59 GMT",
+          "release_notes": "- Revert minimum samples to two: watches reporting 10% increments pretty much require this",
+          "version": "1.15"
+        },
+        {
+          "published_date": "Sat, 27 Dec 2025 18:47:06 GMT",
+          "release_notes": "- Fix out of memory crash on Aplite by removing/re-using some images\r\n- Test with only one required full sample, instead of two.",
+          "version": "1.14"
+        },
+        {
+          "published_date": "Fri, 26 Dec 2025 18:19:48 GMT",
+          "release_notes": "- Show time since last observed charge (increase)\r\n- Show predicted date of next charge\r\n- Show alert when there is about one day remaining\r\n- Allow a mix of 'no change' and discharge samples in initial two samples\r\n- Increase the log length from 8 to 16\r\n- Show log usage in the log window header\r\n- Add days remaining/rate estimations to each individual log entry for a future feature that tracks app accuracy\r\n\r\nNote: data will be reset for this update to allow new features, and to prevent a reset being required in the foreseeable future. Sorry!",
+          "version": "1.12"
+        },
+        {
+          "published_date": "Sat, 20 Dec 2025 09:58:29 GMT",
+          "release_notes": "- Update algorithm to correctly include 'no change' time intervals in overall estimation calculations, improving accuracy on older watches (thanks jojomuc!)\r\n- Update data log to show time intervals more intuitively\r\n- Add new 'high drain alert' option for if a new estimate suddenly becomes 2x the current historical average.",
+          "version": "1.11"
+        },
+        {
+          "published_date": "Thu, 18 Dec 2025 12:29:54 GMT",
+          "release_notes": "- Fix bug counting an 'on charger' entry as 'charged up' regardless of charge difference\r\n- Layout improvements",
+          "version": "1.10"
+        },
+        {
+          "published_date": "Wed, 17 Dec 2025 12:48:31 GMT",
+          "release_notes": "- Fix bug calculating days remaining from the data log, not the live battery level\r\n- Move data log to the Down button on the main screen\r\n- Better sleeping bird image",
+          "version": "1.9"
+        },
+        {
+          "published_date": "Tue, 16 Dec 2025 21:02:20 GMT",
+          "release_notes": "- Fix animation bug when no data has been gathered yet",
+          "version": "1.8"
+        },
+        {
+          "published_date": "Mon, 15 Dec 2025 19:36:54 GMT",
+          "release_notes": "- Major UI overhaul to scale up properly for Emery\r\n- Re-designed the data log to be more obvious\r\n- Implement scrolling on message windows\r\n- Fix issue when a 'no change' log entry time range can overlap a subsequent discharge log entry time range\r\n- Use absolute time to schedule the next wakeup instead of counting seconds\r\n- Show precise time of next wakeup\r\n- If woken up prematurely, silently reschedule",
+          "version": "1.7"
+        },
+        {
+          "published_date": "Sat, 06 Dec 2025 16:59:16 GMT",
+          "release_notes": "- Fix next sample text position\r\n- Add initial timeline pin for noon of day charge may run out",
+          "version": "1.6"
+        },
+        {
+          "published_date": "Thu, 04 Dec 2025 22:11:55 GMT",
+          "release_notes": "- Retry wakeups if they collide with other apps\r\n- Update iconography\r\n- Handle >99% measures in main window and log window\r\n- Further clarify initial stages of sampling on main window",
+          "version": "1.5"
+        },
+        {
+          "published_date": "Wed, 03 Dec 2025 12:15:19 GMT",
+          "release_notes": "- Fix bug where first sample was never taken\r\n- Show version in menu",
+          "version": "1.4"
+        },
+        {
+          "published_date": "Tue, 02 Dec 2025 22:58:06 GMT",
+          "release_notes": "- Clarify more wording about min. required samples\r\n- Log 'no change' and 'charged' events in the data log\r\n- Fix some usages of gmtime over localtime\r\n- Add more weight to most recent estimation\r\n- Add small color flair for color watches",
+          "version": "1.3"
+        },
+        {
+          "published_date": "Sun, 30 Nov 2025 11:24:30 GMT",
+          "release_notes": "- Take first sample only if more than 3/4 of a full interval remain until the next interval.\r\n- Clarify wording on 'estimated rate per day'",
+          "version": "1.2"
+        },
+        {
+          "published_date": "Sat, 29 Nov 2025 18:40:41 GMT",
+          "release_notes": "- Clarify wording on reboots",
+          "version": "1.1"
+        },
+        {
+          "published_date": "Sat, 29 Nov 2025 18:15:00 GMT",
+          "release_notes": "- Initial release",
+          "version": "1.0"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": false
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Sat, 29 Nov 2025 18:15:00 GMT",
+      "description": "Muninn is an extremely lightweight battery estimation app that uses the Wakeup API instead of the Background Worker to monitor battery trends and provide insight without negatively affecting battery life. It uses a moving average of six-hourly readings over time to estimate remaining days of battery life and rate of discharge.\n\nEstimates will begin to appear after two of these readings have been taken.\n\nFeatures include:\n- Negligible battery impact.\n- Moving-average estimation of remaining battery life, weighted towards recent values.\n- Display of last observed charge and predicted next charge date.\n- Notifies when there is about one day of charge remaining.\n- Attempt to set AppGlance to show estimate in the launcher menu.\n- View detailed logs of recent estimates.\n- View general battery tips and Muninn lore.\n- Ability to disable temporarily.\n- Completely delete and reset all app data.\n\nOptions:\n- Vibrate when a sample is taken.\n- Advise when battery charge is below a chosen threshold (50%/20%/10%).\n- Set a timeline pin at noon the day charge may run out.\n- Be notified if the rate of drain is 2x average.\n\nImportant notes:\nIf the watch is off at the next six-hourly interval, the app must be launched to allow wakeups to be resumed. The initial estimate may be an overestimate but will smooth out soon after. Any missed wakeups will be ignored.",
+      "developer_id": "5299cd30e627ce1147000099",
+      "discourse_url": "https://forum.rebble.io/t/83",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/692b642c49be450009b545e2",
+          "orig": "https://assets2.rebble.io/692b642c49be450009b545e2"
+        }
+      ],
+      "hearts": 72,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/692b6436f1551f00096f20a1",
+        "48x48": "https://assets2.rebble.io/exact/48x48/692b6436f1551f00096f20a1"
+      },
+      "id": "692b3821d7dcba000a809ba5",
+      "latest_release": {
+        "id": "6956fd0f16fdf50009c6a89d",
+        "js_md5": "2d119534c3bf14308dc0c120ca081382",
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/6956fd0f16fdf50009c6a89d.pbw",
+        "published_date": "Thu, 01 Jan 2026 23:02:39 GMT",
+        "release_notes": "- Add initial graph and trend accuracy features",
+        "version": "1.16"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/692b3821d7dcba000a809ba5/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/692b3821d7dcba000a809ba5/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/692b3821d7dcba000a809ba5/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/692b3821d7dcba000a809ba5/remove_heart",
+        "share": "https://apps.rebble.io/application/692b3821d7dcba000a809ba5"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/692b64343da3140009e0d786",
+        "80x80": "https://assets2.rebble.io/exact/80x80/692b64343da3140009e0d786"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/694ed09739d92d0009bd9c62"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/694ed09b24ba4b0009dc92ba"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/694ed09dda150100090040ab"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/6956fcd716fdf50009c6a89c"
+        }
+      ],
+      "source": "https://github.com/C-D-Lewis/pebble-dev",
+      "title": "Muninn - Battery Wisdom",
+      "type": "watchapp",
+      "uuid": "d008a08a-6e34-4cc4-98dc-bae02ce5e087",
+      "visible": true,
+      "website": "https://blog.chrislewis.me.uk/"
+    },
+    {
+      "author": "Joel Crane",
+      "capabilities": [
+        "configurable",
+        "timeline"
+      ],
+      "category": "Tools & Utilities",
+      "category_color": "fdbf37",
+      "category_id": "5261a8fb3b773043d500000f",
+      "changelog": [
+        {
+          "published_date": "Sun, 28 Dec 2025 15:52:51 GMT",
+          "release_notes": "- Changed exit timer to 8 seconds",
+          "version": "1.1"
+        },
+        {
+          "published_date": "Sun, 28 Dec 2025 15:40:39 GMT",
+          "release_notes": "- Initial release!",
+          "version": "1.0"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Sun, 28 Dec 2025 15:40:39 GMT",
+      "description": "Instantly calculate how long you worked today with Punchclock! Input when you started, when you ended, and Punchclock calculates how many hours and minutes you worked, and pushes a pin to your past timeline for reference.\n\nVia settings on the phone, configure the default start and end times, and how much time to subtract for breaks. Settings are saved both on the phone (in case you like to switch watches), and saved to the watch (in case your phone isn't nearby).",
+      "developer_id": "52f055bb1ac79487080014fb",
+      "discourse_url": "https://forum.rebble.io/t/363",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/69514f7391ea9d0009991d72",
+          "orig": "https://assets2.rebble.io/69514f7391ea9d0009991d72"
+        }
+      ],
+      "hearts": 15,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/695161e039d92d0008bf661b",
+        "48x48": "https://assets2.rebble.io/exact/48x48/695161e039d92d0008bf661b"
+      },
+      "id": "69514f7391ea9d0009991d73",
+      "latest_release": {
+        "id": "69515253828bd9000926747a",
+        "js_md5": "040dad99c58a7d0f29736a77166ac429",
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/69515253828bd9000926747a.pbw",
+        "published_date": "Sun, 28 Dec 2025 15:52:51 GMT",
+        "release_notes": "- Changed exit timer to 8 seconds",
+        "version": "1.1"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/69514f7391ea9d0009991d73/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/69514f7391ea9d0009991d73/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/69514f7391ea9d0009991d73/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/69514f7391ea9d0009991d73/remove_heart",
+        "share": "https://apps.rebble.io/application/69514f7391ea9d0009991d73"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/69514f7791ea9d0009991d89",
+        "80x80": "https://assets2.rebble.io/exact/80x80/69514f7791ea9d0009991d89"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/69514f7491ea9d0009991d7a"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695162d011ece50009816c92"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695162d3c098f80009046048"
+        }
+      ],
+      "source": "",
+      "title": "Punchclock",
+      "type": "watchapp",
+      "uuid": "63ac38d3-327b-4bae-b69f-306f99761178",
+      "visible": true,
+      "website": "www.potatofi.com"
+    },
+    {
+      "author": "KamiShinn",
+      "capabilities": [
+        "timeline",
+        "configurable"
+      ],
+      "category": "Daily",
+      "category_color": "3db9e6",
+      "category_id": "5261a8fb3b773043d500000c",
+      "changelog": [
+        {
+          "published_date": "Wed, 07 Jan 2026 05:59:37 GMT",
+          "release_notes": "Update to fix timeline integration",
+          "version": "1.4"
+        },
+        {
+          "published_date": "Tue, 06 Jan 2026 05:39:35 GMT",
+          "release_notes": "Initial release",
+          "version": "1.2"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Tue, 06 Jan 2026 05:39:34 GMT",
+      "description": "A revival of the Pebby (Baby watch) app - Baby tracking for Pebble smartwatches.\n\nTrack bottle feedings, diaper changes, and sleep sessions right from your wrist!\nEach event will also be logged on your timeline for later consultation.\nColors have been added to the app to mirror the coloring option from the Huckleberry app.\n\nThe original Baby watch app has been my MVP app on my pebble for the past 3 months since becoming a parent.\nI decided to add my twist on it as well.",
+      "developer_id": "5630f6bc025b51246b000062",
+      "discourse_url": "https://forum.rebble.io/t/448",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/695ca015c78a580009d9be0e",
+          "orig": "https://assets2.rebble.io/695ca015c78a580009d9be0e"
+        }
+      ],
+      "hearts": 2,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/695ca017c78a580009d9be17",
+        "48x48": "https://assets2.rebble.io/exact/48x48/695ca017c78a580009d9be17"
+      },
+      "id": "695ca015c78a580009d9be0f",
+      "latest_release": {
+        "id": "695df6497697aa000956f32d",
+        "js_md5": "e3add84b38e410add35cf8c5fd7323de",
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/695df6497697aa000956f32d.pbw",
+        "published_date": "Wed, 07 Jan 2026 05:59:37 GMT",
+        "release_notes": "Update to fix timeline integration",
+        "version": "1.4"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/695ca015c78a580009d9be0f/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/695ca015c78a580009d9be0f/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/695ca015c78a580009d9be0f/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/695ca015c78a580009d9be0f/remove_heart",
+        "share": "https://apps.rebble.io/application/695ca015c78a580009d9be0f"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/695ca016c78a580009d9be16",
+        "80x80": "https://assets2.rebble.io/exact/80x80/695ca016c78a580009d9be16"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695ca016c78a580009d9be11"
+        }
+      ],
+      "source": "https://github.com/saintyoga-Cyber/Baby-Watch-Reborn",
+      "title": "Baby Watch app reborn",
+      "type": "watchapp",
+      "uuid": "3bbfd550-0764-439b-bc65-43d310de47ef",
+      "visible": true,
+      "website": ""
+    },
+    {
+      "author": "Ilia Breitburg",
+      "capabilities": [
+        "configurable"
+      ],
+      "category": "Tools & Utilities",
+      "category_color": "fdbf37",
+      "category_id": "5261a8fb3b773043d500000f",
+      "changelog": [
+        {
+          "published_date": "Fri, 02 Jan 2026 20:41:48 GMT",
+          "release_notes": "* Stability improvements\r\n* Added log scale for metrics",
+          "version": "1.4"
+        },
+        {
+          "published_date": "Thu, 01 Jan 2026 16:23:20 GMT",
+          "release_notes": "* Efficiency improvements",
+          "version": "1.3"
+        },
+        {
+          "published_date": "Thu, 01 Jan 2026 12:38:52 GMT",
+          "release_notes": "* Improve performance and network data efficiency",
+          "version": "1.2"
+        },
+        {
+          "published_date": "Thu, 01 Jan 2026 11:40:14 GMT",
+          "release_notes": "- Added real-time metrics streaming\r\n- Added lazy metric loading for improved performance and unlimited metrics per run\r\n- Updated app icon\r\n",
+          "version": "1.1"
+        },
+        {
+          "published_date": "Wed, 31 Dec 2025 15:36:15 GMT",
+          "release_notes": "Initial release",
+          "version": "1.0"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": false
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Wed, 31 Dec 2025 15:36:15 GMT",
+      "description": "Monitor your Weights & Biases ML training runs from your Pebble smartwatch.",
+      "developer_id": "5bf5720a24bed3000188e5cd",
+      "discourse_url": "https://forum.rebble.io/t/403",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/695542edce101c00098adc04",
+          "orig": "https://assets2.rebble.io/695542edce101c00098adc04"
+        }
+      ],
+      "hearts": 3,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/695542efce101c00098adc13",
+        "48x48": "https://assets2.rebble.io/exact/48x48/695542efce101c00098adc13"
+      },
+      "id": "695542edce101c00098adc05",
+      "latest_release": {
+        "id": "69582d8cc098f8000aaa2e33",
+        "js_md5": "ace58565596d33b69eadff6f858f1354",
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/69582d8cc098f8000aaa2e33.pbw",
+        "published_date": "Fri, 02 Jan 2026 20:41:48 GMT",
+        "release_notes": "* Stability improvements\r\n* Added log scale for metrics",
+        "version": "1.4"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/695542edce101c00098adc05/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/695542edce101c00098adc05/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/695542edce101c00098adc05/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/695542edce101c00098adc05/remove_heart",
+        "share": "https://apps.rebble.io/application/695542edce101c00098adc05"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/695542efce101c00098adc12",
+        "80x80": "https://assets2.rebble.io/exact/80x80/695542efce101c00098adc12"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695542edce101c00098adc06"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695542edce101c00098adc07"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695542edce101c00098adc08"
+        }
+      ],
+      "source": "https://github.com/breitburg/wrist-and-biases",
+      "title": "Wrist & Biases",
+      "type": "watchapp",
+      "uuid": "c3a7bd19-11f4-4982-923b-3a2101868fe8",
+      "visible": true,
+      "website": "https://breitburg.com/"
+    },
+    {
+      "author": "jLynx",
+      "capabilities": [
+        "configurable"
+      ],
+      "category": "Tools & Utilities",
+      "category_color": "fdbf37",
+      "category_id": "5261a8fb3b773043d500000f",
+      "changelog": [
+        {
+          "published_date": "Mon, 05 Jan 2026 02:39:34 GMT",
+          "release_notes": "- Updated the ability to set & disable full charge notification",
+          "version": "1.2"
+        },
+        {
+          "published_date": "Mon, 05 Jan 2026 02:18:13 GMT",
+          "release_notes": "- Fixed the contrast on colour screens\r\n- Fixed the charging indicator not being visible if the phones battery percentage was less than 50%",
+          "version": "1.1"
+        },
+        {
+          "published_date": "Sun, 04 Jan 2026 06:34:15 GMT",
+          "release_notes": "Initial release",
+          "version": "1.0"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Sun, 04 Jan 2026 06:34:14 GMT",
+      "description": "Never wonder about your phone's charge level again! Monitor your phone's battery directly from your Pebble watch - perfect for when your phone is charging in another room.\r\n\r\nKey Features:\r\n\u2022 Real-time battery level display with large, easy-to-read percentage\r\n\u2022 Visual battery indicator with color-coded status (green/yellow/red)\r\n\u2022 Animated charging indicator - see at a glance when your phone is plugged in\r\n\u2022 Instant updates when battery level or charging status changes\r\n\u2022 Manual refresh with SELECT button\r\n\u2022 Vibration alert when your phone reaches 100% charge\r\n\u2022 Current time display\r\n\u2022 Works on all Pebble models\r\n\r\nHow It Works:\r\nSimply install the app and it will automatically connect to your phone. The watch face shows your phone's battery percentage, charging status, and a visual battery icon that fills up as your phone charges. The lightning bolt animation lets you know when charging is active.\r\n\r\nPerfect For:\r\n\u2022 Monitoring charging progress from another room\r\n\u2022 Keeping track of your phone's battery without checking it constantly\r\n\u2022 Getting notified when your phone is fully charged\r\n\u2022 Peace of mind when you can't see your phone\r\n\r\nRequirements:\r\n\u2022 Pebble watch (all models supported)\r\n\u2022 Smartphone with Battery Status API support (most modern iOS and Android devices)\r\n\r\nStay connected and never miss a charge cycle again!",
+      "developer_id": "695a074a2a98a40009eecf9d",
+      "discourse_url": "https://forum.rebble.io/t/437",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/695a09e424ba4b0008d50151",
+          "orig": "https://assets2.rebble.io/695a09e424ba4b0008d50151"
+        }
+      ],
+      "hearts": 12,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/695a09e724ba4b0008d50160",
+        "48x48": "https://assets2.rebble.io/exact/48x48/695a09e724ba4b0008d50160"
+      },
+      "id": "695a09e424ba4b0008d50152",
+      "latest_release": {
+        "id": "695b2466fb639a0009f3d217",
+        "js_md5": "bb8dd8a2c83d1aadf25d15bddb17a619",
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/695b2466fb639a0009f3d217.pbw",
+        "published_date": "Mon, 05 Jan 2026 02:39:34 GMT",
+        "release_notes": "- Updated the ability to set & disable full charge notification",
+        "version": "1.2"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/695a09e424ba4b0008d50152/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/695a09e424ba4b0008d50152/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/695a09e424ba4b0008d50152/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/695a09e424ba4b0008d50152/remove_heart",
+        "share": "https://apps.rebble.io/application/695a09e424ba4b0008d50152"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/695a09e624ba4b0008d5015f",
+        "80x80": "https://assets2.rebble.io/exact/80x80/695a09e624ba4b0008d5015f"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695a09e524ba4b0008d50155"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695a09e524ba4b0008d50156"
+        }
+      ],
+      "source": "",
+      "title": "Phone Battery Monitor",
+      "type": "watchapp",
+      "uuid": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4161",
+      "visible": true,
+      "website": "https://jlynx.net"
+    },
+    {
+      "author": "innokentiy_t",
+      "capabilities": [],
+      "category": "Games",
+      "category_color": "b57ad3",
+      "category_id": "5261a8fb3b773043d5000012",
+      "changelog": [
+        {
+          "published_date": "Sat, 03 Jan 2026 10:52:18 GMT",
+          "release_notes": "- first release",
+          "version": "1.0"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Sat, 03 Jan 2026 10:52:17 GMT",
+      "description": "It's just a simple demo app based on Tsoding's \"One Formula That Demystifies 3D Graphics\" YouTube video for simple perspective-correct 3D rendering using wireframes and one really simple math formula.\r\n\r\nThe video: https://youtu.be/qjWkNZ0SXfo",
+      "developer_id": "68f9c18dd3c6e4000885b8cb",
+      "discourse_url": "https://forum.rebble.io/t/425",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/6958f4e091ea9d0009ebd755",
+          "orig": "https://assets2.rebble.io/6958f4e091ea9d0009ebd755"
+        }
+      ],
+      "hearts": 6,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/6958f4e291ea9d0009ebd75e",
+        "48x48": "https://assets2.rebble.io/exact/48x48/6958f4e291ea9d0009ebd75e"
+      },
+      "id": "6958f4e091ea9d0009ebd756",
+      "latest_release": {
+        "id": "6958f4e291ea9d0009ebd75f",
+        "js_md5": null,
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/6958f4e291ea9d0009ebd75f.pbw",
+        "published_date": "Sat, 03 Jan 2026 10:52:18 GMT",
+        "release_notes": "- first release",
+        "version": "1.0"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/6958f4e091ea9d0009ebd756/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/6958f4e091ea9d0009ebd756/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/6958f4e091ea9d0009ebd756/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/6958f4e091ea9d0009ebd756/remove_heart",
+        "share": "https://apps.rebble.io/application/6958f4e091ea9d0009ebd756"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/6958f4e191ea9d0009ebd75d",
+        "80x80": "https://assets2.rebble.io/exact/80x80/6958f4e191ea9d0009ebd75d"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/6958f4e191ea9d0009ebd758"
+        }
+      ],
+      "source": "https://github.com/innokentiyt/formula-pebble",
+      "title": "Penger 3D",
+      "type": "watchapp",
+      "uuid": "dd680c76-fbdc-4e4d-89d5-0c0dd716b880",
+      "visible": true,
+      "website": ""
+    },
+    {
+      "author": "James Downs",
+      "capabilities": [],
+      "category": "Daily",
+      "category_color": "3db9e6",
+      "category_id": "5261a8fb3b773043d500000c",
+      "changelog": [
+        {
+          "published_date": "Sun, 04 Jan 2026 12:54:00 GMT",
+          "release_notes": "- Initial release, supporting all existing Pebble watches\r\n- View the timetable for the IKEBUS within different helpful contexts",
+          "version": "1.0"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Sun, 04 Jan 2026 12:53:59 GMT",
+      "description": "Displays the timetable for the IKEBUS, the slow rolling electric bus that roams Ikebukuro.\n\nView the red or blue route times to see the next arrival time of a bus at a stop, all the times for that stop, then all the stop times for that bus. The \"Next stop\" updates in real time while the app is open. Stops won't display a time when there are no more buses coming today.\n\nThe timetable is stored locally which means I'm responsible for pushing updates as it changes, which I'll try to keep up on. \n\nCurrently only English is supported, but other languages will be added in future updates.\n\nAll rights to IKEBUS including imagery belongs to Willer Travel\nhttps://willer-travel.com/en/ikebus/",
+      "developer_id": "5308eabf92c45e5f39000503",
+      "discourse_url": "https://forum.rebble.io/t/439",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/695a62e2fb639a0009f3d1f3",
+          "orig": "https://assets2.rebble.io/695a62e2fb639a0009f3d1f3"
+        }
+      ],
+      "hearts": 3,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/695a62e7fb639a0009f3d214",
+        "48x48": "https://assets2.rebble.io/exact/48x48/695a62e7fb639a0009f3d214"
+      },
+      "id": "695a62e2fb639a0009f3d1f4",
+      "latest_release": {
+        "id": "695a62e8fb639a0009f3d215",
+        "js_md5": null,
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/695a62e8fb639a0009f3d215.pbw",
+        "published_date": "Sun, 04 Jan 2026 12:54:00 GMT",
+        "release_notes": "- Initial release, supporting all existing Pebble watches\r\n- View the timetable for the IKEBUS within different helpful contexts",
+        "version": "1.0"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/695a62e2fb639a0009f3d1f4/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/695a62e2fb639a0009f3d1f4/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/695a62e2fb639a0009f3d1f4/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/695a62e2fb639a0009f3d1f4/remove_heart",
+        "share": "https://apps.rebble.io/application/695a62e2fb639a0009f3d1f4"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/695a62e7fb639a0009f3d213",
+        "80x80": "https://assets2.rebble.io/exact/80x80/695a62e7fb639a0009f3d213"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695a62e3fb639a0009f3d1fa"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695a62e3fb639a0009f3d1fb"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695a62e3fb639a0009f3d1fc"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695a62e4fb639a0009f3d1fd"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695a62e4fb639a0009f3d1fe"
+        }
+      ],
+      "source": "",
+      "title": "IKEBUS Time",
+      "type": "watchapp",
+      "uuid": "9fe23532-53fa-4823-8145-dcfb6ebad93c",
+      "visible": true,
+      "website": ""
+    },
+    {
+      "author": "jLynx",
+      "capabilities": [
+        "configurable"
+      ],
+      "category": "Tools & Utilities",
+      "category_color": "fdbf37",
+      "category_id": "5261a8fb3b773043d500000f",
+      "changelog": [
+        {
+          "published_date": "Wed, 07 Jan 2026 00:11:49 GMT",
+          "release_notes": "Initial release",
+          "version": "1.0"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Wed, 07 Jan 2026 00:11:49 GMT",
+      "description": "## Find My Phone\r\n\r\n**No companion app required - works directly through the Pebble app!**\r\n\r\nNever lose your phone again! Find My Phone helps you locate your misplaced phone instantly with a loud, attention-grabbing alarm - right from your wrist.\r\n\r\n### Features:\r\n- **No Companion App Required** - Works directly through the Pebble app, no extra downloads needed\r\n- **One-Button Operation** - Simply press SELECT to activate the alarm\r\n- **Customizable Melodies** - Choose from 5 different alarm sounds to suit your preference\r\n- **Loud Audio Alert** - Plays a distinctive melody on your phone that's easy to hear\r\n- **Visual Feedback** - Animated display shows when the alarm is active\r\n- **Haptic Feedback** - Your watch vibrates to confirm the alarm is running\r\n- **Continuous Alarm** - Keeps playing until you press SELECT again to stop it\r\n\r\n### How to Use:\r\n1. Open the app on your Pebble\r\n2. Press the SELECT button (middle button)\r\n3. Your phone will start playing a loud alarm\r\n4. Follow the sound to find your phone\r\n5. Press SELECT again to stop the alarm\r\n\r\n### Customize Your Sound:\r\nAccess settings through the Pebble app to choose from:\r\n- Classic Find (Default) - Pleasant ascending melody\r\n- Urgent Alert - Fast alternating tones\r\n- Gentle Reminder - Soft repeating pattern\r\n- Emergency Siren - Loud alternating siren\r\n- Door Chime - Simple two-tone chime\r\n\r\n### Perfect For:\r\n- Finding your phone under couch cushions\r\n- Locating your phone in another room\r\n- Quick phone location when you're in a hurry\r\n- Anyone who frequently misplaces their phone\r\n\r\n**Simple. Effective. Essential.**\r\n\r\nNo more frantically searching for your phone. Just press a button and follow the sound!\r\n\r\n***\r\n\r\n**Technical Notes:**\r\n- Requires Bluetooth connection between watch and phone\r\n- Works with the Pebble mobile app (iOS/Android)\r\n- No additional apps or subscriptions needed\r\n- Settings accessible through the Pebble app configuration",
+      "developer_id": "695a074a2a98a40009eecf9d",
+      "discourse_url": "https://forum.rebble.io/t/452",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/695da4c2fbfdde0009f99798",
+          "orig": "https://assets2.rebble.io/695da4c2fbfdde0009f99798"
+        }
+      ],
+      "hearts": 14,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/695da4c5fbfdde0009f997a7",
+        "48x48": "https://assets2.rebble.io/exact/48x48/695da4c5fbfdde0009f997a7"
+      },
+      "id": "695da4c3fbfdde0009f99799",
+      "latest_release": {
+        "id": "695da4c5fbfdde0009f997a8",
+        "js_md5": "edbbe0152dfdbf0d5c8531d2f6fda5c8",
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/695da4c5fbfdde0009f997a8.pbw",
+        "published_date": "Wed, 07 Jan 2026 00:11:49 GMT",
+        "release_notes": "Initial release",
+        "version": "1.0"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/695da4c3fbfdde0009f99799/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/695da4c3fbfdde0009f99799/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/695da4c3fbfdde0009f99799/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/695da4c3fbfdde0009f99799/remove_heart",
+        "share": "https://apps.rebble.io/application/695da4c3fbfdde0009f99799"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/695da4c5fbfdde0009f997a6",
+        "80x80": "https://assets2.rebble.io/exact/80x80/695da4c5fbfdde0009f997a6"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695da4c3fbfdde0009f9979c"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/695da4c3fbfdde0009f9979d"
+        }
+      ],
+      "source": "",
+      "title": "Find My Phone",
+      "type": "watchapp",
+      "uuid": "a1b2c3d4-e5f6-161b-8c9d-0e1f2a3b4c5d",
+      "visible": true,
+      "website": "https://jlynx.net"
+    },
+    {
+      "author": "Rebble",
+      "capabilities": [
+        "location",
+        "configurable"
+      ],
+      "category": "Daily",
+      "category_color": "3db9e6",
+      "category_id": "5261a8fb3b773043d500000c",
+      "changelog": [
+        {
+          "published_date": "Sat, 19 Apr 2025 22:58:05 GMT",
+          "release_notes": "- Responses to questions about places can now include a visual map of those places!\r\n- You can now enable dictation confirmation in Bobby's settings, if you like (off by default).\r\n- When short on memory, Bobby will start removing images and the oldest parts of the conversation instead of crashing.\r\n- Assorted improvements to memory management.",
+          "version": "1.3"
+        },
+        {
+          "published_date": "Sun, 06 Apr 2025 19:53:34 GMT",
+          "release_notes": "- Fixed time on home screen sometimes sticking at \"12:34\".\r\n- Fixed app crash when saving the settings page while consents are showing.\r\n- Fixed consents screen being skipped without reading if the user saves the settings page and then relaunches the app.",
+          "version": "1.2"
+        },
+        {
+          "published_date": "Tue, 25 Mar 2025 22:37:25 GMT",
+          "release_notes": "- Fixed a crash when updating settings while on the app home screen (so, most times you update settings).\r\n\r\nAlso, in server-side changes:\r\n- Improved reliability of looking up the time in other locations\r\n- Added the ability to locate and report the distance to other locations (cities, etc.)\r\n- Fixed POI lookup always failing",
+          "version": "1.1"
+        },
+        {
+          "published_date": "Mon, 24 Mar 2025 19:33:23 GMT",
+          "release_notes": "Version 1.0!",
+          "version": "1.0"
+        },
+        {
+          "published_date": "Sat, 22 Mar 2025 22:36:28 GMT",
+          "release_notes": "- Added \"yes\" and \"no\" quick responses when you hold the select button on the conversation screen. It also adds an option to repeat the last thing you said if the last response was an error.\r\n- Sometimes, home screen Bobby will suggest you try holding select on the conversation screen.\r\n- Improved scrolling performance on the about screen.",
+          "version": "0.26"
+        },
+        {
+          "published_date": "Sat, 22 Mar 2025 05:04:38 GMT",
+          "release_notes": "- Some example questions and requests are now shown on the home page - press the up button to see them\r\n- You can now ask Bobby to send feedback by saying e.g. 'tell the developers that x' or 'report this conversation'. The buttons (feedback menu and long press on select) are still available.\r\n- Bobby now tells you that using Cobble is unsupported on the Home Screen\r\n- Minor bug fixes",
+          "version": "0.25"
+        },
+        {
+          "published_date": "Fri, 21 Mar 2025 20:41:59 GMT",
+          "release_notes": "Remove the alarm/timer appglances, which somehow cause some watches to dangerously reboot.",
+          "version": "0.24"
+        },
+        {
+          "published_date": "Fri, 21 Mar 2025 09:49:05 GMT",
+          "release_notes": "- Five vibration patterns are now available for alarms and timers. You can choose your favourite from the app's settings on the phone.\r\n- You can now report bad responses from Bobby by holding down the speak button and selecting \"Report Conversation\". The conversation will be sent to us to investigate - we appreciate your help!\r\n- By default, if the app is launched via quick launch, it will now exit after a minute of inactivity. This can be changed via settings in the phone app. Behaviour when launched normally is unchanged.\r\n- If a response takes a long time to arrive, the watch will do a mild haptic when it begins appearing.\r\n- The Legal window now has nicer formatting\r\n- There's now a nice About window in the menu, featuring Bobby!",
+          "version": "0.23"
+        },
+        {
+          "published_date": "Wed, 19 Mar 2025 23:04:50 GMT",
+          "release_notes": "- Timers and alarms are now visible in the main Pebble launcher menu! Put Bobby near the top of your app menu to see them without needing to launch the app\r\n- There's now a \"Feedback\" menu item - you can select it to dictate feedback about Bobby, which will be sent straight to us.\r\n- The main menu has icons now!",
+          "version": "0.22"
+        },
+        {
+          "published_date": "Tue, 18 Mar 2025 00:15:38 GMT",
+          "release_notes": "Timers and alarms can have names now! You can give a timer or alarm a name when you set it by saying, for example, \"set a 30 minute fish baking timer\". The name will appear when the timer goes off, in the timer menu, and when you ask Bobby about timers (for instance, you can say \"how long is left on my fish baking timer?\"). Giving alarms or timers names is still optional.\r\n\r\nTimers now show a big, live countdown when they are set and when you ask about them! You can watch the seconds tick down directly on the conversation screen.\r\n\r\nCertain questions that can be completely answered with just a number (such as \"what is 45 times 24\" or \"what are 20 pounds in dollars\") will show a big number instead of a verbal response.",
+          "version": "0.21"
+        },
+        {
+          "published_date": "Sat, 15 Mar 2025 23:33:26 GMT",
+          "release_notes": "Bobby now remembers your reminders!\r\n\r\nAfter setting a reminder, you can now ask Bobby to tell you what reminders you have, e.g. by asking Bobby to \"show me my reminders\". Bobby can also remove them for you (e.g. \"delete that\").\r\n\r\nThere is now a Reminders menu from which you can view a list of reminders and delete them through a UI, too.\r\n\r\nNote that if you remove a reminder directly from the Timeline, Bobby won't know you did that and will still claim it exists. Also, deleting reminders through Bobby is subject to the same Timeline delays as adding them.",
+          "version": "0.20"
+        },
+        {
+          "published_date": "Fri, 14 Mar 2025 18:25:46 GMT",
+          "release_notes": "- Improved the layout of the root screen\r\n- Record the current version on launch, for future use",
+          "version": "0.19"
+        },
+        {
+          "published_date": "Mon, 10 Mar 2025 02:49:54 GMT",
+          "release_notes": "- Responses to questions about the weather may now show a dedicated weather widget before the response\r\n- Fixed the text at the bottom of the \"Legal\" screen being truncated\r\n- Swapped the \"Quota\" screen's loading animation to a running pony\r\n- Fixed some memory leaks\r\n\r\nAlso, in server side changes since the last update, Bobby can now retrieve more information when necessary to answer questions.",
+          "version": "0.18"
+        },
+        {
+          "published_date": "Sat, 08 Mar 2025 20:52:15 GMT",
+          "release_notes": "Visual improvements!\r\n\r\n- Alarms and timers can now be snoozed (ten minutes for an alarm, one minute for a timer)\r\n- Most screens now have colours (where applicable) and Bobby images\r\n- Improved display of actions taken during conversations\r\n- When cancelling the last alarm or timer, the screen is no longer left blank\r\n",
+          "version": "0.17"
+        },
+        {
+          "published_date": "Thu, 06 Mar 2025 04:00:45 GMT",
+          "release_notes": "- Fixed dithered grey appearing on Pebble 2 inappropriately.",
+          "version": "0.16"
+        },
+        {
+          "published_date": "Thu, 06 Mar 2025 03:14:36 GMT",
+          "release_notes": "- Added the mascot pony to the home screen\r\n- Made everything pinker\r\n- Text is now mostly bold\r\n\r\nAlso, through a server-side change since the previous release, currency conversion is now supported - e.g. \"what is twenty dollars in pounds?\"",
+          "version": "0.15"
+        },
+        {
+          "published_date": "Wed, 05 Mar 2025 03:49:36 GMT",
+          "release_notes": "- Fixed crash when opening the Timers or Alarms menu when they weren't empty\r\n- Fixed issue where timers would claim to be set for one or two seconds longer than expected (e.g. \"2:01\" for a two minute timer)\r\n- Fixed an issue where the chat session would fail after asking Bobby \"how long is left on my timer?\"\r\n- Renamed \"Credits\" to \"Legal\"\r\n- Added a secondary check after Bobby claims to have taken an action (e.g. set a timer, alarm, or reminder) to warn the user if the claimed action has not actually taken place.",
+          "version": "0.14"
+        },
+        {
+          "published_date": "Sun, 02 Mar 2025 07:24:28 GMT",
+          "release_notes": "Fixed appearance of boxes reading \"Response from service lost.\"",
+          "version": "0.13"
+        },
+        {
+          "published_date": "Sun, 02 Mar 2025 01:10:01 GMT",
+          "release_notes": "First public release!",
+          "version": "0.12"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": false
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": false
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Sun, 02 Mar 2025 01:10:01 GMT",
+      "description": "Bobby is a new voice assistant for Pebble, powered by large language models.\n\nBobby can:\n- Answer questions about general knowledge\n- Do calculations for you\n- Tell you the weather\n- Set timers and alarms\n- Set Timeline-based reminders for the future\n- Convert between currencies\n- Tell you about nearby places (restaurants, businesses, things to do)\n- ...and more!\n\nFor quick access to Bobby, you can also set it to a Quick Launch button to immediately launch into listening mode.\n\nWe want your feedback! Let us know what else you'd like Bobby to be able to do, and we'll see whether we can make it happen.\n\nUsing Bobby requires a Rebble subscription.",
+      "developer_id": "603aa992cee2f013540a42bb",
+      "discourse_url": "https://forum.rebble.io/t/111",
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/67e1c4a0d0d80200091471e7",
+          "orig": "https://assets2.rebble.io/67e1c4a0d0d80200091471e7"
+        },
+        {
+          "720x320": "https://assets2.rebble.io/720x320/67e1c4aad0d80200091471e8",
+          "orig": "https://assets2.rebble.io/67e1c4aad0d80200091471e8"
+        },
+        {
+          "720x320": "https://assets2.rebble.io/720x320/67e1c4b2969ef80009b0dcbd",
+          "orig": "https://assets2.rebble.io/67e1c4b2969ef80009b0dcbd"
+        }
+      ],
+      "hearts": 342,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/67c3afe9d2acb30009a3c7cd",
+        "48x48": "https://assets2.rebble.io/exact/48x48/67c3afe9d2acb30009a3c7cd"
+      },
+      "id": "67c3afe7d2acb30009a3c7c2",
+      "latest_release": {
+        "id": "68042a7d954fd200098b4972",
+        "js_md5": "81522cd3795ed24561b20b4e504678c9",
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/68042a7d954fd200098b4972.pbw",
+        "published_date": "Sat, 19 Apr 2025 22:58:05 GMT",
+        "release_notes": "- Responses to questions about places can now include a visual map of those places!\r\n- You can now enable dictation confirmation in Bobby's settings, if you like (off by default).\r\n- When short on memory, Bobby will start removing images and the oldest parts of the conversation instead of crashing.\r\n- Assorted improvements to memory management.",
+        "version": "1.3"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/67c3afe7d2acb30009a3c7c2/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/67c3afe7d2acb30009a3c7c2/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/67c3afe7d2acb30009a3c7c2/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/67c3afe7d2acb30009a3c7c2/remove_heart",
+        "share": "https://apps.rebble.io/application/67c3afe7d2acb30009a3c7c2"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/67c3afe9d2acb30009a3c7cd",
+        "80x80": "https://assets2.rebble.io/exact/80x80/67c3afe9d2acb30009a3c7cd"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/67ccaeacb7a023024b2145f6"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/67ccaf40d2acb302d5ba81fd"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/67ce528eb7a0230391426cd6"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/67e1b34ba7ff460008f96ac0"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/68042ffed942ca00094f672a"
+        }
+      ],
+      "source": "https://github.com/pebble-dev/bobby-assistant",
+      "title": "Bobby",
+      "type": "watchapp",
+      "uuid": "1d272bb4-cf00-4e3e-a7f3-7394309e0341",
+      "visible": true,
+      "website": "https://bobby.rebble.io"
+    },
+    {
+      "author": "Gonzalo Mu\u00f1oz",
+      "capabilities": [
+        "configurable"
+      ],
+      "category": "Tools & Utilities",
+      "category_color": "fdbf37",
+      "category_id": "5261a8fb3b773043d500000f",
+      "changelog": [
+        {
+          "published_date": "Tue, 08 Aug 2023 14:33:10 GMT",
+          "release_notes": "First release: added support for SHA256 codes",
+          "version": "4.0"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Tue, 08 Aug 2023 14:33:10 GMT",
+      "description": "A fork of the original QuickAuth app by Kevin Cooper, now with support for SHA256 codes.",
+      "developer_id": "609457438a44a400535e6933",
+      "discourse_url": null,
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/64d25222482a0c03a5ab9339",
+          "orig": "https://assets2.rebble.io/64d25222482a0c03a5ab9339"
+        }
+      ],
+      "hearts": 25,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/64d25226482a0c03a5ab9345",
+        "48x48": "https://assets2.rebble.io/exact/48x48/64d25226482a0c03a5ab9345"
+      },
+      "id": "64d25223482a0c03a5ab933a",
+      "latest_release": {
+        "id": "64d25226482a0c03a5ab9346",
+        "js_md5": "fb2360bb2d5ff0b91b55a7711e48bf13",
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/64d25226482a0c03a5ab9346.pbw",
+        "published_date": "Tue, 08 Aug 2023 14:33:10 GMT",
+        "release_notes": "First release: added support for SHA256 codes",
+        "version": "4.0"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/64d25223482a0c03a5ab933a/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/64d25223482a0c03a5ab933a/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/64d25223482a0c03a5ab933a/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/64d25223482a0c03a5ab933a/remove_heart",
+        "share": "https://apps.rebble.io/application/64d25223482a0c03a5ab933a"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/64d25226482a0c03a5ab9345",
+        "80x80": "https://assets2.rebble.io/exact/80x80/64d25226482a0c03a5ab9345"
+      },
+      "published_date": null,
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/64d25224482a0c03a5ab933d"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/64d25224482a0c03a5ab933e"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/64d25224482a0c03a5ab933f"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/64d25224482a0c03a5ab9340"
+        }
+      ],
+      "source": "https://github.com/zamuz/QuickAuth4",
+      "title": "QuickAuth 4",
+      "type": "watchapp",
+      "uuid": "85bf7c30-6d6b-451a-87d4-614d1a4dc088",
+      "visible": true,
+      "website": ""
+    },
+    {
+      "author": "Jessica Yeh",
+      "capabilities": [],
+      "category": "Health & Fitness",
+      "category_color": "98D500",
+      "category_id": "5261a8fb3b773043d5000004",
+      "changelog": [
+        {
+          "published_date": "Wed, 09 Mar 2016 19:07:53 GMT",
+          "release_notes": "Fixed a bug where auto reminder went off too often if you used a custom drinking unit.",
+          "version": "3.3"
+        },
+        {
+          "published_date": "Wed, 16 Dec 2015 06:45:05 GMT",
+          "release_notes": "Pebble Round support",
+          "version": "3.2"
+        },
+        {
+          "published_date": "Thu, 12 Nov 2015 16:34:23 GMT",
+          "release_notes": "- fixed bug where reminders didn't stop during the night",
+          "version": "3.1"
+        },
+        {
+          "published_date": "Sun, 08 Nov 2015 23:19:20 GMT",
+          "release_notes": "- added color",
+          "version": "3.0"
+        },
+        {
+          "published_date": "Fri, 06 Nov 2015 22:03:50 GMT",
+          "release_notes": "- fixed bug where gallon wouldn't reset at right time and reminders were also buggy for Pebble Time",
+          "version": "2.5"
+        },
+        {
+          "published_date": "Thu, 05 Nov 2015 18:35:01 GMT",
+          "release_notes": "- fixed a bug where the streak could go to 65535\r\n- changed the default setting for reminders to be on Auto instead of Off to make it more obvious that reminders are a feature",
+          "version": "2.4"
+        },
+        {
+          "published_date": "Tue, 15 Sep 2015 01:40:27 GMT",
+          "release_notes": "added a description for Customary and Metric to make it more clear what that setting is for",
+          "version": "2.3"
+        },
+        {
+          "published_date": "Sat, 29 Aug 2015 18:09:47 GMT",
+          "release_notes": "- increased font size on the amount consumed label for better legibility\r\n- added a custom drinking unit option, e.g. you can now set a drinking unit of 12 oz or anything else\r\n- fixed appearance issues on Pebble Time",
+          "version": "2.2"
+        },
+        {
+          "published_date": "Wed, 27 May 2015 05:21:31 GMT",
+          "release_notes": "- metric unit mode\r\n- start of day setting\r\n- menu app icon",
+          "version": "2.1"
+        },
+        {
+          "published_date": "Fri, 13 Mar 2015 15:55:42 GMT",
+          "release_notes": "- Drink reminders: Reminds you to drink water throughout the day with a vibration and notification\r\n- More time options for \"End of Day\" setting\r\n- Improved water container images\r\n- New settings icon\r\n- Bug fixes",
+          "version": "2.0"
+        },
+        {
+          "published_date": "Sat, 28 Feb 2015 06:19:28 GMT",
+          "release_notes": "",
+          "version": "1.0"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Sat, 28 Feb 2015 06:18:20 GMT",
+      "description": "Challenge yourself to drink more water for better health! Health experts recommend drinking at least a half gallon (8 cups) of water every day. Drinking enough water can help you lose weight by controlling your appetite, boosting your metabolism, and aiding your digestion.\r\n\r\nIs 8 cups a day too easy for you? Aim for a whole gallon of water! In the 30-day water challenge, you challenge yourself to drink a gallon of water every day for 30 days straight. People who have completed this challenge report a wide range of beneficial results, such as weight loss, more energy, less headaches, better mood, softer hair, and healthier looking skin.\r\n\r\nWith Gallon Challenge, you can help yourself drink more water by keeping count of how much water you drink each day, and how many days in a row you've met your goal. The app also keeps track of statistics such as the total amount of water you've recorded consuming and the length of your longest streak.\r\n\r\nYou can customize your drinking goal to be either a half gallon or whole gallon of water each day. The unit that you drink in can be customized to either ounces, cups, pints, or quarts. You can change the hour that your day starts at in case you have an irregular schedule.\r\n\r\nNew in version 2! Set reminders to drink water. You can either choose how often you want to be reminded, or use Auto reminders to let the app evenly space them out throughout the day to keep you on track for reaching your goal. These reminders won't bother you while you sleep, because it uses your \"End of Day\" setting to know approximately what time you are asleep.",
+      "developer_id": "54cbc3b00a912f754500000c",
+      "discourse_url": null,
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/ex8Xx1k2QL2RH5dTE1fR",
+          "orig": "https://assets2.rebble.io/ex8Xx1k2QL2RH5dTE1fR"
+        }
+      ],
+      "hearts": 410,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/82QcadQ9Tr28DR27U3mD",
+        "48x48": "https://assets2.rebble.io/exact/48x48/82QcadQ9Tr28DR27U3mD"
+      },
+      "id": "54f15dacbc88dfd03d000028",
+      "latest_release": {
+        "id": "56e073d1e376669e7e00001d",
+        "js_md5": null,
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/56e073d1e376669e7e00001d.pbw",
+        "published_date": "Wed, 09 Mar 2016 19:07:53 GMT",
+        "release_notes": "Fixed a bug where auto reminder went off too often if you used a custom drinking unit.",
+        "version": "3.3"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/54f15dacbc88dfd03d000028/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/54f15dacbc88dfd03d000028/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/54f15dacbc88dfd03d000028/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/54f15dacbc88dfd03d000028/remove_heart",
+        "share": "https://apps.rebble.io/application/54f15dacbc88dfd03d000028"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/IA9sbaWoRkiBQ1zuYm8I",
+        "80x80": "https://assets2.rebble.io/exact/80x80/IA9sbaWoRkiBQ1zuYm8I"
+      },
+      "published_date": "Sat, 28 Feb 2015 06:19:48 GMT",
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/YA3bCaM2SkSvkMfReHAD"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/xiujiB11QBenOg2DH9cE"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/mZs39jXHQgmsDOJyagzG"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/i92HJM1oSOlBoFUW1mLt"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/ZzAfutFkRQGCqqAVP6Me"
+        }
+      ],
+      "source": "https://github.com/JessicaYeh/pebble-gallon-challenge",
+      "title": "Gallon Challenge",
+      "type": "watchapp",
+      "uuid": "8c4c050d-a998-4cc1-aae5-91a387e954c7",
+      "visible": true,
+      "website": null
+    },
+    {
+      "author": "SeaPea Software",
+      "capabilities": [],
+      "category": "Tools & Utilities",
+      "category_color": "fdbf37",
+      "category_id": "5261a8fb3b773043d500000f",
+      "changelog": [
+        {
+          "published_date": "Sat, 08 Oct 2016 04:49:48 GMT",
+          "release_notes": "Added App Glance support for OS 4.\r\nAlso added a vibe when the alarm is automatically reset with 'Get Out Of Bed' alarm turned on.",
+          "version": "3.2"
+        },
+        {
+          "published_date": "Fri, 03 Jun 2016 02:04:20 GMT",
+          "release_notes": "Fixed a few bugs with the 'Get Out Of Bed' alarm when set to turn on after the primary alarm is stopped.",
+          "version": "3.1"
+        },
+        {
+          "published_date": "Fri, 03 Jun 2016 02:03:55 GMT",
+          "release_notes": "Added Daylight Savings Time (DST) Check. The Pebble OS APIs currently do not handle DST changes, so due to the various DST rules around the world, which change regularly, the app now wakes once a week to check for DST changes and adjust alarms if necessary. By default this is at 4am on Sundays, but this can be changed in the settings in the app if your country changes over on a different day. If Gentle Wake was not open before the DST Check then it immediately closes so it should not interfere with anything running.\r\n\r\nAlso improved skipping alarms (hold Up on main screen with no active alarm) so up to 6 days can be skipped by repeatedly holding and releasing the Up button. Holding Up after 6 days skipped, cycles back to no skips and disabling & re-enabling alarms or changing settings also resets the skipping.",
+          "version": "1.8"
+        },
+        {
+          "published_date": "Fri, 03 Jun 2016 01:58:11 GMT",
+          "release_notes": "Fixed corner cases with alarm skipping.\r\nFixed alarm not stopping when an alarm is configured for only a single day.\r\nImproved the randomness of the 'Konami' code method of stopping the alarm (yes I realize that a random code is not really *the* Konami code...)",
+          "version": "2.5"
+        },
+        {
+          "published_date": "Sat, 26 Mar 2016 15:36:44 GMT",
+          "release_notes": "Fairly extensive rework of the code to make sure it fits in the original Pebbles including the latest features.\r\n\r\n- New Feature: Get Out Of Bed Alarm - Turn this on in the Smart Alarm Settings section to get a secondary alarm X minutes after your normal alarm that can automatically turn off if you stand up and take 5 paces with no more than 2 seconds between each step. It also has a distinct alarm pattern.\r\n- Get Out Of Bed Alarm has 2 modes that you toggle through in the settings: \r\n1) X Minutes after alarm start for those of us who are habitual snoozers\r\n2) X Minutes after stopping alarm for those that manage to turn off the alarm in their sleep even with Konami Code enabled\r\n\r\nNew Feature: Auto-Close - Automatically closes Gentle Wake after X minutes of inactivity (no button presses, no active alarm or snoozing, etc) which goes back to your default watch face.",
+          "version": "3.0"
+        },
+        {
+          "published_date": "Thu, 17 Dec 2015 06:33:28 GMT",
+          "release_notes": "Fixed alarms and graphical glitches on original Pebbles using the new v3 firmware (with Timeline). There is one case of crashing if you go into the Snooze Delay or Monitor Period and then go to set some alarms. For now, just exit the app between changing the settings and alarms.",
+          "version": "2.8"
+        },
+        {
+          "published_date": "Sat, 07 Nov 2015 06:28:43 GMT",
+          "release_notes": "Tweaked design for Pebble Time Round",
+          "version": "2.7"
+        },
+        {
+          "published_date": "Sun, 25 Oct 2015 06:18:27 GMT",
+          "release_notes": "Added support for Pebble Time Round",
+          "version": "2.6"
+        },
+        {
+          "published_date": "Sat, 12 Sep 2015 02:55:43 GMT",
+          "release_notes": "Added patch to prevent repetitive random konami codes. \r\nFixed alarm skipping (hold Up on main screen) in certain cases. \r\nFixed alarm info when using 12 hour clock. \r\nAdded version number to the bottom of the settings menu",
+          "version": "2.4"
+        },
+        {
+          "published_date": "Sun, 16 Aug 2015 07:34:36 GMT",
+          "release_notes": "Fixed a bug in the alarm settings screen and also fixed a major crash on the original Pebbles as all the new features caused them to run out of memory.",
+          "version": "2.3"
+        },
+        {
+          "published_date": "Sun, 16 Aug 2015 02:06:16 GMT",
+          "release_notes": "Added random Konami Code setting for stopping alarm to really make sure it is not stopped accidentally. (Go to the in-app settings and toggle the 'Stop Alarm' setting. Then when stopping the alarm a random quondam code will be shown which must be entered using the watch buttons)",
+          "version": "2.1"
+        },
+        {
+          "published_date": "Sat, 15 Aug 2015 00:51:29 GMT",
+          "release_notes": "Multiple new features in this release:\r\n- Added one-time alarm that replaces any regular alarm in the next 24 hours (and then goes back to the normal set alarms)\r\n- Multiple vibration patterns: Gentle (original), Not-So-Gentle (starts with longer vibrations), and Not-So-Gentle after 2 snoozes (original for the first 2 times)\r\n- Added better alarm skip UI (hold the Up button on the main screen to automatically skip and then restart alarms for up to 4 weeks)\r\n- When within 10 hours of the next alarm, the main screen shows the hours and minutes remaining before the alarm",
+          "version": "2.2"
+        },
+        {
+          "published_date": "Wed, 27 May 2015 19:48:55 GMT",
+          "release_notes": "Updated to work with OS 3.0 on Pebble Times and added a splash of color",
+          "version": "2.0"
+        },
+        {
+          "published_date": "Tue, 30 Dec 2014 01:37:00 GMT",
+          "release_notes": "Fixed 12PM appearing as 12AM, oops...",
+          "version": "1.7"
+        },
+        {
+          "published_date": "Wed, 26 Nov 2014 01:57:04 GMT",
+          "release_notes": "Improved error message when wakeup API fails",
+          "version": "1.6"
+        },
+        {
+          "published_date": "Sat, 22 Nov 2014 03:32:08 GMT",
+          "release_notes": "Improved feedback when skipping next alarm",
+          "version": "1.5"
+        },
+        {
+          "published_date": "Fri, 21 Nov 2014 05:20:29 GMT",
+          "release_notes": "Hold up button on main screen to toggle skipping next alarm (so you don't have to remember to re-enable alarms for one exception)",
+          "version": "1.4"
+        },
+        {
+          "published_date": "Sun, 16 Nov 2014 03:23:50 GMT",
+          "release_notes": "Improved robustness in setting wakeup",
+          "version": "1.3"
+        },
+        {
+          "published_date": "Sat, 15 Nov 2014 02:24:29 GMT",
+          "release_notes": "Added sensitivity setting for the Smart Alarm",
+          "version": "1.2"
+        },
+        {
+          "published_date": "Thu, 13 Nov 2014 05:11:03 GMT",
+          "release_notes": "Added clearer instructions for stopping alarm and made recovery from forced exit better",
+          "version": "1.1"
+        }
+      ],
+      "companions": {
+        "android": null,
+        "ios": null
+      },
+      "compatibility": {
+        "android": {
+          "supported": true
+        },
+        "aplite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "basalt": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "chalk": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "diorite": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "emery": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "flint": {
+          "firmware": {
+            "major": 3
+          },
+          "supported": true
+        },
+        "ios": {
+          "min_js_version": 1,
+          "supported": true
+        }
+      },
+      "created_at": "Mon, 10 Nov 2014 05:03:53 GMT",
+      "description": "- Alarms for each day of the week\r\n- Smart Alarm attempts to wake you if it detects you stirring shortly before the alarm time, which is the Monitor Period (doesn't interfere with background activity apps)\r\n- All settings are in-app (Down button on main screen) \r\n- Alarm vibration starts gentle and gets longer and longer to gradually wake you and this can be adjusted with the Vibration Pattern setting\r\n- Alarm will vibrate for just over a minute and will then auto-snooze to save battery\r\n- Doesn't need to be manually started for the alarms to work (set and forget)\r\n- While Alarm is vibrating, a single click on any button snoozes the alarm. 2 quick clicks are required by to turn off the alarm to reduce the chance of accidentally turning it off\r\n- Change the 'Stop Alarm' setting to 'Konami Code' to show a random sequence of buttons to turn off the alarm to help really make sure you are awake\r\n- Dynamic snooze halves the initial snooze time on each snooze until it reaches 3 minutes - for those of us with a habit of hitting snooze repeatedly ;)\r\n- Can temporarily disable all alarms (Single Up button click on main screen)\r\n- 'Easy Light' - hold your Pebble vertically to turn on the backlight while the alarm is vibrating/snoozing (no need to shake your wrist!). Can be turned off.\r\n- Skip alarms by holding Up on the main screen and choose a date to skip until (alarms restart on that date.) Disabling & enabling alarms, or going into the settings resets skips\r\n- DST Check sets the day of the week on which it checks if your location has switched to/from Daylight Savings Time",
+      "developer_id": "52f00ed07a772ced5d0000db",
+      "discourse_url": null,
+      "header_images": [
+        {
+          "720x320": "https://assets2.rebble.io/720x320/0xTurtZ6SNiB02UyDWMJ",
+          "orig": "https://assets2.rebble.io/0xTurtZ6SNiB02UyDWMJ"
+        },
+        {
+          "720x320": "https://assets2.rebble.io/720x320/3qtShrbASwm1IngVqUSu",
+          "orig": "https://assets2.rebble.io/3qtShrbASwm1IngVqUSu"
+        },
+        {
+          "720x320": "https://assets2.rebble.io/720x320/TgZmTVtfTqo8H2aYnBb8",
+          "orig": "https://assets2.rebble.io/TgZmTVtfTqo8H2aYnBb8"
+        }
+      ],
+      "hearts": 1480,
+      "icon_image": {
+        "28x28": "https://assets2.rebble.io/exact/28x28/y81an95jRri8sZA2EEtr",
+        "48x48": "https://assets2.rebble.io/exact/48x48/y81an95jRri8sZA2EEtr"
+      },
+      "id": "546047390db50db6e100002b",
+      "latest_release": {
+        "id": "57f8799498b2fcc17b000055",
+        "js_md5": null,
+        "js_version": -1,
+        "pbw_file": "https://storage.googleapis.com/rebble-pbws/pbw/57f8799498b2fcc17b000055.pbw",
+        "published_date": "Sat, 08 Oct 2016 04:49:48 GMT",
+        "release_notes": "Added App Glance support for OS 4.\r\nAlso added a vibe when the alarm is automatically reset with 'Get Out Of Bed' alarm turned on.",
+        "version": "3.2"
+      },
+      "links": {
+        "add": "https://a",
+        "add_flag": "https://appstore-api.rebble.io/api/v0/applications/546047390db50db6e100002b/add_flag",
+        "add_heart": "https://appstore-api.rebble.io/api/v0/applications/546047390db50db6e100002b/add_heart",
+        "remove": "https://b",
+        "remove_flag": "https://appstore-api.rebble.io/api/v0/applications/546047390db50db6e100002b/remove_flag",
+        "remove_heart": "https://appstore-api.rebble.io/api/v0/applications/546047390db50db6e100002b/remove_heart",
+        "share": "https://apps.rebble.io/application/546047390db50db6e100002b"
+      },
+      "list_image": {
+        "144x144": "https://assets2.rebble.io/exact/144x144/CTtcLSaTRZqOFbVAgYzc",
+        "80x80": "https://assets2.rebble.io/exact/80x80/CTtcLSaTRZqOFbVAgYzc"
+      },
+      "published_date": "Wed, 12 Nov 2014 18:42:31 GMT",
+      "screenshot_hardware": "basalt",
+      "screenshot_images": [
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/GVzeRPhISyRVMMgzFAhg"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/256vD1EyRwWiXDM6sAo7"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/UBZny93eT7ys8114WmyI"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/cfzRoUmoTv00gKyXL0hh"
+        },
+        {
+          "144x168": "https://assets2.rebble.io/exact/144x168/MC9vJ6y0QfunLxv6kkEA"
+        }
+      ],
+      "source": "https://github.com/SeaPea/GentleWake",
+      "title": "Gentle Wake (Daily Smart Alarm Clock with Sleep Monitoring)",
+      "type": "watchapp",
+      "uuid": "701c1038-920b-49db-90ff-1a6f2c90226e",
+      "visible": true,
+      "website": null
+    }
+  ],
+  "banners": [
+    {
+      "application_id": "67c3afe7d2acb30009a3c7c2",
+      "image": {
+        "720x320": "https://assets2.rebble.io/720x320/bobby-banner-basalt-2.png"
+      },
+      "title": "Bobby"
+    }
+  ],
+  "categories": [
+    {
+      "application_ids": [],
+      "banners": [
+        {
+          "application_id": "67c3afe7d2acb30009a3c7c2",
+          "image": {
+            "720x320": "https://assets2.rebble.io/720x320/bobby-banner-basalt-2.png"
+          },
+          "title": "Bobby"
+        }
+      ],
+      "color": "3db9e6",
+      "icon": {
+        "88x88": "https://assets2.rebble.io/88x88/0QTBuPgXR8GAOMW0fJaA"
+      },
+      "id": "5261a8fb3b773043d500000c",
+      "links": {
+        "apps": "/api/v1/apps/category/daily"
+      },
+      "name": "Daily",
+      "slug": "daily"
+    },
+    {
+      "application_ids": [],
+      "banners": [],
+      "color": "fdbf37",
+      "icon": {
+        "88x88": "https://assets2.rebble.io/88x88/Lhxn2MNYQruUOPNkreOs"
+      },
+      "id": "5261a8fb3b773043d500000f",
+      "links": {
+        "apps": "/api/v1/apps/category/tools-and-utilities"
+      },
+      "name": "Tools & Utilities",
+      "slug": "tools-and-utilities"
+    },
+    {
+      "application_ids": [],
+      "banners": [],
+      "color": "FF9000",
+      "icon": {
+        "88x88": "https://assets2.rebble.io/88x88/WLi53fwzS2CKqMOAytF7"
+      },
+      "id": "5261a8fb3b773043d5000001",
+      "links": {
+        "apps": "/api/v1/apps/category/notifications"
+      },
+      "name": "Notifications",
+      "slug": "notifications"
+    },
+    {
+      "application_ids": [],
+      "banners": [],
+      "color": "fc4b4b",
+      "icon": {
+        "88x88": "https://assets2.rebble.io/88x88/TpLgG0W6TT6Pt6Nm3t91"
+      },
+      "id": "5261a8fb3b773043d5000008",
+      "links": {
+        "apps": "/api/v1/apps/category/remotes"
+      },
+      "name": "Remotes",
+      "slug": "remotes"
+    },
+    {
+      "application_ids": [],
+      "banners": [],
+      "color": "98D500",
+      "icon": {
+        "88x88": "https://assets2.rebble.io/88x88/xeW2tf3BSmWWBRyfmCZn"
+      },
+      "id": "5261a8fb3b773043d5000004",
+      "links": {
+        "apps": "/api/v1/apps/category/health-and-fitness"
+      },
+      "name": "Health & Fitness",
+      "slug": "health-and-fitness"
+    },
+    {
+      "application_ids": [],
+      "banners": [],
+      "color": "b57ad3",
+      "icon": {
+        "88x88": "https://assets2.rebble.io/88x88/Xji7xwyYSzqR1ANNhTyi"
+      },
+      "id": "5261a8fb3b773043d5000012",
+      "links": {
+        "apps": "/api/v1/apps/category/games"
+      },
+      "name": "Games",
+      "slug": "games"
+    }
+  ],
+  "collections": [
+    {
+      "application_ids": [
+        "574c54772e49dd0ef600000c",
+        "546047390db50db6e100002b",
+        "6837b69b7c3a470009af6c56",
+        "64d25223482a0c03a5ab933a",
+        "67c3afe7d2acb30009a3c7c2",
+        "666e80ff7568f7000a0b966f",
+        "54f15dacbc88dfd03d000028"
+      ],
+      "links": {
+        "apps": "/api/v1/apps/collection/featured_apps/apps"
+      },
+      "name": "Rebble Picks",
+      "slug": "featured_apps"
+    },
+    {
+      "application_ids": [
+        "692b3821d7dcba000a809ba5",
+        "67c3afe7d2acb30009a3c7c2",
+        "69514f7391ea9d0009991d73",
+        "695a09e424ba4b0008d50152",
+        "686578b965207500093d5a94",
+        "539e18f21a19dec6ca0000aa",
+        "69501540da1501000944b086"
+      ],
+      "links": {
+        "apps": "/api/v1/apps/collection/most-loved/apps"
+      },
+      "name": "Most Loved",
+      "slug": "most-loved"
+    },
+    {
+      "application_ids": [
+        "695da4c3fbfdde0009f99799",
+        "695cea36ccb618000951b01b",
+        "695ca015c78a580009d9be0f",
+        "695a62e2fb639a0009f3d1f4",
+        "695a09e424ba4b0008d50152",
+        "6958f4e091ea9d0009ebd756",
+        "695542edce101c00098adc05"
+      ],
+      "links": {
+        "apps": "/api/v1/apps/collection/all/apps"
+      },
+      "name": "All Watchapps",
+      "slug": "all"
+    }
+  ]
+}
