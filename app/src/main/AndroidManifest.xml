@@ -101,7 +101,8 @@
         <provider
             android:authorities="com.matejdro.micropebble.pebblekit"
             android:name="io.rebble.libpebblecommon.pebblekit.two.PebbleKitProvider"
-            android:exported="true" />
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
 
         <provider
             android:name=".logging.LogFileProvider"
