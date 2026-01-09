@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.appstore.api.store.application
 
+import com.matejdro.micropebble.appstore.api.serializer.BlankStringSerializer
 import com.matejdro.micropebble.appstore.api.serializer.HeaderImagesSerializer
 import com.matejdro.micropebble.appstore.api.serializer.Rfc1123InstantSerializer
 import kotlinx.serialization.SerialName
@@ -26,6 +27,7 @@ data class Application(
    @SerialName("developer_id")
    val developerId: String,
    @SerialName("discourse_url")
+   @Serializable(BlankStringSerializer::class)
    val discourseUrl: String? = null,
    @SerialName("header_images")
    @Serializable(HeaderImagesSerializer::class)
@@ -49,10 +51,12 @@ data class Application(
    val screenshotHardware: String,
    @SerialName("screenshot_images")
    val screenshotImages: List<ApplicationScreenshot>,
+   @Serializable(BlankStringSerializer::class)
    val source: String? = null,
    val title: String,
    val type: ApplicationType,
    val uuid: Uuid,
    val visible: Boolean,
+   @Serializable(BlankStringSerializer::class)
    val website: String? = null,
 )

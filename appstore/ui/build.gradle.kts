@@ -31,6 +31,7 @@ dependencies {
    implementation(libs.kotlinova.core)
    implementation(libs.kotlinova.navigation)
    implementation(libs.okio)
+   implementation(libs.androidx.foundation.layout)
 
    compileOnly(libs.koin.core)
 }

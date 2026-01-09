@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,13 +15,14 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,11 +38,13 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
+import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import dev.zacsweers.metro.Inject
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
-import si.inova.kotlinova.core.logging.logcat
 import si.inova.kotlinova.core.outcome.Outcome
+import si.inova.kotlinova.navigation.instructions.navigateTo
+import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 
@@ -47,7 +52,11 @@ import si.inova.kotlinova.navigation.screens.Screen
 @InjectNavigationScreen
 class AppstoreScreen(
    private val viewModel: AppstoreViewModel,
+   private val navigator: Navigator,
 ) : Screen<AppstoreScreenKey>() {
+   val categoryHeaderContentType = "categoryHeaderContentType"
+   val appTileContentType = "appTileContentType"
+
    @OptIn(ExperimentalMaterial3Api::class)
    @Composable
    override fun Content(key: AppstoreScreenKey) {
@@ -85,11 +94,11 @@ class AppstoreScreen(
                   modifier = Modifier.fillMaxSize(),
                   verticalArrangement = Arrangement.spacedBy(8.dp),
                   horizontalArrangement = Arrangement.spacedBy(8.dp),
-                  contentPadding = PaddingValues(8.dp),
+                  contentPadding = PaddingValues(8.dp)
                ) {
                   var totalIndex = 0
                   for (collection in data.collections) {
-                     stickyHeader(collection.slug) {
+                     stickyHeader(collection.slug, contentType = categoryHeaderContentType) {
                         Box(
                            modifier = Modifier
                               .fillMaxWidth()
@@ -99,7 +108,7 @@ class AppstoreScreen(
                         }
                      }
                      for (appId in collection.appIds) {
-                        item(totalIndex++) {
+                        item(totalIndex++, contentType = appTileContentType) {
                            val app = data.applicationsById[appId]
                            if (app == null) {
                               Text(
@@ -119,11 +128,8 @@ class AppstoreScreen(
 
    @Composable
    private fun WatchAppDisplay(app: Application) {
-      OutlinedButton(
-         onClick = {
-            logcat { "${app.title} clicked" }
-         },
-         shape = CardDefaults.outlinedShape,
+      Card(
+         onClick = { navigator.navigateTo(AppstoreDetailsScreenKey(app)) },
          modifier = Modifier.fillMaxSize(),
       ) {
          Column(
@@ -139,7 +145,7 @@ class AppstoreScreen(
                   modifier = Modifier
                      .fillMaxWidth()
                      .padding(bottom = 8.dp)
-                     .clip(CardDefaults.shape),
+                     .clip(MaterialTheme.shapes.extraLarge),
                   contentScale = ContentScale.FillWidth,
                )
             }
@@ -150,6 +156,18 @@ class AppstoreScreen(
                overflow = TextOverflow.Ellipsis,
                style = MaterialTheme.typography.titleMedium
             )
+            Row(
+               horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+               verticalAlignment = Alignment.CenterVertically,
+               modifier = Modifier.fillMaxWidth()
+            ) {
+               Icon(painterResource(R.drawable.outline_favorite_24), contentDescription = null)
+               Text(app.hearts.toString())
+               if (app.source != null) {
+                  VerticalDivider()
+                  Icon(painterResource(R.drawable.outline_code_24), contentDescription = null)
+               }
+            }
          }
       }
    }

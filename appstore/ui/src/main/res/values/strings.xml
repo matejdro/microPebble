@@ -2,4 +2,9 @@
 <resources>
     <string name="watchface">Watchfaces</string>
     <string name="watchapp">Apps</string>
+    <string name="appVersionInfo">Version information</string>
+    <string name="appWebsiteLink">Website link</string>
+    <string name="appSourceCode">Source code</string>
+    <string name="appFromDeveloper">More from this developer</string>
+    <string name="appDiscourseLink">Discuss on Discourse</string>
 </resources>

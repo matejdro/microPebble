@@ -45,6 +45,7 @@ class AppstoreViewModel(
       try {
          val result = appstoreClient.getHomePage(selectedTab)
          homePages[selectedTab] = result
+         result.applicationsById
          emit(Outcome.Success(result))
       } catch (e: IllegalArgumentException) {
          emit(Outcome.Error(DataParsingException(e.message, e)))
