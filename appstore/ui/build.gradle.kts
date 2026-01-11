@@ -30,6 +30,7 @@ dependencies {
    implementation(libs.kotlin.io)
    implementation(libs.kotlinova.core)
    implementation(libs.kotlinova.navigation)
+   implementation(libs.kotlin.serialization.json)
    implementation(libs.okio)
    implementation(libs.androidx.foundation.layout)
 
