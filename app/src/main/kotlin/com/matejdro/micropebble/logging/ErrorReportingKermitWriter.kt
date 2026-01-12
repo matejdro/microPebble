@@ -35,6 +35,7 @@ private val EXCLUDED_MESSAGES = listOf(
    "expected ResetComplete",
    "Couldn't send packet",
    "Cannot connect peripheral that has been cancelled",
+   "Exceeded max retries",
 )
 
 // We don't want to report generic BLE disconnections as they are often non-actionable
