@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.appstore.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -64,13 +65,14 @@ class AppstoreDetailsScreen : Screen<AppstoreDetailsScreenKey>() {
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun AppstoreDetailsContent(app: Application) {
+   @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
    Scaffold(floatingActionButton = {
       ExtendedFloatingActionButton(
          onClick = {},
          icon = { Icon(painterResource(R.drawable.outline_download_24), contentDescription = "Install") },
          text = { Text(stringResource(R.string.install)) }
       )
-   }) { paddingValues ->
+   }) { _ ->
       val childModifier = Modifier.padding(horizontal = 8.dp)
       val actions = remember { getActionsFor(app) }
       Box(
