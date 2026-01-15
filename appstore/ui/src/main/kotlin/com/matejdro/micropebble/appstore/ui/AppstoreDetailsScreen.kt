@@ -1,10 +1,10 @@
 package com.matejdro.micropebble.appstore.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,22 +12,29 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -40,9 +47,12 @@ import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import dev.zacsweers.metro.Inject
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
+import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 import java.net.URI
@@ -54,25 +64,74 @@ import kotlin.time.toJavaInstant
 
 @Inject
 @InjectNavigationScreen
-class AppstoreDetailsScreen : Screen<AppstoreDetailsScreenKey>() {
+class AppstoreDetailsScreen(
+   private val viewModel: AppstoreDetailsViewModel,
+) : Screen<AppstoreDetailsScreenKey>() {
    @OptIn(ExperimentalMaterial3Api::class)
    @Composable
    override fun Content(key: AppstoreDetailsScreenKey) {
-      AppstoreDetailsContent(key.app)
+      val installState = viewModel.appState.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      val snackbarHostState = remember { SnackbarHostState() }
+      LaunchedEffect(Unit) {
+         viewModel.appState.filterIsInstance<Outcome.Error<*>>().collect {
+            snackbarHostState.showSnackbar(it.exception.message ?: "Unknown error")
+         }
+      }
+      AppstoreDetailsContent(
+         key.app,
+         snackbarHostState,
+         if (installState is Outcome.Success) installState.data else AppInstallState.INSTALLED,
+         installApp = {
+            viewModel.install()
+         }
+      )
    }
 }
 
 @Composable
+private fun floatingActionButtonElevation(): ButtonElevation {
+   return ButtonDefaults.buttonElevation(
+      defaultElevation = 6.0.dp,
+      pressedElevation = 6.0.dp,
+      focusedElevation = 6.0.dp,
+      hoveredElevation = 8.0.dp,
+      disabledElevation = 4.0.dp,
+   )
+}
+
+@Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun AppstoreDetailsContent(app: Application) {
-   @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-   Scaffold(floatingActionButton = {
-      ExtendedFloatingActionButton(
-         onClick = {},
-         icon = { Icon(painterResource(R.drawable.outline_download_24), contentDescription = "Install") },
-         text = { Text(stringResource(R.string.install)) }
-      )
-   }) { _ ->
+private fun AppstoreDetailsContent(
+   app: Application,
+   errorsSnackbarState: SnackbarHostState,
+   appInstallState: AppInstallState,
+   installApp: () -> Unit,
+) {
+   Scaffold(
+      floatingActionButton = {
+         ElevatedButton(
+            onClick = installApp,
+            enabled = appInstallState != AppInstallState.INSTALLED,
+            elevation = floatingActionButtonElevation(),
+            colors = ButtonDefaults.buttonColors()
+               .run { copy(disabledContainerColor = disabledContainerColor.compositeOver(MaterialTheme.colorScheme.background)) },
+            modifier = Modifier.defaultMinSize(minHeight = 56.dp),
+            shape = FloatingActionButtonDefaults.extendedFabShape,
+         ) {
+            Row {
+               Icon(painterResource(R.drawable.outline_download_24), contentDescription = "Install")
+               val text = when (appInstallState) {
+                  AppInstallState.CAN_INSTALL -> stringResource(R.string.install)
+                  AppInstallState.INSTALLED -> stringResource(R.string.installed)
+               }
+               Text(text)
+            }
+         }
+      },
+      snackbarHost = {
+         SnackbarHost(hostState = errorsSnackbarState)
+      }
+   ) { _ ->
       val childModifier = Modifier.padding(horizontal = 8.dp)
       val actions = remember { getActionsFor(app) }
       Box(
@@ -235,6 +294,6 @@ internal fun AppstoreDetailsContentPreview() {
    PreviewTheme {
       val rawString = URI("https://appstore-api.rebble.io/api/v1/apps/id/67c751c6d2acb30009a3c812").toURL().readText()
       val string = Json.encodeToString(Json.parseToJsonElement(rawString).jsonObject["data"]?.jsonArray[0])
-      AppstoreDetailsContent(Json.decodeFromString(string))
+      AppstoreDetailsContent(Json.decodeFromString(string), SnackbarHostState(), AppInstallState.INSTALLED) {}
    }
 }

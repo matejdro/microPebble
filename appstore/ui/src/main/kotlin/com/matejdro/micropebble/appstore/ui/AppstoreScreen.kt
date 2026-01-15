@@ -6,20 +6,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,36 +20,24 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
-import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
+import com.matejdro.micropebble.appstore.ui.common.WatchAppDisplay
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import dev.zacsweers.metro.Inject
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
-import si.inova.kotlinova.core.logging.logcat
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
-
-private const val APP_IMAGE_ASPECT_RATIO = 6.0f / 7.0f
 
 @Inject
 @InjectNavigationScreen
@@ -74,7 +55,7 @@ class AppstoreScreen(
 
       LaunchedEffect(viewModel.selectedTab) { viewModel.loadHomePage() }
 
-      Column(Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
+      Column(Modifier.safeDrawingPadding()) {
          TabRow(selectedTabIndex = viewModel.selectedTab.ordinal) {
             Tab(
                viewModel.selectedTab == ApplicationType.Watchface,
@@ -116,7 +97,7 @@ class AppstoreScreen(
                         ) {
                            TextButton(
                               onClick = {
-                                 logcat { collection.links.apps }
+                                 navigator.navigateTo(viewModel.screenKeyFor(collection))
                               },
                               modifier = Modifier
                                  .fillMaxWidth()
@@ -151,76 +132,11 @@ class AppstoreScreen(
                                  "App with ID $appId not found", Modifier.padding(16.dp), color = MaterialTheme.colorScheme.error
                               )
                            } else {
-                              WatchAppDisplay(app)
+                              WatchAppDisplay(navigator, app)
                            }
                         }
                      }
                   }
-               }
-            }
-         }
-      }
-   }
-
-   @Composable
-   private fun WatchAppDisplay(app: Application) {
-      Card(
-         onClick = { navigator.navigateTo(AppstoreDetailsScreenKey(app)) },
-         modifier = Modifier.fillMaxSize(),
-      ) {
-         Column(
-            Modifier
-               .fillMaxSize()
-               .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-         ) {
-            val cardShape = CardDefaults.shape as RoundedCornerShape
-
-            // This should not be so hard
-            operator fun CornerSize.minus(b: CornerSize) = this.let {
-               object : CornerSize {
-                  override fun toPx(shapeSize: Size, density: Density) =
-                     (it.toPx(shapeSize, density) - b.toPx(shapeSize, density)).coerceAtLeast(0f)
-               }
-            }
-
-            val padCornerSize = CornerSize(8.dp)
-            app.screenshotImages.firstOrNull()?.let {
-               AsyncImage(
-                  model = it.medium,
-                  contentDescription = "App image for ${app.title}",
-                  modifier = Modifier
-                     .fillMaxWidth()
-                     .padding(bottom = 8.dp)
-                     .aspectRatio(APP_IMAGE_ASPECT_RATIO)
-                     .clip(
-                        RoundedCornerShape(
-                           cardShape.topStart - padCornerSize,
-                           cardShape.topEnd - padCornerSize,
-                           cardShape.bottomEnd - padCornerSize,
-                           cardShape.bottomStart - padCornerSize
-                        )
-                     ),
-                  contentScale = ContentScale.FillWidth,
-               )
-            }
-            Text(
-               app.title,
-               textAlign = TextAlign.Center,
-               maxLines = 1,
-               overflow = TextOverflow.Ellipsis,
-               style = MaterialTheme.typography.titleMedium
-            )
-            Row(
-               horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-               verticalAlignment = Alignment.CenterVertically,
-               modifier = Modifier.fillMaxWidth()
-            ) {
-               Icon(painterResource(R.drawable.outline_favorite_24), contentDescription = null)
-               Text(app.hearts.toString())
-               if (app.source != null) {
-                  VerticalDivider()
-                  Icon(painterResource(R.drawable.outline_code_24), contentDescription = null)
                }
             }
          }
