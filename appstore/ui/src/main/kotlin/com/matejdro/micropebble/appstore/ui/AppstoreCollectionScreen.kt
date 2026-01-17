@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CardDefaults
@@ -21,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.matejdro.micropebble.appstore.ui.common.WatchAppDisplay
+import com.matejdro.micropebble.appstore.ui.common.appGridCells
 import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
 import dev.zacsweers.metro.Inject
 import si.inova.kotlinova.navigation.navigator.Navigator
@@ -51,7 +51,7 @@ class AppstoreCollectionScreen(
          }
       ) { contentPadding ->
          LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = appGridCells,
             modifier = Modifier
                .fillMaxSize()
                .padding(contentPadding)

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -52,6 +51,7 @@ import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreCollection
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
 import com.matejdro.micropebble.appstore.ui.common.WatchAppDisplay
+import com.matejdro.micropebble.appstore.ui.common.appGridCells
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
@@ -175,7 +175,7 @@ class AppstoreScreen(
                }
                ProgressErrorSuccessScaffold(outcome) { results ->
                   LazyVerticalGrid(
-                     columns = GridCells.Fixed(2),
+                     columns = appGridCells,
                      modifier = Modifier
                         .fillMaxSize()
                         .padding(8.dp)
@@ -224,7 +224,7 @@ private fun AppstoreHomepage(
       if (state is Outcome.Success) {
          val data = state.data
          LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = appGridCells,
             modifier = Modifier
                .fillMaxSize()
                .padding(horizontal = 8.dp)

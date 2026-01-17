@@ -4,6 +4,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,27 +17,32 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingActionButtonMenu
+import androidx.compose.material3.FloatingActionButtonMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LeadingIconTab
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.ToggleFloatingActionButton
+import androidx.compose.material3.ToggleFloatingActionButtonDefaults.animateIcon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -77,8 +83,15 @@ class WatchappListScreen(
    private val navigator: Navigator,
 ) : Screen<WatchappListKey>() {
    @Composable
+   @OptIn(ExperimentalMaterial3ExpressiveApi::class)
    override fun Content(key: WatchappListKey) {
       val state = viewModel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention().value
+
+      val selectPbwResult = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { pbwUri ->
+         if (pbwUri != null) {
+            viewModel.startInstall(pbwUri)
+         }
+      }
 
       ProgressErrorSuccessScaffold(
          state,
@@ -86,12 +99,6 @@ class WatchappListScreen(
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
       ) {
-         val selectPbwResult = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { pbwUri ->
-            if (pbwUri != null) {
-               viewModel.startInstall(pbwUri)
-            }
-         }
-
          WatchappListScreenContent(
             it,
             viewModel.actionStatus.collectAsStateWithLifecycleAndBlinkingPrevention().value,
@@ -142,6 +149,7 @@ class WatchappListScreen(
    }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun WatchappListScreenContent(
    state: WatchappListState,
@@ -152,96 +160,121 @@ private fun WatchappListScreenContent(
    setOrder: (Uuid, Int) -> Unit,
    openConfiguration: (Uuid) -> Unit,
 ) {
-   ErrorAlertDialog(actionStatus, errorText = { it.installUserFriendlyErrorMessage() })
-   var selectedTab by rememberSaveable { mutableIntStateOf(0) }
-   val listState = rememberLazyListState()
+   Box {
+      ErrorAlertDialog(actionStatus, errorText = { it.installUserFriendlyErrorMessage() })
+      var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+      val listState = rememberLazyListState()
 
-   ReorderableListContainer(
-      if (selectedTab == 0) state.watchfaces else state.watchapps,
-      listState,
-      enabled = selectedTab == 1
-   ) { displayedItems ->
-      LazyColumn(
-         state = listState,
-         modifier = Modifier.fillMaxSize(),
-         contentPadding = WindowInsets.safeDrawing.asPaddingValues()
+      ReorderableListContainer(
+         if (selectedTab == 0) state.watchfaces else state.watchapps,
+         listState,
+         enabled = selectedTab == 1
+      ) { displayedItems ->
+         LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = WindowInsets.safeDrawing.asPaddingValues()
+         ) {
+            item("TabBar") {
+               SecondaryTabRow(selectedTabIndex = selectedTab) {
+                  LeadingIconTab(
+                     selectedTab == 0,
+                     onClick = { selectedTab = 0 },
+                     text = {
+                        Text(stringResource(R.string.watchfaces))
+                     },
+                     icon = {
+                        Icon(painterResource(R.drawable.outline_browse_gallery_24), contentDescription = null)
+                     }
+                  )
+                  LeadingIconTab(
+                     selectedTab == 1,
+                     onClick = { selectedTab = 1 },
+                     text = {
+                        Text(stringResource(R.string.watchapps))
+                     },
+                     icon = {
+                        Icon(painterResource(R.drawable.outline_apps_24), contentDescription = null)
+                     }
+                  )
+               }
+            }
+
+            if (displayedItems.isEmpty()) {
+               item {
+                  Text(
+                     "None installed yet",
+                     Modifier
+                        .padding(32.dp)
+                        .fillMaxWidth()
+                        .wrapContentSize(),
+                     style = MaterialTheme.typography.titleSmall
+                  )
+               }
+            }
+
+            itemsWithDivider(
+               displayedItems,
+               key = { it.properties.id.toString() },
+               contentType = { "app" },
+               modifier = { Modifier.animateItem() }
+            ) { app ->
+               ReorderableListItem(
+                  key = app.properties.id,
+                  data = app,
+                  setOrder = {
+                     setOrder(app.properties.id, it)
+                  },
+                  modifier = Modifier
+                     .fillMaxWidth()
+               ) { modifier ->
+                  App(
+                     app,
+                     actionStatus !is Outcome.Progress,
+                     delete = { deleteApp(app.properties.id) },
+                     openConfiguration = { openConfiguration(app.properties.id) },
+                     modifier
+                  )
+               }
+            }
+         }
+      }
+
+      var expanded by remember { mutableStateOf(false) }
+
+      FloatingActionButtonMenu(
+         expanded,
+         button = {
+            ToggleFloatingActionButton(expanded, onCheckedChange = { expanded = it }) {
+               val close = painterResource(R.drawable.outline_close_24) as VectorPainter
+               val open = painterResource(R.drawable.outline_add_24) as VectorPainter
+               val imageVector by remember {
+                  derivedStateOf {
+                     @Suppress("MagicNumber")
+                     if (checkedProgress > 0.5f) close else open
+                  }
+               }
+               Icon(
+                  painter = imageVector,
+                  contentDescription = null,
+                  modifier = Modifier.animateIcon({ checkedProgress }),
+               )
+            }
+         },
+         modifier = Modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .align(Alignment.BottomEnd)
       ) {
-         item("ButtonsBar") {
-            if (actionStatus is Outcome.Progress) {
-               CircularProgressIndicator(Modifier.padding(8.dp))
-            } else {
-               Row(
-                  Modifier
-                     .fillMaxWidth()
-                     .wrapContentWidth(),
-                  horizontalArrangement = Arrangement.spacedBy(16.dp)
-               ) {
-                  Button(
-                     onClick = installFromPbw,
-                  ) {
-                     Text(stringResource(R.string.install_from_pbw))
-                  }
-
-                  Button(
-                     onClick = installFromAppstore,
-                  ) {
-                     Text(stringResource(R.string.install_from_store))
-                  }
-               }
-            }
-         }
-
-         item("Divider") { HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.onSurface) }
-
-         item("TabBar") {
-            TabRow(selectedTabIndex = selectedTab) {
-               Tab(selectedTab == 0, onClick = { selectedTab = 0 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
-                  Text(stringResource(R.string.watchfaces))
-               }
-
-               Tab(selectedTab == 1, onClick = { selectedTab = 1 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
-                  Text(stringResource(R.string.watchapps))
-               }
-            }
-         }
-
-         if (displayedItems.isEmpty()) {
-            item {
-               Text(
-                  "None installed yet",
-                  Modifier
-                     .padding(32.dp)
-                     .fillMaxWidth()
-                     .wrapContentSize(),
-                  style = MaterialTheme.typography.titleSmall
-               )
-            }
-         }
-
-         itemsWithDivider(
-            displayedItems,
-            key = { it.properties.id.toString() },
-            contentType = { "app" },
-            modifier = { Modifier.animateItem() }
-         ) { app ->
-            ReorderableListItem(
-               key = app.properties.id,
-               data = app,
-               setOrder = {
-                  setOrder(app.properties.id, it)
-               },
-               modifier = Modifier
-                  .fillMaxWidth()
-            ) { modifier ->
-               App(
-                  app,
-                  actionStatus !is Outcome.Progress,
-                  delete = { deleteApp(app.properties.id) },
-                  openConfiguration = { openConfiguration(app.properties.id) },
-                  modifier
-               )
-            }
-         }
+         FloatingActionButtonMenuItem(
+            onClick = installFromPbw,
+            text = { Text(stringResource(R.string.install_from_pbw)) },
+            icon = { Icon(painterResource(R.drawable.outline_file_open_24), contentDescription = null) },
+         )
+         FloatingActionButtonMenuItem(
+            onClick = installFromAppstore,
+            text = { Text(stringResource(R.string.install_from_store)) },
+            icon = { Icon(painterResource(R.drawable.outline_store_24), contentDescription = null) },
+         )
       }
    }
 }
