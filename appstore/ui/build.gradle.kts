@@ -37,6 +37,8 @@ dependencies {
    implementation(libs.kotlin.serialization.json)
    implementation(libs.okio)
    implementation(libs.androidx.foundation.layout)
+   implementation(libs.androidx.paging.runtime)
+   implementation(libs.androidx.paging.compose)
    implementation(libs.libpebble3)
 
    compileOnly(libs.koin.core)

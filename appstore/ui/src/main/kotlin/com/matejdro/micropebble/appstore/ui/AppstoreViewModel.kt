@@ -12,21 +12,17 @@ import com.matejdro.micropebble.appstore.api.store.application.AlgoliaApplicatio
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreCollection
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
+import com.matejdro.micropebble.appstore.ui.common.getHttpClient
+import com.matejdro.micropebble.appstore.ui.common.json
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import dev.zacsweers.metro.Inject
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import si.inova.kotlinova.core.exceptions.DataParsingException
@@ -35,19 +31,6 @@ import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
-
-val json = Json {
-   isLenient = true
-   ignoreUnknownKeys = true
-}
-
-val httpClient by lazy {
-   HttpClient {
-      install(ContentNegotiation) {
-         json(json)
-      }
-   }
-}
 
 @Inject
 @ContributesScopedService
@@ -68,7 +51,7 @@ class AppstoreViewModel(
    val appstoreSources = listOf(
       AppstoreSource(
          url = "https://appstore-api.rebble.io/api",
-         name = "Rebble Appstore",
+         name = "Rebble",
          algoliaData = AlgoliaData(
             appId = "7683OW76EQ",
             apiKey = "252f4938082b8693a8a9fc0157d1d24f",
@@ -77,7 +60,7 @@ class AppstoreViewModel(
       ),
       AppstoreSource(
          url = "https://appstore-api.repebble.com/api",
-         name = "Pebble App Feed",
+         name = "Core Devices",
          algoliaData = AlgoliaData(
             appId = "GM3S9TRYO4",
             apiKey = "0b83b4f8e4e8e9793d2f1f93c21894aa",
@@ -144,5 +127,5 @@ class AppstoreViewModel(
    }
 
    private suspend fun getHomePage(type: ApplicationType) =
-      withContext(Dispatchers.IO) { httpClient }.get(appstoreSource.url.joinUrls(type.apiEndpoint)).body<AppstoreHomePage>()
+      getHttpClient().get(appstoreSource.url.joinUrls(type.apiEndpoint)).body<AppstoreHomePage>()
 }

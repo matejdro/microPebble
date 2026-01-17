@@ -2,6 +2,7 @@ package com.matejdro.micropebble.appstore.ui
 
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.collection.AppstoreCollectionPage
+import com.matejdro.micropebble.appstore.ui.common.getHttpClient
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
@@ -10,11 +11,9 @@ import dispatch.core.withDefault
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.rebble.libpebblecommon.connection.LockerApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withContext
 import kotlinx.io.files.Path
 import okio.buffer
 import okio.sink
@@ -66,7 +65,7 @@ class AppstoreDetailsViewModel(
       if (key.onlyPartialData && source != null) {
          resources.launchResourceControlTask(_appDataState) {
             val realData =
-               withContext(Dispatchers.IO) { httpClient }
+               getHttpClient()
                   .get(source.url.joinUrls("/v1/apps/id/${key.app.id}"))
                   .body<AppstoreCollectionPage>().apps.first()
             emit(Outcome.Success(realData))

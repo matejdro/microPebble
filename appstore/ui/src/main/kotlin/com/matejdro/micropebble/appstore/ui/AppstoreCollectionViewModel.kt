@@ -1,88 +1,67 @@
 package com.matejdro.micropebble.appstore.ui
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.Composable
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.collection.AppstoreCollectionPage
+import com.matejdro.micropebble.appstore.ui.common.getHttpClient
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
 import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.withContext
-import si.inova.kotlinova.core.exceptions.DataParsingException
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
-import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 
 @Inject
 @ContributesScopedService
 class AppstoreCollectionViewModel(
-   private val resources: CoroutineResourceManager,
+   resources: CoroutineResourceManager,
    private val actionLogger: ActionLogger,
 ) : SingleScreenViewModel<AppstoreCollectionScreenKey>(resources.scope) {
-   private val _collections = mutableListOf<AppstoreCollectionPage>()
-   val collections
-      get() = _collections
-   private val _state = MutableStateFlow<Outcome<AppstoreCollectionPage>>(Outcome.Progress())
-   val state: StateFlow<Outcome<AppstoreCollectionPage>>
-      get() = _state
-   var page by mutableIntStateOf(0)
-   var hasFoundEnd by mutableStateOf(false)
-      private set
-
-   fun reload() {
-      actionLogger.logAction { "AppstoreCollectionViewModel.reload()" }
-      _collections.clear()
-      load()
-   }
-
-   fun load() = resources.launchResourceControlTask(_state) {
-      actionLogger.logAction { "AppstoreCollectionViewModel.load()" }
-      emit(Outcome.Progress())
-      while (page !in _collections.indices) {
-         loadNextPage()
-      }
-      emit(Outcome.Success(_collections[page]))
-   }
-
-   suspend fun CoroutineResourceManager.ResourceControlBlock<AppstoreCollectionPage>.loadNextPage() {
-      actionLogger.logAction { "AppstoreCollectionViewModel.loadNextPage()" }
-      emit(Outcome.Progress())
-      try {
-         val result = getNextPage()
-         if (result.links.nextPage == null) {
-            hasFoundEnd = true
-         }
-         _collections.add(result)
-         emit(Outcome.Success(result))
-      } catch (e: IllegalArgumentException) {
-         emit(Outcome.Error(DataParsingException(e.message, e)))
-      }
-   }
-
-   private suspend fun getNextPage(): AppstoreCollectionPage {
-      actionLogger.logAction { "AppstoreCollectionViewModel.getNextPage()" }
-      return withContext(Dispatchers.IO) { httpClient }.get(
-         _collections.lastOrNull()?.links?.nextPage ?: key.endpoint
+   private val appPager = Pager(
+      PagingConfig(
+         pageSize = 10
       )
-         .body<AppstoreCollectionPage>()
+   ) {
+      object : PagingSource<Int, Application>() {
+         override fun getRefreshKey(state: PagingState<Int, Application>) =
+            ((state.anchorPosition ?: 0) - state.config.initialLoadSize / 2).coerceAtLeast(0)
+
+         override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Application> {
+            val offset = (params.key ?: 0)
+            val page = getHttpClient().get(key.endpoint) {
+               url {
+                  parameters["offset"] = offset.toString()
+                  parameters["limit"] = params.loadSize.toString()
+               }
+            }.body<AppstoreCollectionPage>()
+            return LoadResult.Page(
+               data = page.apps,
+               prevKey = if (params.loadSize >= offset) null else offset - params.loadSize,
+               nextKey = page.links.nextPage?.let { offset + params.loadSize }
+            )
+         }
+      }
    }
 
-   fun previousPage() {
-      actionLogger.logAction { "AppstoreCollectionViewModel.previousPage()" }
-      page--
-      load()
-   }
+   private lateinit var lazyPagingItems: LazyPagingItems<Application>
 
-   fun nextPage() {
-      actionLogger.logAction { "AppstoreCollectionViewModel.nextPage()" }
-      page++
-      load()
+   /**
+    * Cache the [LazyPagingItems] in the viewmodel so that the loading progress doesn't get reset on navigation.
+    */
+   @Composable
+   fun getLazyPagingItems(): LazyPagingItems<Application> {
+      actionLogger.logAction { "AppstoreCollectionViewModel.getLazyPagingItems()" }
+      if (!this::lazyPagingItems.isInitialized) {
+         lazyPagingItems = appPager.flow.collectAsLazyPagingItems()
+      }
+      return lazyPagingItems
    }
 }
