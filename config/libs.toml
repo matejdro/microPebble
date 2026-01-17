@@ -75,6 +75,7 @@ unmock-androidJar = "16-robolectric-13921718"
 unmock-plugin = "0.9.0"
 versionCatalogUpdate = "1.0.0"
 foundationLayout = "1.10.0"
+algolia = "3.37.3"
 
 [libraries]
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }
@@ -194,7 +195,7 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 unmock-androidJar = { module = "org.robolectric:android-all", version.ref = "unmock-androidJar" }
 unmock-plugin = { module = "com.github.bjoernq:unmockplugin", version.ref = "unmock-plugin" }
 androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
-
+algolia = { module = "com.algolia:algoliasearch-client-kotlin", version.ref = "algolia" }
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

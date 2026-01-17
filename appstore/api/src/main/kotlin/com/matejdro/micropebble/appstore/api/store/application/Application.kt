@@ -2,7 +2,7 @@ package com.matejdro.micropebble.appstore.api.store.application
 
 import com.matejdro.micropebble.appstore.api.serializer.BlankStringSerializer
 import com.matejdro.micropebble.appstore.api.serializer.HeaderImagesSerializer
-import com.matejdro.micropebble.appstore.api.serializer.Rfc1123InstantSerializer
+import com.matejdro.micropebble.appstore.api.serializer.PebbleAPIInstantSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Instant
@@ -21,7 +21,7 @@ data class Application(
    val companions: ApplicationCompanions,
    val compatibility: Map<String, CompatibilityInfo>,
    @SerialName("created_at")
-   @Serializable(Rfc1123InstantSerializer::class)
+   @Serializable(PebbleAPIInstantSerializer::class)
    val createdAt: Instant,
    val description: String,
    @SerialName("developer_id")
@@ -45,7 +45,7 @@ data class Application(
     * Unused, possibly.
     */
    @SerialName("published_date")
-   @Serializable(Rfc1123InstantSerializer::class)
+   @Serializable(PebbleAPIInstantSerializer::class)
    val publishedDate: Instant?,
    @SerialName("screenshot_hardware")
    val screenshotHardware: String,

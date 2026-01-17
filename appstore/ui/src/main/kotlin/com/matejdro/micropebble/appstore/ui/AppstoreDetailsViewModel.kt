@@ -1,13 +1,20 @@
 package com.matejdro.micropebble.appstore.ui
 
+import com.matejdro.micropebble.appstore.api.store.application.Application
+import com.matejdro.micropebble.appstore.api.store.collection.AppstoreCollectionPage
 import com.matejdro.micropebble.common.logging.ActionLogger
+import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
 import dev.zacsweers.metro.Inject
 import dispatch.core.withDefault
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.rebble.libpebblecommon.connection.LockerApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
 import kotlinx.io.files.Path
 import okio.buffer
 import okio.sink
@@ -39,6 +46,9 @@ class AppstoreDetailsViewModel(
    private val _appState = MutableStateFlow<Outcome<AppInstallState>>(Outcome.Progress())
    val appState: StateFlow<Outcome<AppInstallState>> = _appState
 
+   private val _appDataState = MutableStateFlow<Outcome<Application>>(Outcome.Progress())
+   val appDataState: StateFlow<Outcome<Application>> = _appDataState
+
    override fun onServiceRegistered() {
       actionLogger.logAction { "AppstoreDetailsViewModel.onServiceRegistered()" }
 
@@ -51,15 +61,32 @@ class AppstoreDetailsViewModel(
             }
          )
       }
+
+      val source = key.appstoreSource
+      if (key.onlyPartialData && source != null) {
+         resources.launchResourceControlTask(_appDataState) {
+            val realData =
+               withContext(Dispatchers.IO) { httpClient }
+                  .get(source.url.joinUrls("/v1/apps/id/${key.app.id}"))
+                  .body<AppstoreCollectionPage>().apps.first()
+            emit(Outcome.Success(realData))
+         }
+      } else {
+         _appDataState.value = Outcome.Success(key.app)
+      }
    }
 
    fun install() = resources.launchResourceControlTask(_appState) {
+      val app = appDataState.value
+      if (app !is Outcome.Success) {
+         return@launchResourceControlTask
+      }
       actionLogger.logAction { "AppstoreDetailsViewModel.install()" }
-      val uri = URL(key.app.latestRelease.pbwFile)
+      val uri = URL(app.data.latestRelease.pbwFile)
       actionLogger.logAction { "WatchappListViewModel.install()" }
 
       withDefault {
-         val tmpFile = File.createTempFile(key.app.uuid.toString(), "pbw")
+         val tmpFile = File.createTempFile(app.data.uuid.toString(), "pbw")
 
          try {
             uri.openConnection().getInputStream().use { input ->

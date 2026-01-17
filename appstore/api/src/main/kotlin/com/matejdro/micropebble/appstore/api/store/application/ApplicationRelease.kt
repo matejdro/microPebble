@@ -1,6 +1,6 @@
 package com.matejdro.micropebble.appstore.api.store.application
 
-import com.matejdro.micropebble.appstore.api.serializer.Rfc1123InstantSerializer
+import com.matejdro.micropebble.appstore.api.serializer.PebbleAPIInstantSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.time.Instant
@@ -15,7 +15,7 @@ data class ApplicationRelease(
    @SerialName("pbw_file")
    val pbwFile: String,
    @SerialName("published_date")
-   @Serializable(Rfc1123InstantSerializer::class)
+   @Serializable(PebbleAPIInstantSerializer::class)
    val publishedDate: Instant,
    @SerialName("release_notes")
    val releaseNotes: String,

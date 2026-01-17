@@ -68,7 +68,9 @@ class AppstoreCollectionViewModel(
 
    private suspend fun getNextPage(): AppstoreCollectionPage {
       actionLogger.logAction { "AppstoreCollectionViewModel.getNextPage()" }
-      return withContext(Dispatchers.IO) { httpClient }.get(_collections.lastOrNull()?.links?.nextPage ?: key.endpoint)
+      return withContext(Dispatchers.IO) { httpClient }.get(
+         _collections.lastOrNull()?.links?.nextPage ?: key.endpoint
+      )
          .body<AppstoreCollectionPage>()
    }
 

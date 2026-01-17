@@ -27,18 +27,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.ui.R
 import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 
-private const val APP_IMAGE_ASPECT_RATIO = 6.0f / 7.0f
-
 @Composable
-fun WatchAppDisplay(navigator: Navigator, app: Application, modifier: Modifier = Modifier) {
+fun WatchAppDisplay(
+   app: Application,
+   navigator: Navigator?,
+   modifier: Modifier = Modifier,
+   appstoreSource: AppstoreSource? = null,
+   onlyPartialData: Boolean = false,
+) {
    Card(
-      onClick = { navigator.navigateTo(AppstoreDetailsScreenKey(app)) },
+      onClick = { navigator?.navigateTo(AppstoreDetailsScreenKey(app, onlyPartialData, appstoreSource)) },
       modifier = modifier.fillMaxSize(),
    ) {
       Column(
@@ -50,10 +55,10 @@ fun WatchAppDisplay(navigator: Navigator, app: Application, modifier: Modifier =
          val cardShape = CardDefaults.shape as RoundedCornerShape
 
          // This should not be so hard
-         operator fun CornerSize.minus(b: CornerSize) = this.let {
+         operator fun CornerSize.minus(b: CornerSize) = let { baseSize ->
             object : CornerSize {
                override fun toPx(shapeSize: Size, density: Density) =
-                  (it.toPx(shapeSize, density) - b.toPx(shapeSize, density)).coerceAtLeast(0f)
+                  (baseSize.toPx(shapeSize, density) - b.toPx(shapeSize, density)).coerceAtLeast(0f)
             }
          }
 

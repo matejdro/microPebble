@@ -23,6 +23,7 @@ dependencies {
    implementation(projects.commonCompose)
    implementation(projects.commonNavigation)
    implementation(projects.sharedResources)
+   implementation(libs.algolia)
    implementation(libs.androidx.activity.compose)
    implementation(libs.androidx.core)
    implementation(libs.coil)
