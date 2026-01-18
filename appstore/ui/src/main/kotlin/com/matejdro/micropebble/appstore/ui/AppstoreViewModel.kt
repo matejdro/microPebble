@@ -6,14 +6,13 @@ import androidx.compose.runtime.setValue
 import com.algolia.client.api.SearchClient
 import com.algolia.client.model.search.SearchParamsObject
 import com.algolia.client.model.search.TagFilters
+import com.matejdro.micropebble.appstore.api.ApiClient
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.AppstoreSourceService
 import com.matejdro.micropebble.appstore.api.store.application.AlgoliaApplication
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreCollection
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
-import com.matejdro.micropebble.appstore.ui.common.getHttpClient
-import com.matejdro.micropebble.appstore.ui.common.json
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
@@ -39,6 +38,7 @@ class AppstoreViewModel(
    private val resources: CoroutineResourceManager,
    private val actionLogger: ActionLogger,
    private val appstoreSourceService: AppstoreSourceService,
+   private val api: ApiClient,
 ) : SingleScreenViewModel<AppstoreScreenKey>(resources.scope) {
    private val _loadingState: MutableStateFlow<Outcome<AppstoreHomePage>> = MutableStateFlow(Outcome.Progress())
    val homePageState: StateFlow<Outcome<AppstoreHomePage>>
@@ -105,7 +105,7 @@ class AppstoreViewModel(
       ).hits.mapNotNull {
          it.additionalProperties?.let { content ->
             logcat { content.toString() }
-            json.decodeFromJsonElement(JsonObject(content))
+            api.json.decodeFromJsonElement(JsonObject(content))
          }
       }
       logcat { "Found result count of $response" }
@@ -121,5 +121,5 @@ class AppstoreViewModel(
    }
 
    private suspend fun getHomePage(type: ApplicationType) =
-      getHttpClient().get(ensureAppstoreSource().url.joinUrls(type.apiEndpoint)).body<AppstoreHomePage>()
+      api.http.get(ensureAppstoreSource().url.joinUrls(type.apiEndpoint)).body<AppstoreHomePage>()
 }

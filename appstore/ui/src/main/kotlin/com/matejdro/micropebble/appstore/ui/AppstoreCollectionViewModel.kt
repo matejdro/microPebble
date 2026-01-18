@@ -7,9 +7,9 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.matejdro.micropebble.appstore.api.ApiClient
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.collection.AppstoreCollectionPage
-import com.matejdro.micropebble.appstore.ui.common.getHttpClient
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
 import dev.zacsweers.metro.Inject
@@ -24,6 +24,7 @@ import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 class AppstoreCollectionViewModel(
    resources: CoroutineResourceManager,
    private val actionLogger: ActionLogger,
+   private val api: ApiClient,
 ) : SingleScreenViewModel<AppstoreCollectionScreenKey>(resources.scope) {
    private val appPager = Pager(
       PagingConfig(
@@ -36,7 +37,7 @@ class AppstoreCollectionViewModel(
 
          override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Application> {
             val offset = (params.key ?: 0)
-            val page = getHttpClient().get(key.endpoint) {
+            val page = api.http.get(key.endpoint) {
                url {
                   parameters["offset"] = offset.toString()
                   parameters["limit"] = params.loadSize.toString()

@@ -171,6 +171,7 @@ kotlinova-navigation-test = { module = "si.inova.kotlinova:navigation-test", ver
 kotlinova-retrofit = { module = "si.inova.kotlinova:retrofit", version.ref = "kotlinova" }
 kotlinova-retrofit-test = { module = "si.inova.kotlinova:retrofit-test", version.ref = "kotlinova" }
 ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }

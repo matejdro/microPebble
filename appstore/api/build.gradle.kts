@@ -4,6 +4,8 @@ plugins {
 }
 
 dependencies {
-   implementation(libs.kotlin.serialization.json)
-   implementation(libs.kotlin.coroutines)
+   api(libs.kotlin.coroutines)
+   api(libs.kotlinova.core)
+   api(libs.ktor.core)
+   api(libs.kotlin.serialization.json)
 }

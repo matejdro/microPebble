@@ -50,6 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
+import com.matejdro.micropebble.appstore.api.AppInstallState
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.ui.common.APP_IMAGE_ASPECT_RATIO
@@ -141,7 +142,7 @@ private fun AppstoreDetailsContent(
          shape = FloatingActionButtonDefaults.extendedFabShape,
       ) {
          Row {
-            Icon(painterResource(R.drawable.outline_download_24), contentDescription = "Install")
+            Icon(painterResource(R.drawable.ic_download), contentDescription = "Install")
             val text = when (appInstallState) {
                AppInstallState.CAN_INSTALL -> stringResource(R.string.install)
                AppInstallState.INSTALLED -> stringResource(R.string.installed)
@@ -246,7 +247,7 @@ private fun TitleCard(app: Application, modifier: Modifier = Modifier) {
                horizontalArrangement = Arrangement.spacedBy(8.dp),
                modifier = Modifier.fillMaxHeight(),
             ) {
-               Icon(painterResource(R.drawable.outline_favorite_24), contentDescription = null)
+               Icon(painterResource(R.drawable.ic_like), contentDescription = null)
                Text(app.hearts.toString())
             }
          }
@@ -315,7 +316,7 @@ private fun LinksCard(actions: List<AppAction>, modifier: Modifier = Modifier) {
                Text(stringResource(action.label), Modifier.padding(8.dp))
                if (action is AppLink) {
                   Icon(
-                     painter = painterResource(R.drawable.baseline_open_in_new_24),
+                     painter = painterResource(R.drawable.ic_open),
                      contentDescription = null,
                      modifier = Modifier.padding(8.dp)
                   )

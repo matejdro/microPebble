@@ -8,4 +8,6 @@ data class AppstoreSource(
    val name: String,
 
    val algoliaData: AlgoliaData? = null,
+
+   val enabled: Boolean = true,
 )

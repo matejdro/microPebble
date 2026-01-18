@@ -94,11 +94,11 @@ fun WatchAppDisplay(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
          ) {
-            Icon(painterResource(R.drawable.outline_favorite_24), contentDescription = null)
+            Icon(painterResource(R.drawable.ic_like), contentDescription = null)
             Text(app.hearts.toString())
             if (app.source != null) {
                VerticalDivider()
-               Icon(painterResource(R.drawable.outline_code_24), contentDescription = null)
+               Icon(painterResource(R.drawable.ic_source_code), contentDescription = null)
             }
          }
       }

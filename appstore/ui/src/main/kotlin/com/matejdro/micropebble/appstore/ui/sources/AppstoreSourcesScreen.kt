@@ -78,7 +78,7 @@ class AppstoreSourcesScreen(
                   editedSource = null
                },
                content = {
-                  Icon(painterResource(R.drawable.outline_add_24), contentDescription = null)
+                  Icon(painterResource(R.drawable.ic_add), contentDescription = null)
                },
             )
          },

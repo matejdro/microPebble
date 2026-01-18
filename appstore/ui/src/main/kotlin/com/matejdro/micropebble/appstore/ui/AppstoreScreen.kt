@@ -115,7 +115,7 @@ class AppstoreScreen(
                      Text(stringResource(R.string.watchface))
                   },
                   icon = {
-                     Icon(painterResource(R.drawable.outline_browse_gallery_24), contentDescription = null)
+                     Icon(painterResource(R.drawable.ic_watchfaces), contentDescription = null)
                   }
                )
 
@@ -126,7 +126,7 @@ class AppstoreScreen(
                      Text(stringResource(R.string.watchapp))
                   },
                   icon = {
-                     Icon(painterResource(R.drawable.outline_apps_24), contentDescription = null)
+                     Icon(painterResource(R.drawable.ic_apps), contentDescription = null)
                   }
                )
 
@@ -138,7 +138,7 @@ class AppstoreScreen(
                      modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                      readOnly = true,
                      singleLine = true,
-                     leadingIcon = { Icon(painterResource(R.drawable.outline_database_24), contentDescription = null) },
+                     leadingIcon = { Icon(painterResource(R.drawable.ic_appstore_source), contentDescription = null) },
                      colors = ExposedDropdownMenuDefaults.textFieldColors(
                         unfocusedContainerColor = Color.Transparent,
                         focusedContainerColor = Color.Transparent,
@@ -171,7 +171,7 @@ class AppstoreScreen(
                         onExpandedChange = { searchExpanded = it },
                         placeholder = { Text(stringResource(R.string.search)) },
                         leadingIcon = {
-                           Icon(painterResource(R.drawable.outline_search_24), contentDescription = null)
+                           Icon(painterResource(R.drawable.ic_search), contentDescription = null)
                         }
                      )
                   },
@@ -271,7 +271,7 @@ private fun AppstoreHomepage(
                            ) {
                               Text(stringResource(R.string.seeAll))
                               Icon(
-                                 painter = painterResource(R.drawable.outline_chevron_forward_24),
+                                 painter = painterResource(R.drawable.ic_chevron_forward),
                                  contentDescription = null,
                                  modifier = Modifier.padding(8.dp)
                               )

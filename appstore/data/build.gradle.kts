@@ -14,8 +14,10 @@ android {
 dependencies {
    api(projects.appstore.api)
    api(projects.common)
-   implementation(libs.androidx.datastore.preferences)
-   implementation(libs.ktor.okhttp)
-   implementation(libs.ktor.contentNegotiation)
+
    implementation(libs.ktor.serialization.kotlinx.json)
+   implementation(libs.androidx.datastore.preferences)
+   implementation(libs.ktor.contentNegotiation)
+   implementation(libs.ktor.okhttp)
+   implementation(libs.libpebble3)
 }

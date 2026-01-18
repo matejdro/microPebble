@@ -109,6 +109,7 @@ class WatchappListScreen(
                navigator.navigateTo(AppstoreScreenKey)
             },
             deleteApp = viewModel::deleteApp,
+            updateApp = {},
             setOrder = viewModel::reorderApp,
             openConfiguration = { appUuid ->
                navigator.navigateTo(AppConfigScreenKey(appUuid))
@@ -157,6 +158,7 @@ private fun WatchappListScreenContent(
    installFromPbw: () -> Unit,
    installFromAppstore: () -> Unit,
    deleteApp: (Uuid) -> Unit,
+   updateApp: (Uuid) -> Unit,
    setOrder: (Uuid, Int) -> Unit,
    openConfiguration: (Uuid) -> Unit,
 ) {
@@ -184,7 +186,7 @@ private fun WatchappListScreenContent(
                         Text(stringResource(R.string.watchfaces))
                      },
                      icon = {
-                        Icon(painterResource(R.drawable.outline_browse_gallery_24), contentDescription = null)
+                        Icon(painterResource(R.drawable.ic_watchfaces), contentDescription = null)
                      }
                   )
                   LeadingIconTab(
@@ -194,7 +196,7 @@ private fun WatchappListScreenContent(
                         Text(stringResource(R.string.watchapps))
                      },
                      icon = {
-                        Icon(painterResource(R.drawable.outline_apps_24), contentDescription = null)
+                        Icon(painterResource(R.drawable.ic_apps), contentDescription = null)
                      }
                   )
                }
@@ -232,6 +234,8 @@ private fun WatchappListScreenContent(
                      app,
                      actionStatus !is Outcome.Progress,
                      delete = { deleteApp(app.properties.id) },
+                     updatable = app.properties.id in state.updatableWatchfaces,
+                     update = { updateApp(app.properties.id) },
                      openConfiguration = { openConfiguration(app.properties.id) },
                      modifier
                   )
@@ -246,8 +250,8 @@ private fun WatchappListScreenContent(
          expanded,
          button = {
             ToggleFloatingActionButton(expanded, onCheckedChange = { expanded = it }) {
-               val close = painterResource(R.drawable.outline_close_24) as VectorPainter
-               val open = painterResource(R.drawable.outline_add_24) as VectorPainter
+               val close = painterResource(R.drawable.ic_close) as VectorPainter
+               val open = painterResource(R.drawable.ic_open) as VectorPainter
                val imageVector by remember {
                   derivedStateOf {
                      @Suppress("MagicNumber")
@@ -268,12 +272,12 @@ private fun WatchappListScreenContent(
          FloatingActionButtonMenuItem(
             onClick = installFromPbw,
             text = { Text(stringResource(R.string.install_from_pbw)) },
-            icon = { Icon(painterResource(R.drawable.outline_file_open_24), contentDescription = null) },
+            icon = { Icon(painterResource(R.drawable.ic_install_pbw), contentDescription = null) },
          )
          FloatingActionButtonMenuItem(
             onClick = installFromAppstore,
             text = { Text(stringResource(R.string.install_from_store)) },
-            icon = { Icon(painterResource(R.drawable.outline_store_24), contentDescription = null) },
+            icon = { Icon(painterResource(R.drawable.ic_appstore), contentDescription = null) },
          )
       }
    }
@@ -284,6 +288,8 @@ private fun App(
    app: LockerWrapper,
    enableActions: Boolean,
    delete: () -> Unit,
+   updatable: Boolean,
+   update: () -> Unit,
    openConfiguration: () -> Unit,
    modifier: Modifier = Modifier,
 ) {
@@ -301,6 +307,12 @@ private fun App(
          verticalArrangement = Arrangement.spacedBy(8.dp)
       ) {
          Text(app.properties.title, style = MaterialTheme.typography.bodyMedium)
+      }
+
+      if (updatable) {
+         OutlinedButton(onClick = update, contentPadding = PaddingValues(8.dp)) {
+            Icon(painterResource(R.drawable.ic_update), contentDescription = stringResource(R.string.update))
+         }
       }
 
       if (app is LockerWrapper.NormalApp && app.configurable) {
@@ -322,11 +334,12 @@ private fun App(
 @ShowkaseComposable(group = "Test")
 internal fun WatchappListScreenContentPreview() {
    PreviewTheme {
-      val state = WatchappListState(fakeApps, fakeApps)
+      val state = WatchappListState(fakeApps, fakeApps, listOf(fakeApps.first().properties.id))
 
       WatchappListScreenContent(
          state,
          Outcome.Success(Unit),
+         {},
          {},
          {},
          {},
@@ -349,6 +362,7 @@ internal fun WatchappListInstallingPreview() {
          {},
          {},
          {},
+         {},
          { _, _ -> },
          {}
       )
@@ -368,6 +382,7 @@ internal fun WatchappListInstallingErrorPreview() {
          {},
          {},
          {},
+         {},
          { _, _ -> },
          {}
       )
@@ -384,6 +399,7 @@ internal fun WatchappListScreenContentEmptyPreview() {
       WatchappListScreenContent(
          state,
          Outcome.Success(Unit),
+         {},
          {},
          {},
          {},
