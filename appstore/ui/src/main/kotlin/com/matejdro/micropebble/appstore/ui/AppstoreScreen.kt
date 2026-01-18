@@ -16,12 +16,12 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LeadingIconTab
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -32,9 +32,12 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,6 +60,7 @@ import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.outcome.Outcome
@@ -79,10 +83,17 @@ class AppstoreScreen(
    @OptIn(ExperimentalMaterial3Api::class)
    @Composable
    override fun Content(key: AppstoreScreenKey) {
+      val coroutineScope = rememberCoroutineScope()
+      remember { coroutineScope.launch { viewModel.ensureAppstoreSource() } }
+
       var searchExpanded by rememberSaveable { mutableStateOf(false) }
       val getSelectedTab = { viewModel.selectedTab }
       val setSelectedTab: (ApplicationType) -> Unit = { viewModel.selectedTab = it }
       val searchResultState = viewModel.searchResultState.collectAsStateWithLifecycleAndBlinkingPrevention().value
+
+      val appstoreSources by viewModel.appstoreSources.collectAsState(emptyList(), coroutineScope.coroutineContext)
+
+      val canSearch by remember { derivedStateOf { viewModel.appstoreSource?.algoliaData != null } }
 
       LaunchedEffect(viewModel.selectedTab, viewModel.appstoreSource) {
          viewModel.loadHomePage()
@@ -122,9 +133,9 @@ class AppstoreScreen(
                var expanded by remember { mutableStateOf(false) }
                ExposedDropdownMenuBox(expanded, onExpandedChange = { expanded = it }) {
                   TextField(
-                     value = viewModel.appstoreSource.name,
+                     value = viewModel.appstoreSource?.name.toString(),
                      onValueChange = {},
-                     modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                     modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
                      readOnly = true,
                      singleLine = true,
                      leadingIcon = { Icon(painterResource(R.drawable.outline_database_24), contentDescription = null) },
@@ -137,7 +148,7 @@ class AppstoreScreen(
                      expanded = expanded,
                      onDismissRequest = { expanded = false }
                   ) {
-                     for (source in viewModel.appstoreSources) {
+                     for (source in appstoreSources) {
                         DropdownMenuItem(
                            text = { Text(source.name, style = MaterialTheme.typography.bodyLarge) },
                            onClick = {
@@ -149,47 +160,49 @@ class AppstoreScreen(
                   }
                }
             }
-            SearchBar(
-               inputField = {
-                  SearchBarDefaults.InputField(
-                     query = viewModel.searchQuery,
-                     onQueryChange = { viewModel.searchQuery = it },
-                     onSearch = {},
-                     expanded = searchExpanded,
-                     onExpandedChange = { searchExpanded = it },
-                     placeholder = { Text(stringResource(R.string.search)) },
-                     leadingIcon = {
-                        Icon(painterResource(R.drawable.outline_search_24), contentDescription = null)
-                     }
-                  )
-               },
-               expanded = searchExpanded,
-               onExpandedChange = { searchExpanded = it },
-               modifier = Modifier.align(Alignment.CenterHorizontally),
-               windowInsets = WindowInsets(),
-            ) {
-               val outcome = when (searchResultState) {
-                  is Outcome.Error -> searchResultState
-                  is Outcome.Progress if searchResultState.data != null -> Outcome.Success(searchResultState.data!!)
-                  else -> searchResultState
-               }
-               ProgressErrorSuccessScaffold(outcome) { results ->
-                  LazyVerticalGrid(
-                     columns = appGridCells,
-                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp)
-                        .clip(CardDefaults.shape),
-                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                  ) {
-                     items(results) {
-                        WatchAppDisplay(
-                           it.toApplication(),
-                           navigator,
-                           appstoreSource = viewModel.appstoreSource,
-                           onlyPartialData = true
-                        )
+            if (canSearch) {
+               SearchBar(
+                  inputField = {
+                     SearchBarDefaults.InputField(
+                        query = viewModel.searchQuery,
+                        onQueryChange = { viewModel.searchQuery = it },
+                        onSearch = {},
+                        expanded = searchExpanded,
+                        onExpandedChange = { searchExpanded = it },
+                        placeholder = { Text(stringResource(R.string.search)) },
+                        leadingIcon = {
+                           Icon(painterResource(R.drawable.outline_search_24), contentDescription = null)
+                        }
+                     )
+                  },
+                  expanded = searchExpanded,
+                  onExpandedChange = { searchExpanded = it },
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
+                  windowInsets = WindowInsets(),
+               ) {
+                  val outcome = when (searchResultState) {
+                     is Outcome.Error -> searchResultState
+                     is Outcome.Progress if searchResultState.data != null -> Outcome.Success(searchResultState.data!!)
+                     else -> searchResultState
+                  }
+                  ProgressErrorSuccessScaffold(outcome) { results ->
+                     LazyVerticalGrid(
+                        columns = appGridCells,
+                        modifier = Modifier
+                           .fillMaxSize()
+                           .padding(8.dp)
+                           .clip(CardDefaults.shape),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                     ) {
+                        items(results) {
+                           WatchAppDisplay(
+                              it.toApplication(),
+                              navigator,
+                              appstoreSource = viewModel.appstoreSource,
+                              onlyPartialData = true
+                           )
+                        }
                      }
                   }
                }

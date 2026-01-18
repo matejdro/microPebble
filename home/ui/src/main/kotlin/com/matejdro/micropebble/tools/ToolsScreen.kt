@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.home.ui.R
+import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
 import com.matejdro.micropebble.navigation.keys.CalendarListScreenKey
 import com.matejdro.micropebble.navigation.keys.DeveloperConnectionScreenKey
 import com.matejdro.micropebble.navigation.keys.OnboardingKey
@@ -76,6 +77,7 @@ class ToolsScreen(
                { navigator.navigateTo(OnboardingKey) },
                { navigator.navigateTo(DeveloperConnectionScreenKey) },
                { navigator.navigateTo(CalendarListScreenKey) },
+               { navigator.navigateTo(AppstoreSourcesScreenKey) },
                viewModel::getLogs,
                viewModel::resetLog,
                viewModel::changeMusicAlwaysPaused
@@ -92,6 +94,7 @@ private fun ToolsScreenContent(
    openPermissions: () -> Unit,
    openDevConnection: () -> Unit,
    openCalendarSettings: () -> Unit,
+   openAppstoreSources: () -> Unit,
    startLogSaving: () -> Unit,
    notifyLogIntentSent: () -> Unit,
    changeMusicAlwaysPaused: (newValue: Boolean) -> Unit,
@@ -147,6 +150,10 @@ private fun ToolsScreenContent(
             ToolButton(openCalendarSettings, R.drawable.calendar_settings, R.string.calendar)
          }
 
+         item {
+            ToolButton(openAppstoreSources, R.drawable.appstore_sources, R.string.manage_appstore_sources)
+         }
+
          item(span = { GridItemSpan(maxLineSpan) }) {
             SwitchPreference(
                state.alwaysSendPausedMusic,
@@ -194,6 +201,7 @@ internal fun ToolsScreenPreview() {
          openPermissions = {},
          openDevConnection = {},
          openCalendarSettings = {},
+         openAppstoreSources = {},
          startLogSaving = {},
          notifyLogIntentSent = {},
          changeMusicAlwaysPaused = {},

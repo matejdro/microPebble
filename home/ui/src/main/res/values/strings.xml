@@ -32,4 +32,5 @@
     <string name="voice_permission_title">Voice recording</string>
     <string name="voice_permission_description">Needed for the voice recognition from the watch</string>
     <string name="calendar">Calendar</string>
+    <string name="manage_appstore_sources">Appstore sources</string>
 </resources>
