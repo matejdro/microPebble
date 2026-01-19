@@ -23,6 +23,7 @@ import io.ktor.client.request.get
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import si.inova.kotlinova.core.exceptions.DataParsingException
@@ -52,7 +53,7 @@ class AppstoreViewModel(
    var selectedTab by mutableStateOf(ApplicationType.Watchface)
 
    val appstoreSources
-      get() = appstoreSourceService.sources
+      get() = appstoreSourceService.sources.map { source -> source.filter { it.enabled } }
    var appstoreSource: AppstoreSource? by mutableStateOf(null)
 
    var searchQuery by mutableStateOf("")

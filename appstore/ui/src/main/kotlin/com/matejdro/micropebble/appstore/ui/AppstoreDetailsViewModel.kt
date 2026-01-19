@@ -1,6 +1,7 @@
 package com.matejdro.micropebble.appstore.ui
 
 import com.matejdro.micropebble.appstore.api.ApiClient
+import com.matejdro.micropebble.appstore.api.AppInstallSource
 import com.matejdro.micropebble.appstore.api.AppInstallState
 import com.matejdro.micropebble.appstore.api.AppInstallationClient
 import com.matejdro.micropebble.appstore.api.store.application.Application
@@ -71,6 +72,10 @@ class AppstoreDetailsViewModel(
       }
       val pbwUrl = URL(app.data.latestRelease.pbwFile)
 
-      emit(installer.install(pbwUrl))
+      val outcome = installer.install(
+         pbwUrl,
+         key.appstoreSource?.let { AppInstallSource(app.data.uuid, app.data.id, it.id) }
+      )
+      emit(outcome)
    }
 }

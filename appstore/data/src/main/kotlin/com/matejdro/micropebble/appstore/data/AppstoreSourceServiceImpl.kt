@@ -1,7 +1,7 @@
 package com.matejdro.micropebble.appstore.data
 
 import android.content.Context
-import androidx.datastore.core.CorruptionException
+import android.util.Log
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
 import com.matejdro.micropebble.appstore.api.AlgoliaData
@@ -17,11 +17,13 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
+import kotlin.uuid.Uuid
 
 private object AppstoreSourcesSerializer : Serializer<List<AppstoreSource>> {
    private val json = Json { ignoreUnknownKeys = true }
    override val defaultValue = listOf(
       AppstoreSource(
+         id = Uuid.parse("a7f9e6d9-0a47-4540-83a8-672d5c5f9139"),
          url = "https://appstore-api.rebble.io/api",
          name = "Rebble",
          algoliaData = AlgoliaData(
@@ -31,6 +33,7 @@ private object AppstoreSourcesSerializer : Serializer<List<AppstoreSource>> {
          ),
       ),
       AppstoreSource(
+         id = Uuid.parse("ddbec6a1-8ea1-42cc-8dee-b0373fbaa5bd"),
          url = "https://appstore-api.repebble.com/api",
          name = "Core Devices",
          algoliaData = AlgoliaData(
@@ -44,8 +47,9 @@ private object AppstoreSourcesSerializer : Serializer<List<AppstoreSource>> {
    override suspend fun readFrom(input: InputStream) =
       try {
          json.decodeFromString<List<AppstoreSource>>(input.readBytes().decodeToString())
-      } catch (serialization: SerializationException) {
-         throw CorruptionException("Unable to read Settings", serialization)
+      } catch (e: SerializationException) {
+         Log.e("AppstoreSourcesSerializer.readFrom", "Failed to load appstore sources", e)
+         defaultValue
       }
 
    override suspend fun writeTo(t: List<AppstoreSource>, output: OutputStream) = withContext(Dispatchers.IO) {
@@ -87,7 +91,7 @@ class AppstoreSourceServiceImpl(
    override suspend fun replaceSource(oldSource: AppstoreSource, source: AppstoreSource) {
       context.appstoreSourcesStore.updateData { settings ->
          val data = settings.toMutableList()
-         val index = data.indexOfFirst { it == oldSource }
+         val index = data.indexOfFirst { it.id == oldSource.id }
          if (index == -1) {
             data.add(oldSource)
          } else {

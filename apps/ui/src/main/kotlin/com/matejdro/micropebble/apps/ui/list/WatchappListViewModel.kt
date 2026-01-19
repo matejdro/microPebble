@@ -5,11 +5,22 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.compose.runtime.Stable
 import com.matejdro.micropebble.apps.ui.errors.InvalidPbwFileException
+import com.matejdro.micropebble.appstore.api.ApiClient
+import com.matejdro.micropebble.appstore.api.AppInstallSource
+import com.matejdro.micropebble.appstore.api.AppInstallationClient
+import com.matejdro.micropebble.appstore.api.AppstoreSource
+import com.matejdro.micropebble.appstore.api.AppstoreSourceService
+import com.matejdro.micropebble.appstore.api.store.application.ApplicationList
 import com.matejdro.micropebble.common.exceptions.LibPebbleError
 import com.matejdro.micropebble.common.logging.ActionLogger
+import com.matejdro.micropebble.common.util.compareTo
+import com.matejdro.micropebble.common.util.joinUrls
+import com.matejdro.micropebble.common.util.parseVersionString
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
 import dev.zacsweers.metro.Inject
 import dispatch.core.withDefault
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.rebble.libpebblecommon.connection.Errors
 import io.rebble.libpebblecommon.connection.LockerApi
 import io.rebble.libpebblecommon.connection.UserFacingError
@@ -23,6 +34,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.io.files.Path
@@ -31,9 +43,11 @@ import okio.sink
 import okio.source
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
+import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 import java.io.File
+import kotlin.collections.map
 import kotlin.time.Duration.Companion.seconds
 import kotlin.uuid.Uuid
 
@@ -46,11 +60,38 @@ class WatchappListViewModel(
    private val lockerApi: LockerApi,
    private val context: Context,
    private val errorHandler: Errors,
+   private val installationClient: AppInstallationClient,
+   private val appstoreSourceService: AppstoreSourceService,
+   private val api: ApiClient,
 ) : SingleScreenViewModel<WatchappListKey>(resources.scope) {
    private val _uiState = MutableStateFlow<Outcome<WatchappListState>>(Outcome.Progress())
    val uiState: StateFlow<Outcome<WatchappListState>> = _uiState
    private val _actionStatus = MutableStateFlow<Outcome<Unit>>(Outcome.Success(Unit))
    val actionStatus: StateFlow<Outcome<Unit>> = _actionStatus
+   val appInstallSourceStatus = combine(
+      uiState,
+      installationClient.appInstallSources,
+   ) { state, sources ->
+      state.mapData { data ->
+         (data.watchfaces + data.watchapps).map { it.properties.id }.associateWith { sources[it] }
+      }
+   }
+   val updatableWatchapps = combine(appInstallSourceStatus, appstoreSourceService.sources) { apps, sources ->
+      if (apps is Outcome.Success) {
+         val map = mutableMapOf<Uuid, AppStatus>()
+         for ((id, installSource) in apps.data) {
+            map[id] = isAppUpdatable(installSource, sources)
+         }
+         Outcome.Success(map)
+      } else {
+         Outcome.Progress<Map<Uuid, AppStatus>>()
+      }
+   }
+
+   val appstoreSources
+      get() = appstoreSourceService.sources
+   val appInstallationSources
+      get() = installationClient.appInstallSources
 
    override fun onServiceRegistered() {
       actionLogger.logAction { "WatchappListViewModel.onServiceRegistered()" }
@@ -111,6 +152,8 @@ class WatchappListViewModel(
             lockerApi.removeApp(uuid)
          }
 
+         installationClient.removeFromSources(uuid)
+
          emit(Outcome.Success(Unit))
       }
    }
@@ -120,6 +163,13 @@ class WatchappListViewModel(
       lockerApi.setAppOrder(uuid, index)
 
       emit(Outcome.Success(Unit))
+   }
+
+   fun changeAppInstallSource(installSource: AppInstallSource, newAppstoreId: Uuid) {
+      resources.launchWithExceptionReporting {
+         actionLogger.logAction { "WatchappListViewModel.changeAppInstallSource($installSource, $newAppstoreId)" }
+         installationClient.updateSources(installSource.appId, installSource.copy(sourceId = newAppstoreId))
+      }
    }
 
    private suspend inline fun <reified E : UserFacingError> runLibPebbleActionWithErrorConversion(
@@ -152,6 +202,32 @@ class WatchappListViewModel(
       context.contentResolver.query(uri, projection, null, null, null).use {
          if (it?.moveToFirst() != true) return@use null
          it.getString(0)
+      }
+   }
+
+   private suspend fun isAppUpdatable(
+      installSource: AppInstallSource?,
+      sources: List<AppstoreSource>,
+   ): AppStatus {
+      if (installSource == null) {
+         return AppStatus.NotUpdatable
+      }
+      val updateSource = sources.find { it.enabled && it.id == installSource.sourceId } ?: return AppStatus.MissingSource
+      val response = runCatching {
+         api.http.get(updateSource.url.joinUrls("/v1/apps/id/${installSource.storeId}"))
+            .body<ApplicationList>()
+      }.getOrNull() ?: return AppStatus.AppNotFound
+      if (response.data.isEmpty()) {
+         return AppStatus.AppNotFound
+      }
+      val latestVersion = parseVersionString(response.data.first().latestRelease.version) ?: return AppStatus.Error
+      val currentVersion =
+         lockerApi.getLockerApp(installSource.appId).first()?.properties?.version?.let { parseVersionString(it) }
+            ?: return AppStatus.Error
+      return if (latestVersion > currentVersion) {
+         AppStatus.Updatable
+      } else {
+         AppStatus.UpToDate
       }
    }
 }

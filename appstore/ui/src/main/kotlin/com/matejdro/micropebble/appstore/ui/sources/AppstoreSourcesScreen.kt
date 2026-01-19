@@ -3,7 +3,6 @@ package com.matejdro.micropebble.appstore.ui.sources
 import android.webkit.URLUtil
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,8 +13,6 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
@@ -41,8 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.matejdro.micropebble.appstore.api.AlgoliaData
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.ui.R
@@ -52,6 +47,7 @@ import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.navigation.di.ContributesScreenBinding
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
+import kotlin.uuid.Uuid
 import com.matejdro.micropebble.sharedresources.R as sharedR
 
 @InjectNavigationScreen
@@ -167,7 +163,7 @@ class AppstoreSourcesScreen(
             icon = {
                Icon(painterResource(R.drawable.ic_restore), contentDescription = null)
             },
-            title = {
+            text = {
                Text(stringResource(R.string.confirm_restore))
             },
             confirmButton = {
@@ -190,53 +186,64 @@ class AppstoreSourcesScreen(
    }
 }
 
-// I think the number of if statements is triggering the cyclomatic complexity detector, even though there's really not much
-// I can do about that
-@Suppress("CyclomaticComplexMethod")
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun AppstoreSourceConfigurator(
    source: AppstoreSource? = null,
    onSubmitted: (AppstoreSource?) -> Unit,
 ) {
+   val id = source?.id ?: remember { Uuid.random() }
    var name by remember { mutableStateOf(source?.name ?: "New source") }
    var url by remember { mutableStateOf(source?.url ?: "") }
    var algoliaEnabled by remember { mutableStateOf(source?.algoliaData != null) }
    var algoliaAppId by remember { mutableStateOf(source?.algoliaData?.appId ?: "") }
    var algoliaApiKey by remember { mutableStateOf(source?.algoliaData?.apiKey ?: "") }
    var algoliaIndexName by remember { mutableStateOf(source?.algoliaData?.indexName ?: "") }
-   val canBeSubmitted by remember {
+   val newSource by remember {
       derivedStateOf {
-         name.isNotEmpty()
-            && URLUtil.isNetworkUrl(url)
-            && (!algoliaEnabled || algoliaAppId.isNotEmpty() && algoliaApiKey.isNotEmpty() && algoliaIndexName.isNotEmpty())
-      }
-   }
-   val trySubmit = {
-      if (source == null) {
-         onSubmitted(null)
-      }
-      if (canBeSubmitted) {
-         onSubmitted(
-            AppstoreSource(
-               url = url,
-               name = name,
-               algoliaData = if (algoliaEnabled) {
-                  AlgoliaData(
-                     appId = algoliaAppId,
-                     apiKey = algoliaApiKey,
-                     indexName = algoliaIndexName,
-                  )
-               } else {
-                  null
-               }
-            )
+         AppstoreSource(
+            id = id,
+            url = url,
+            name = name,
+            algoliaData = if (algoliaEnabled) {
+               AlgoliaData(
+                  appId = algoliaAppId,
+                  apiKey = algoliaApiKey,
+                  indexName = algoliaIndexName,
+               )
+            } else {
+               null
+            }
          )
       }
    }
-   Dialog(onDismissRequest = { trySubmit() }, properties = DialogProperties(windowTitle = name)) {
-      Card {
-         Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(16.dp)) {
+   val trySubmit = {
+      if (newSource.isValid()) {
+         onSubmitted(newSource)
+      } else if (source == null) {
+         onSubmitted(null)
+      }
+   }
+   AlertDialog(
+      onDismissRequest = { trySubmit() },
+      title = {
+         Text(stringResource(R.string.edit_source, name))
+      },
+      confirmButton = {
+         TextButton(
+            onClick = { trySubmit() },
+            enabled = newSource.isValid(),
+         ) {
+            Text(stringResource(sharedR.string.ok))
+         }
+      },
+      dismissButton = {
+         TextButton(onClick = { onSubmitted(null) }) {
+            Text(stringResource(sharedR.string.cancel))
+         }
+      },
+      text = {
+         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
                name,
                { name = it },
@@ -282,12 +289,16 @@ private fun AppstoreSourceConfigurator(
                   modifier = Modifier.fillMaxWidth()
                )
             }
-            Box(Modifier.fillMaxWidth()) {
-               Button(trySubmit, enabled = canBeSubmitted, modifier = Modifier.align(Alignment.Center)) {
-                  Text(stringResource(R.string.save))
-               }
-            }
+            Text(
+               "${stringResource(R.string.id_colon)}$id",
+               style = MaterialTheme.typography.bodySmall,
+               color = MaterialTheme.colorScheme.secondary
+            )
          }
       }
-   }
+   )
 }
+
+private fun AppstoreSource.isValid() = name.isNotEmpty() && URLUtil.isNetworkUrl(url) && algoliaData.isValid()
+
+private fun AlgoliaData?.isValid() = this == null || appId.isNotBlank() && apiKey.isNotBlank() && indexName.isNotBlank()

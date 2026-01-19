@@ -7,6 +7,8 @@ import dev.zacsweers.metro.Inject
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 
 @Inject
@@ -17,9 +19,13 @@ class ApiClientImpl : ApiClient {
       ignoreUnknownKeys = true
    }
 
-   override val http = HttpClient {
-      install(ContentNegotiation) {
-         json(json)
+   override val http by lazy {
+      runBlocking(Dispatchers.IO) {
+         HttpClient {
+            install(ContentNegotiation) {
+               json(json)
+            }
+         }
       }
    }
 }

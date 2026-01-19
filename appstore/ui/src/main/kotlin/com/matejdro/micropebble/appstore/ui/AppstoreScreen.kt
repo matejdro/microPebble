@@ -148,7 +148,7 @@ class AppstoreScreen(
                      expanded = expanded,
                      onDismissRequest = { expanded = false }
                   ) {
-                     for (source in appstoreSources) {
+                     for (source in appstoreSources.filter { it.enabled }) {
                         DropdownMenuItem(
                            text = { Text(source.name, style = MaterialTheme.typography.bodyLarge) },
                            onClick = {

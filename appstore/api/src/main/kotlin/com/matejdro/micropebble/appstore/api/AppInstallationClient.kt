@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.appstore.api
 
+import kotlinx.coroutines.flow.Flow
 import si.inova.kotlinova.core.outcome.CauseException
 import si.inova.kotlinova.core.outcome.Outcome
 import java.io.IOException
@@ -15,5 +16,13 @@ class AppSideloadFailed : CauseException(message = "App failed to sideload", isP
 class AppDownloadFailed(cause: IOException) : CauseException(message = "App download failed", cause)
 
 interface AppInstallationClient {
-   suspend fun install(url: URL, tmpFileName: String = Uuid.random().toString()): Outcome<AppInstallState>
+   val appInstallSources: Flow<Map<Uuid, AppInstallSource>>
+   suspend fun install(
+      url: URL,
+      source: AppInstallSource? = null,
+      tmpFileName: String = Uuid.random().toString(),
+   ): Outcome<AppInstallState>
+   suspend fun getInstallationSource(appId: Uuid): AppInstallSource?
+   suspend fun removeFromSources(id: Uuid)
+   suspend fun updateSources(id: Uuid, newSource: AppInstallSource)
 }
