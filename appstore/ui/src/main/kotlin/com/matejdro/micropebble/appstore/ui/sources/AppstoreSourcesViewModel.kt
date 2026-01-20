@@ -19,29 +19,40 @@ class AppstoreSourcesViewModel(
 ) : SingleScreenViewModel<AppstoreCollectionScreenKey>(resources.scope) {
    val sources
       get() = sourceService.sources
+   val isDefaultSources = sourceService.isDefault
 
-   fun reorderSource(source: AppstoreSource, newIndex: Int) = resources.scope.launch {
+   fun reorderSource(source: AppstoreSource, newIndex: Int) {
       logger.logAction { "AppstoreSourcesViewModel.reorderSource($source, $newIndex)" }
-      sourceService.reorderSource(source, newIndex)
+      resources.scope.launch {
+         sourceService.reorderSource(source, newIndex)
+      }
    }
 
-   fun addSource(source: AppstoreSource) = resources.scope.launch {
+   fun addSource(source: AppstoreSource) {
       logger.logAction { "AppstoreSourcesViewModel.addSource($source)" }
-      sourceService.addSource(source)
+      resources.scope.launch {
+         sourceService.addSource(source)
+      }
    }
 
-   fun replaceSource(oldSource: AppstoreSource, source: AppstoreSource) = resources.scope.launch {
+   fun replaceSource(oldSource: AppstoreSource, source: AppstoreSource) {
       logger.logAction { "AppstoreSourcesViewModel.replaceSource($oldSource, $source)" }
-      sourceService.replaceSource(oldSource, source)
+      resources.scope.launch {
+         sourceService.replaceSource(oldSource, source)
+      }
    }
 
-   fun restoreSources() = resources.scope.launch {
+   fun restoreSources() {
       logger.logAction { "AppstoreSourcesViewModel.restoreSources()" }
-      sourceService.restoreSources()
+      resources.scope.launch {
+         sourceService.restoreSources()
+      }
    }
 
-   fun removeSource(source: AppstoreSource) = resources.scope.launch {
+   fun removeSource(source: AppstoreSource) {
       logger.logAction { "AppstoreSourcesViewModel.removeSource($source)" }
-      sourceService.removeSource(source)
+      resources.scope.launch {
+         sourceService.removeSource(source)
+      }
    }
 }

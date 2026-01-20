@@ -4,4 +4,5 @@
     <string name="app_name">MPebble</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="manage_appstore_sources">Appstore sources</string>
 </resources>

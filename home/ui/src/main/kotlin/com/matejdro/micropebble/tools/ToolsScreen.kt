@@ -52,6 +52,7 @@ import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
+import com.matejdro.micropebble.sharedresources.R as sharedR
 
 @InjectNavigationScreen
 @ContributesScreenBinding
@@ -151,7 +152,7 @@ private fun ToolsScreenContent(
          }
 
          item {
-            ToolButton(openAppstoreSources, R.drawable.appstore_sources, R.string.manage_appstore_sources)
+            ToolButton(openAppstoreSources, R.drawable.appstore_sources, sharedR.string.manage_appstore_sources)
          }
 
          item(span = { GridItemSpan(maxLineSpan) }) {

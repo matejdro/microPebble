@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,11 +57,12 @@ import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
 import com.matejdro.micropebble.appstore.ui.common.WatchAppDisplay
 import com.matejdro.micropebble.appstore.ui.common.appGridCells
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
+import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
+import com.matejdro.micropebble.ui.errors.NoSourcesDisplay
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.outcome.Outcome
@@ -70,6 +72,7 @@ import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 import java.net.URI
 import kotlin.time.Duration.Companion.milliseconds
+import com.matejdro.micropebble.sharedresources.R as sharedR
 
 private const val categoryHeaderContentType = "categoryHeaderContentType"
 private const val appTileContentType = "appTileContentType"
@@ -84,14 +87,27 @@ class AppstoreScreen(
    @Composable
    override fun Content(key: AppstoreScreenKey) {
       val coroutineScope = rememberCoroutineScope()
-      remember { coroutineScope.launch { viewModel.ensureAppstoreSource() } }
+      val appstoreSources by viewModel.appstoreSources.collectAsState(emptyList(), coroutineScope.coroutineContext)
+
+      if (appstoreSources.isEmpty()) {
+         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            NoSourcesDisplay {
+               Button(
+                  onClick = { navigator.navigateTo(AppstoreSourcesScreenKey) },
+                  modifier = Modifier.align(Alignment.CenterHorizontally),
+               ) {
+                  Text(stringResource(sharedR.string.manage_appstore_sources))
+                  Icon(painterResource(R.drawable.ic_chevron_forward), contentDescription = null)
+               }
+            }
+         }
+         return
+      }
 
       var searchExpanded by rememberSaveable { mutableStateOf(false) }
       val getSelectedTab = { viewModel.selectedTab }
       val setSelectedTab: (ApplicationType) -> Unit = { viewModel.selectedTab = it }
       val searchResultState = viewModel.searchResultState.collectAsStateWithLifecycleAndBlinkingPrevention().value
-
-      val appstoreSources by viewModel.appstoreSources.collectAsState(emptyList(), coroutineScope.coroutineContext)
 
       val canSearch by remember { derivedStateOf { viewModel.appstoreSource?.algoliaData != null } }
 

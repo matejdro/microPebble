@@ -19,6 +19,6 @@
     <string name="index_name">Index name</string>
     <string name="confirm_restore">Restore all appstore sources to the default Rebble and Core Devices sources?</string>
     <string name="appstore_sources">Appstore sources</string>
-    <string name="id_colon">"ID: "</string>
+    <string name="id_placeholder">"ID: %1$s"</string>
     <string name="edit_source">Edit %1$s</string>
 </resources>

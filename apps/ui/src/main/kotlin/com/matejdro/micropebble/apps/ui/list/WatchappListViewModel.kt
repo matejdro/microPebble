@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.io.files.Path
@@ -89,7 +90,7 @@ class WatchappListViewModel(
    }
 
    val appstoreSources
-      get() = appstoreSourceService.sources
+      get() = appstoreSourceService.sources.map { it.filter { s -> s.enabled } }
    val appInstallationSources
       get() = installationClient.appInstallSources
 
