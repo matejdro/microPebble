@@ -401,6 +401,7 @@ private fun App(
             is AppStatus.Updatable -> UpdateButton(update, status)
             AppStatus.JustUpdated -> UpdateInstalledIndicator()
             AppStatus.NotUpdatable -> {}
+            AppStatus.UpToDate -> {}
             else -> AppStatusFailedIndicator(status)
          }
       } else {
