@@ -41,11 +41,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.appstore.api.AlgoliaData
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.ui.R
 import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
+import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
+import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import com.matejdro.micropebble.ui.errors.NoSourcesDisplay
 import com.matejdro.micropebble.ui.lists.ReorderableListContainer
 import si.inova.kotlinova.compose.components.itemsWithDivider
@@ -172,35 +176,37 @@ private fun AppstoreSourcesContent(
          )
       }
    ) { contentPadding ->
-      Column(Modifier.padding(contentPadding)) {
-         if (!listItems.any { it.enabled }) {
-            NoSourcesDisplay()
-         }
-         ReorderableListContainer(listItems, listState) { items ->
-            LazyColumn(
-               state = listState,
-               modifier = Modifier.fillMaxSize(),
-            ) {
-               itemsWithDivider(
-                  items,
-                  key = { it.id },
-                  modifier = { Modifier.animateItem() }
-               ) { source ->
-                  ReorderableListItem(
-                     key = source.id,
-                     data = source,
-                     setOrder = { setOrder(source, it) },
-                     modifier = Modifier
-                        .fillMaxWidth()
-                  ) { modifier ->
-                     SourceListItem(
-                        source,
-                        sourceEnabledChange = { sourceEnabledChange(source, it) },
-                        onEditSource = { onEditSource(source) },
-                        onRemoveSource = { onRemoveSource(source) },
-                        modifier
-                     )
-                  }
+      ReorderableListContainer(listItems, listState) { items ->
+         LazyColumn(
+            state = listState,
+            modifier = Modifier
+               .fillMaxSize()
+               .padding(contentPadding),
+         ) {
+            itemsWithDivider(
+               items,
+               key = { it.id },
+               modifier = { Modifier.animateItem() }
+            ) { source ->
+               ReorderableListItem(
+                  key = source.id,
+                  data = source,
+                  setOrder = { setOrder(source, it) },
+                  modifier = Modifier
+                     .fillMaxWidth()
+               ) { modifier ->
+                  SourceListItem(
+                     source,
+                     sourceEnabledChange = { sourceEnabledChange(source, it) },
+                     onEditSource = { onEditSource(source) },
+                     onRemoveSource = { onRemoveSource(source) },
+                     modifier
+                  )
+               }
+            }
+            if (!listItems.any { it.enabled }) {
+               item {
+                  NoSourcesDisplay()
                }
             }
          }
@@ -238,7 +244,6 @@ private fun SourceListItem(
 
       Column(
          modifier = Modifier.weight(1f),
-         verticalArrangement = Arrangement.spacedBy(8.dp)
       ) {
          val appyStrikethrough: TextStyle.() -> TextStyle = {
             if (source.enabled) {
@@ -247,11 +252,18 @@ private fun SourceListItem(
                copy(textDecoration = TextDecoration.LineThrough)
             }
          }
-         Text(source.name, style = MaterialTheme.typography.bodyMedium.appyStrikethrough())
+         Text(
+            source.name,
+            style = MaterialTheme.typography.bodyMedium.appyStrikethrough(),
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
+         )
          Text(
             source.id.toString(),
             style = MaterialTheme.typography.labelSmall.appyStrikethrough(),
-            color = MaterialTheme.colorScheme.secondary
+            color = MaterialTheme.colorScheme.secondary,
+            overflow = TextOverflow.MiddleEllipsis,
+            maxLines = 1,
          )
       }
 
@@ -386,3 +398,87 @@ private fun AppstoreSourceConfigurator(
 private fun AppstoreSource.isValid() = name.isNotEmpty() && URLUtil.isNetworkUrl(url) && algoliaData.isValid()
 
 private fun AlgoliaData?.isValid() = this == null || appId.isNotBlank() && apiKey.isNotBlank() && indexName.isNotBlank()
+
+private val baseSources = listOf(
+   AppstoreSource(
+      id = Uuid.parse("00000000-89ab-cdef-0123-456789abcdef"),
+      url = "",
+      name = "Appstore source 1"
+   ),
+   AppstoreSource(
+      id = Uuid.parse("10000000-89ab-cdef-0123-456789abcdef"),
+      url = "",
+      name = "Appstore source 2",
+      enabled = false,
+   ),
+   AppstoreSource(
+      id = Uuid.parse("20000000-89ab-cdef-0123-456789abcdef"),
+      url = "",
+      name = "Appstore source 3"
+   ),
+   AppstoreSource(
+      id = Uuid.parse("30000000-89ab-cdef-0123-456789abcdef"),
+      url = "",
+      name = "Appstore source 4444444444444"
+   ),
+)
+
+@FullScreenPreviews
+@Composable
+@ShowkaseComposable(group = "Test")
+private fun AppstoreSourcesPreview() {
+   PreviewTheme {
+      val sources = baseSources
+      AppstoreSourcesContent(
+         onCreateSource = {},
+         onReset = {},
+         isDefaultSources = sources == baseSources,
+         listItems = sources,
+         listState = rememberLazyListState(),
+         setOrder = { _, _ -> },
+         sourceEnabledChange = { _, _ -> },
+         onEditSource = {},
+         onRemoveSource = {},
+      )
+   }
+}
+
+@FullScreenPreviews
+@Composable
+@ShowkaseComposable(group = "Test")
+private fun AllDisabledAppstoreSourcesPreview() {
+   PreviewTheme {
+      val sources = baseSources.map { it.copy(enabled = false) }
+      AppstoreSourcesContent(
+         onCreateSource = {},
+         onReset = {},
+         isDefaultSources = sources == baseSources,
+         listItems = sources,
+         listState = rememberLazyListState(),
+         setOrder = { _, _ -> },
+         sourceEnabledChange = { _, _ -> },
+         onEditSource = {},
+         onRemoveSource = {},
+      )
+   }
+}
+
+@FullScreenPreviews
+@Composable
+@ShowkaseComposable(group = "Test")
+private fun NoSourcesSourcesPreview() {
+   PreviewTheme {
+      val sources = emptyList<AppstoreSource>()
+      AppstoreSourcesContent(
+         onCreateSource = {},
+         onReset = {},
+         isDefaultSources = sources == baseSources,
+         listItems = sources,
+         listState = rememberLazyListState(),
+         setOrder = { _, _ -> },
+         sourceEnabledChange = { _, _ -> },
+         onEditSource = {},
+         onRemoveSource = {},
+      )
+   }
+}
