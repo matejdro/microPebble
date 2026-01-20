@@ -1,36 +1,54 @@
 package com.matejdro.micropebble.apps.ui.list
 
 import androidx.compose.runtime.Stable
+import com.matejdro.micropebble.common.util.VersionInfo
+import si.inova.kotlinova.core.outcome.CauseException
 
 @Stable
-enum class AppStatus {
+sealed class AppStatus {
+
    /**
     * An error occurred when attempting to fetch updates for the app.
     */
-   Error,
+   data object Error : AppStatus()
 
    /**
     * The app is already up to date.
     */
-   UpToDate,
+   data object UpToDate : AppStatus()
 
    /**
     * The app is updatable.
     */
-   Updatable,
+   data class Updatable(val fromVersion: VersionInfo, val toVersion: VersionInfo) : AppStatus()
 
    /**
     * The app wasn't found on the remote server.
     */
-   AppNotFound,
+   data object AppNotFound : AppStatus()
 
    /**
     * No source is listed for the app, thus, it cannot be installed.
     */
-   MissingSource,
+   data object MissingSource : AppStatus()
 
    /**
     * The app isn't updatable, because it's a system app or similar.
     */
-   NotUpdatable,
+   data object NotUpdatable : AppStatus()
+
+   /**
+    * The update failed to complete.
+    */
+   data class UpdateFailed(val error: CauseException) : AppStatus()
+
+   /**
+    * The app was just updated.
+    */
+   data object JustUpdated : AppStatus()
+
+   /**
+    * The update is happening as we speak.
+    */
+   data object Updating : AppStatus()
 }

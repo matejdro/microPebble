@@ -6,7 +6,6 @@ import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
 import com.matejdro.micropebble.appstore.api.AppDownloadFailed
 import com.matejdro.micropebble.appstore.api.AppInstallSource
-import com.matejdro.micropebble.appstore.api.AppInstallState
 import com.matejdro.micropebble.appstore.api.AppInstallationClient
 import com.matejdro.micropebble.appstore.api.AppSideloadFailed
 import dev.zacsweers.metro.AppScope
@@ -58,7 +57,7 @@ class AppInstallationClientImpl(
 ) : AppInstallationClient {
    override val appInstallSources: Flow<Map<Uuid, AppInstallSource>> = context.appInstallSources.data
 
-   override suspend fun install(url: URL, source: AppInstallSource?, tmpFileName: String): Outcome<AppInstallState> =
+   override suspend fun install(url: URL, source: AppInstallSource?, tmpFileName: String): Outcome<Unit> =
       withContext(Dispatchers.IO) {
          if (source != null) {
             context.appInstallSources.updateData { it + (source.appId to source) }
@@ -79,7 +78,7 @@ class AppInstallationClientImpl(
          try {
             val result = lockerApi.sideloadApp(Path(tmpFile.absolutePath))
             if (result) {
-               Outcome.Success(AppInstallState.INSTALLED)
+               Outcome.Success(Unit)
             } else {
                if (source != null) {
                   context.appInstallSources.updateData { it - source.appId }

@@ -21,7 +21,7 @@ interface AppInstallationClient {
       url: URL,
       source: AppInstallSource? = null,
       tmpFileName: String = Uuid.random().toString(),
-   ): Outcome<AppInstallState>
+   ): Outcome<Unit>
    suspend fun getInstallationSource(appId: Uuid): AppInstallSource?
    suspend fun removeFromSources(id: Uuid)
    suspend fun updateSources(id: Uuid, newSource: AppInstallSource)

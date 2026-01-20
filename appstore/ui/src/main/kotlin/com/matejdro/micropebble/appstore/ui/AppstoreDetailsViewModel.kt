@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
+import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 import java.net.URL
@@ -76,6 +77,6 @@ class AppstoreDetailsViewModel(
          pbwUrl,
          key.appstoreSource?.let { AppInstallSource(app.data.uuid, app.data.id, it.id) }
       )
-      emit(outcome)
+      emit(outcome.mapData { AppInstallState.INSTALLED })
    }
 }
