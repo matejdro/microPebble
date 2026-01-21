@@ -125,6 +125,7 @@ custom {
 
 dependencies {
    implementation(projects.common)
+   implementation(libs.androidx.work.runtime)
    compileOnly(projects.commonAndroid)
    implementation(projects.apps.ui)
    implementation(projects.appstore.api)

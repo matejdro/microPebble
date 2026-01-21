@@ -6,8 +6,11 @@ import android.os.Build
 import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
 import android.os.strictmode.Violation
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import androidx.work.Configuration
+import androidx.work.WorkManager
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import com.matejdro.micropebble.di.ApplicationGraph
@@ -90,6 +93,18 @@ open class MicroPebbleApplication : Application() {
          }
       }
       applicationGraph.initNotificationChannels()
+
+      WorkManager.initialize(
+         context = this,
+         Configuration.Builder().run {
+            setWorkerFactory(applicationGraph.getWorkerFactory())
+            setMinimumLoggingLevel(Log.INFO)
+            setWorkerCoroutineContext(applicationGraph.getDefaultCoroutineScope().coroutineContext)
+            build()
+         }
+      )
+
+      applicationGraph.getAppUpdaterWorkController().scheduleBackgroundTasks()
    }
 
    private fun setupLogging() {

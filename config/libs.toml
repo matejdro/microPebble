@@ -25,6 +25,7 @@ androidx-test-runner = "1.7.0"
 androidx-test-services = "1.6.0"
 androidx-test-uiautomator = "2.3.0"
 androidx-startup = "1.2.0"
+androidx-work = "2.11.0"
 certificateTransparency = "2.8.4"
 coil = "3.3.0"
 composeDnd = "0.4.0"
@@ -200,6 +201,7 @@ unmock-androidJar = { module = "org.robolectric:android-all", version.ref = "unm
 unmock-plugin = { module = "com.github.bjoernq:unmockplugin", version.ref = "unmock-plugin" }
 androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 algolia = { module = "com.algolia:algoliasearch-client-kotlin", version.ref = "algolia" }
+androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 
 [plugins]
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

@@ -16,7 +16,9 @@ dependencies {
    api(projects.common)
 
    implementation(libs.ktor.serialization.kotlinx.json)
+   implementation(libs.androidx.core)
    implementation(libs.androidx.datastore.preferences)
+   implementation(libs.androidx.work.runtime)
    implementation(libs.ktor.contentNegotiation)
    implementation(libs.ktor.okhttp)
    implementation(libs.libpebble3)

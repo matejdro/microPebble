@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Required for crash reporting -->
+    <!-- Required for crash reporting and app update notifications -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- For developer connection Wi-Fi access -->
