@@ -140,7 +140,13 @@ open class MicroPebbleApplication : Application() {
             .detectLeakedSqlLiteObjects()
             .detectCredentialProtectedWhileLocked()
             .detectImplicitDirectBoot()
-            .detectUnsafeIntentLaunch()
+            .run {
+               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                  detectUnsafeIntentLaunch()
+               } else {
+                  this
+               }
+            }
             .run {
                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
                   detectBlockedBackgroundActivityLaunch()

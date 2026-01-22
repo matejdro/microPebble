@@ -39,7 +39,11 @@ fun MicroPebbleTheme(
    val colorScheme = when {
       dynamicColor -> {
          val context = LocalContext.current
-         if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+         } else {
+            if (darkTheme) darkColorScheme() else lightColorScheme()
+         }
       }
 
       darkTheme -> DarkColorScheme
