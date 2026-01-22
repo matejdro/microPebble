@@ -5,7 +5,3 @@ val libs = the<LibrariesForLibs>()
 plugins {
    id("dev.zacsweers.metro")
 }
-
-metro {
-   enableScopedInjectClassHints = true
-}

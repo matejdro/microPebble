@@ -6,6 +6,7 @@ import io.rebble.libpebblecommon.connection.PebbleBleIdentifier
 import io.rebble.libpebblecommon.connection.PebbleIdentifier
 import io.rebble.libpebblecommon.metadata.WatchColor
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
+import io.rebble.libpebblecommon.packets.ProtocolCapsFlag
 import kotlin.time.Instant
 
 class FakeKnownConnectingDevice(
@@ -20,6 +21,7 @@ class FakeKnownConnectingDevice(
    override val connectionFailureInfo: ConnectionFailureInfo? = null,
    override val serial: String = "XXXXXXXXXXXX",
    override val usingBtClassic: Boolean = false,
+   override val capabilities: Set<ProtocolCapsFlag> = emptySet(),
 ) : ConnectingKnownPebbleDevice {
    override val runningFwVersion: String = "v1.2.3-core"
 

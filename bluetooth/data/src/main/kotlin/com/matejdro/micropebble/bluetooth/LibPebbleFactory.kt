@@ -15,7 +15,7 @@ import io.rebble.libpebblecommon.connection.TokenProvider
 import io.rebble.libpebblecommon.connection.WebServices
 import io.rebble.libpebblecommon.services.WatchInfo
 import io.rebble.libpebblecommon.voice.TranscriptionProvider
-import io.rebble.libpebblecommon.web.LockerModel
+import io.rebble.libpebblecommon.web.LockerModelWrapper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.uuid.Uuid
 
@@ -28,7 +28,7 @@ interface LibPebbleFactory {
       transcriptionProvider: TranscriptionProvider,
    ): LibPebble {
       val dummyWebServices = object : WebServices {
-         override suspend fun fetchLocker(): LockerModel? {
+         override suspend fun fetchLocker(): LockerModelWrapper? {
             return null
          }
 
