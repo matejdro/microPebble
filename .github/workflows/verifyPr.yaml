@@ -3,6 +3,10 @@ run-name: "#${{ github.event.pull_request.number}} ${{ github.event.pull_request
 on:
   pull_request:
     types: [ 'opened', 'reopened', 'synchronize' ]
+
+permissions:
+  issues: write
+
 jobs:
   build-app:
     runs-on: "ubuntu-latest"
