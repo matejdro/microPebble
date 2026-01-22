@@ -10,7 +10,6 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.work.Configuration
-import androidx.work.WorkManager
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import com.matejdro.micropebble.di.ApplicationGraph
@@ -30,9 +29,10 @@ import si.inova.kotlinova.core.logging.AndroidLogcatLogger
 import si.inova.kotlinova.core.logging.LogPriority
 import si.inova.kotlinova.core.logging.LogcatLogger
 import java.io.File
+import androidx.work.Configuration as WorkConfiguration
 import co.touchlab.kermit.Logger as KermitLogger
 
-open class MicroPebbleApplication : Application() {
+open class MicroPebbleApplication : Application(), WorkConfiguration.Provider {
    open val applicationGraph: ApplicationGraph by lazy {
       createGraphFactory<MainApplicationGraph.Factory>().create(this)
    }
@@ -93,16 +93,6 @@ open class MicroPebbleApplication : Application() {
          }
       }
       applicationGraph.initNotificationChannels()
-
-      WorkManager.initialize(
-         context = this,
-         Configuration.Builder().run {
-            setWorkerFactory(applicationGraph.getWorkerFactory())
-            setMinimumLoggingLevel(Log.INFO)
-            setWorkerCoroutineContext(applicationGraph.getDefaultCoroutineScope().coroutineContext)
-            build()
-         }
-      )
 
       applicationGraph.getAppUpdaterWorkController().scheduleBackgroundTasks()
    }
@@ -218,6 +208,14 @@ open class MicroPebbleApplication : Application() {
          it.pid == myPid && packageName == it.processName
       } == true
    }
+
+   override val workManagerConfiguration: WorkConfiguration
+      get() = Configuration.Builder().run {
+         setWorkerFactory(applicationGraph.getWorkerFactory())
+         setMinimumLoggingLevel(Log.INFO)
+         setWorkerCoroutineContext(applicationGraph.getDefaultCoroutineScope().coroutineContext)
+         build()
+      }
 }
 
 private val STRICT_MODE_EXCLUSIONS = listOf(
