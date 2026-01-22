@@ -45,6 +45,7 @@ class NotificationAppListViewModel(
                   notificationsConfig.mutePhoneCallSoundsWhenConnected,
                   notificationsConfig.respectDoNotDisturb,
                   notificationsConfig.sendNotifications,
+                  notificationsConfig.useAndroidVibePatterns,
                   watchConfig.calendarReminders,
                )
             )
@@ -115,6 +116,18 @@ class NotificationAppListViewModel(
          libPebble.config.value.copy(
             watchConfig = libPebble.config.value.watchConfig.copy(
                calendarReminders = send
+            )
+         )
+      )
+   }
+
+   fun setUseAndroidVibrationPatterns(send: Boolean) {
+      actionLogger.logAction { "NotificationAppListViewModel.setUseAndroidVibrationPatterns(send = $send)" }
+
+      libPebble.updateConfig(
+         libPebble.config.value.copy(
+            notificationConfig = libPebble.config.value.notificationConfig.copy(
+               useAndroidVibePatterns = send
             )
          )
       )

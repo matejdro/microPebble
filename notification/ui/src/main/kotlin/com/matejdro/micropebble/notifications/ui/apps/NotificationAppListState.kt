@@ -8,5 +8,6 @@ data class NotificationAppListState(
    val mutePhoneCallSoundsWhenConnected: Boolean,
    val respectDoNotDisturb: Boolean,
    val sendNotifications: Boolean,
+   val useAndroidVibrationPatterns: Boolean,
    val sendCalendarReminders: Boolean,
 )

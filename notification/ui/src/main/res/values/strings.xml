@@ -5,4 +5,5 @@
     <string name="respect_dnd">Respect phone\'s do not disturb mode</string>
     <string name="send_notifications_to_the_watch">Send notifications to the watch</string>
     <string name="show_calendar_reminders">Show calendar reminders\n(only affects future calendar events)</string>
+    <string name="phone_notification_vibration">Respect phone\'s notification vibration patterns</string>
 </resources>
