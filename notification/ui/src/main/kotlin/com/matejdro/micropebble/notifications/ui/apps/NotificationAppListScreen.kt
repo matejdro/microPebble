@@ -76,7 +76,8 @@ class NotificationAppListScreen(
             viewModel::setCallsPhoneMute,
             viewModel::setRespectDoNotDisturb,
             viewModel::setSendNotifications,
-            viewModel::setSendCalendarReminders
+            viewModel::setUseAndroidVibrationPatterns,
+            viewModel::setSendCalendarReminders,
          )
       }
    }
@@ -90,6 +91,7 @@ private fun NotificationAppListScreenContent(
    setCallsPhoneMute: (Boolean) -> Unit,
    setRespectDoNotDisturb: (Boolean) -> Unit,
    setSendNotifications: (Boolean) -> Unit,
+   setUseAndroidVibrationPatterns: (Boolean) -> Unit,
    setSendCalendarReminders: (Boolean) -> Unit,
 ) {
    LazyColumn(
@@ -155,6 +157,21 @@ private fun NotificationAppListScreenContent(
                   .weight(1f)
             )
             Switch(state.respectDoNotDisturb, onCheckedChange = setRespectDoNotDisturb)
+         }
+
+         Row(
+            Modifier
+               .fillMaxWidth()
+               .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+         ) {
+            Text(
+               stringResource(R.string.phone_notification_vibration),
+               Modifier
+                  .padding(end = 16.dp)
+                  .weight(1f)
+            )
+            Switch(state.useAndroidVibrationPatterns, onCheckedChange = setUseAndroidVibrationPatterns)
          }
 
          Row(
@@ -259,12 +276,14 @@ internal fun NotificationAppListScreenContentPreview() {
          false,
          false,
          true,
-         true
+         true,
+         true,
       )
 
       NotificationAppListScreenContent(
          state,
          { _, _ -> },
+         {},
          {},
          {},
          {},

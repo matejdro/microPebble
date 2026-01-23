@@ -13,7 +13,7 @@ import com.matejdro.micropebble.navigation.keys.OnboardingKey
 import com.matejdro.micropebble.pbw.FileInstallHandler
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.AssistedInject
 import dispatch.core.MainImmediateCoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +27,8 @@ import si.inova.kotlinova.navigation.instructions.OpenScreen
 import si.inova.kotlinova.navigation.instructions.ReplaceBackstack
 import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 
-class MainViewModel @Inject constructor(
+@AssistedInject
+class MainViewModel constructor(
    private val actionLogger: ActionLogger,
    private val preferences: DataStore<Preferences>,
    mainScope: MainImmediateCoroutineScope,
