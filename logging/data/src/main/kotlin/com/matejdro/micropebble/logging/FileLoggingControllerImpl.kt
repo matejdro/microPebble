@@ -2,6 +2,7 @@ package com.matejdro.micropebble.logging
 
 import android.content.Context
 import android.os.Build
+import androidx.core.content.pm.PackageInfoCompat
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -25,8 +26,8 @@ class FileLoggingControllerImpl(
    }
 
    override fun getDeviceInfo(): String {
-      val pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0)
-      val vCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { pInfo.longVersionCode } else { pInfo.versionCode }
+      val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+      val vCode = PackageInfoCompat.getLongVersionCode(pInfo)
 
       return "Manufacturer: ${android.os.Build.MANUFACTURER}\n" +
          "Device: ${android.os.Build.MODEL} (${android.os.Build.DEVICE})\n" +

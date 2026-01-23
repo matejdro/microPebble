@@ -46,7 +46,7 @@ fun <T> ReorderableListContainer(
    val scope = object : ReorderableListScope<T> {
       @Composable
       override fun ReorderableListItem(
-         key: Any,
+         key: String,
          data: T,
          setOrder: (toIndex: Int) -> Unit,
          modifier: Modifier,
@@ -134,7 +134,7 @@ fun <T> ReorderableListContainer(
 interface ReorderableListScope<T> {
    @Composable
    fun ReorderableListItem(
-      key: Any,
+      key: String,
       data: T,
       setOrder: (toIndex: Int) -> Unit,
       modifier: Modifier = Modifier,

@@ -26,8 +26,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -179,7 +179,7 @@ private fun WatchappListScreenContent(
          item("Divider") { HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.onSurface) }
 
          item("TabBar") {
-            TabRow(selectedTabIndex = selectedTab) {
+            PrimaryTabRow(selectedTabIndex = selectedTab) {
                Tab(selectedTab == 0, onClick = { selectedTab = 0 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
                   Text(stringResource(R.string.watchfaces))
                }
@@ -210,7 +210,7 @@ private fun WatchappListScreenContent(
             modifier = { Modifier.animateItem() }
          ) { app ->
             ReorderableListItem(
-               key = app.properties.id,
+               key = app.properties.id.toString(),
                data = app,
                setOrder = {
                   setOrder(app.properties.id, it)

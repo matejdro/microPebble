@@ -76,16 +76,16 @@ class BluetoothScanScreen(
    override fun Content(key: BluetoothScanScreenKey) {
       val state = viewmodel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention()
       Surface() {
-         ProgressErrorSuccessScaffold(state.value) {
-            val bluetoothScanState = getBluetoothScanState(it)
+         ProgressErrorSuccessScaffold(state.value) { scanState ->
+            val bluetoothScanState = getBluetoothScanState(scanState)
             val context = LocalContext.current
             val companionManager = context.getSystemService<CompanionDeviceManager>()!!
             ScanScreenContent(
-               it,
+               scanState,
                toggleScan = {
                   if (!bluetoothScanState.bluetoothPermission.allPermissionsGranted) {
                      bluetoothScanState.bluetoothPermission.launchMultiplePermissionRequest()
-                  } else if (!it.bluetoothOn) {
+                  } else if (!scanState.bluetoothOn) {
                      bluetoothScanState.turnOnBluetoothIntent.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
                   } else {
                      viewmodel.toggleScan()
