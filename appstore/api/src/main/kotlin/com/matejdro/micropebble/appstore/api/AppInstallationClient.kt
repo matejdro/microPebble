@@ -25,4 +25,13 @@ interface AppInstallationClient {
    suspend fun getInstallationSource(appId: Uuid): AppInstallSource?
    suspend fun removeFromSources(id: Uuid)
    suspend fun updateSources(id: Uuid, newSource: AppInstallSource)
+   suspend fun isAppUpdatable(
+      installSource: AppInstallSource?,
+      sources: List<AppstoreSource>,
+   ): AppStatus
+
+   suspend fun isAppUpdatable(
+      uuid: Uuid,
+      sources: List<AppstoreSource>,
+   ): AppStatus
 }

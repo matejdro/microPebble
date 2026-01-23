@@ -1,10 +1,8 @@
-package com.matejdro.micropebble.apps.ui.list
+package com.matejdro.micropebble.appstore.api
 
-import androidx.compose.runtime.Stable
 import com.matejdro.micropebble.common.util.VersionInfo
 import si.inova.kotlinova.core.outcome.CauseException
 
-@Stable
 sealed class AppStatus {
 
    /**

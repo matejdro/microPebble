@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_update_channel_name">Application updates</string>
+    <string name="update_text_content">%1$s (%2$s → %3$s)</string>
+    <string name="single_update_text_content">%1$s → %2$s</string>
+    <string name="apps_have_updates">%1$d apps have updates</string>
+    <string name="app_has_updates">%1$s has updates</string>
+</resources>

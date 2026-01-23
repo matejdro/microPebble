@@ -8,15 +8,14 @@ import com.matejdro.micropebble.apps.ui.errors.InvalidPbwFileException
 import com.matejdro.micropebble.appstore.api.ApiClient
 import com.matejdro.micropebble.appstore.api.AppInstallSource
 import com.matejdro.micropebble.appstore.api.AppInstallationClient
+import com.matejdro.micropebble.appstore.api.AppStatus
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.AppstoreSourceService
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationList
 import com.matejdro.micropebble.common.exceptions.LibPebbleError
 import com.matejdro.micropebble.common.logging.ActionLogger
-import com.matejdro.micropebble.common.util.compareTo
 import com.matejdro.micropebble.common.util.joinUrls
-import com.matejdro.micropebble.common.util.parseVersionString
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
 import dev.zacsweers.metro.Inject
 import dispatch.core.withDefault
@@ -31,6 +30,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.buffer
@@ -84,7 +84,7 @@ class WatchappListViewModel(
       if (apps is Outcome.Success) {
          val map = mutableMapOf<Uuid, AppStatus>()
          for ((id, installSource) in apps.data) {
-            map[id] = isAppUpdatable(installSource, sources)
+            map[id] = installationClient.isAppUpdatable(installSource, sources)
          }
          Outcome.Success(map)
       } else {
@@ -168,28 +168,23 @@ class WatchappListViewModel(
       actionLogger.logAction { "WatchappListViewModel.updateApp($uuid)" }
       resources.launchWithExceptionReporting {
          _appUpdatingStatus.emit(appUpdatingStatus.value + (uuid to Outcome.Progress()))
-         val result = asyncUpdateApp(uuid)
+         val result =
+            appInstallSourceStatus.filterIsSuccess().first().data[uuid]?.let {
+               asyncUpdateApp(it)
+            } ?: Outcome.Error(UnknownCauseException("No app update source"))
          _appUpdatingStatus.emit(appUpdatingStatus.value + (uuid to result))
          delay(10.seconds)
          _appUpdatingStatus.emit(appUpdatingStatus.value - uuid)
       }
    }
 
-   private suspend fun asyncUpdateApp(uuid: Uuid): Outcome<Unit> {
-      val installSource =
-         appInstallSourceStatus.filterIsInstance<Outcome.Success<Map<Uuid, AppInstallSource?>>>().first().data[uuid]
-            ?: return Outcome.Error(UnknownCauseException("No app install source"))
+   private suspend fun asyncUpdateApp(installSource: AppInstallSource): Outcome<Unit> {
       val updateSource = appstoreSourceService.sources.first().findFor(installSource)
          ?: return Outcome.Error(UnknownCauseException("No app update source"))
       val appListing = fetchAppListing(updateSource, installSource)
          ?: return Outcome.Error(UnknownCauseException("Failed to fetch app listing"))
       val pbwUrl = URL(appListing.latestRelease.pbwFile)
-      return when (val result = installationClient.install(pbwUrl, installSource)) {
-         is Outcome.Success -> Outcome.Success(Unit)
-         is Outcome.Error -> Outcome.Error(result.exception)
-         // It should never be progress.
-         is Outcome.Progress -> Outcome.Error(UnknownCauseException())
-      }
+      return installationClient.install(pbwUrl, installSource)
    }
 
    fun reorderApp(uuid: Uuid, index: Int) = resources.launchResourceControlTask(_actionStatus) {
@@ -239,26 +234,6 @@ class WatchappListViewModel(
       }
    }
 
-   private suspend fun isAppUpdatable(
-      installSource: AppInstallSource?,
-      sources: List<AppstoreSource>,
-   ): AppStatus {
-      if (installSource == null) {
-         return AppStatus.NotUpdatable
-      }
-      val updateSource = sources.findFor(installSource) ?: return AppStatus.MissingSource
-      val currentVersion =
-         lockerApi.getLockerApp(installSource.appId).first()?.properties?.version?.let { parseVersionString(it) }
-            ?: return AppStatus.Error
-      val response = fetchAppListing(updateSource, installSource) ?: return AppStatus.AppNotFound
-      val latestVersion = parseVersionString(response.latestRelease.version) ?: return AppStatus.Error
-      return if (latestVersion > currentVersion) {
-         AppStatus.Updatable(currentVersion, latestVersion)
-      } else {
-         AppStatus.UpToDate
-      }
-   }
-
    private fun List<AppstoreSource>.findFor(installSource: AppInstallSource) =
       find { it.enabled && it.id == installSource.sourceId }
 
@@ -266,4 +241,6 @@ class WatchappListViewModel(
       runCatching {
          api.http.get(updateSource.url.joinUrls("/v1/apps/id/${installSource.storeId}")).body<ApplicationList>().data.first()
       }.getOrNull()
+
+   private fun <T> Flow<Outcome<T>>.filterIsSuccess() = filterIsInstance<Outcome.Success<T>>()
 }

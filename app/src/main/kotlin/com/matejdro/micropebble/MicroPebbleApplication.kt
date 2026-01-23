@@ -94,7 +94,7 @@ open class MicroPebbleApplication : Application(), WorkConfiguration.Provider {
       }
       applicationGraph.initNotificationChannels()
 
-      applicationGraph.getAppUpdaterWorkController().scheduleBackgroundTasks()
+      applicationGraph.getAppUpdateFinderWorkController().scheduleBackgroundTasks()
    }
 
    private fun setupLogging() {

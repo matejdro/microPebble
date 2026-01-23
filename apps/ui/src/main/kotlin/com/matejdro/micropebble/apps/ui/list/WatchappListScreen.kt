@@ -73,6 +73,7 @@ import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.apps.ui.R
 import com.matejdro.micropebble.apps.ui.errors.installUserFriendlyErrorMessage
 import com.matejdro.micropebble.apps.ui.webviewconfig.AppConfigScreenKey
+import com.matejdro.micropebble.appstore.api.AppStatus
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.common.util.parseVersionString
 import com.matejdro.micropebble.common.util.toVersionString

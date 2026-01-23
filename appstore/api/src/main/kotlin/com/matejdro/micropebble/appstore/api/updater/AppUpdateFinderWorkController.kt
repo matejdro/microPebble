@@ -1,5 +1,5 @@
 package com.matejdro.micropebble.appstore.api.updater
 
-interface AppUpdaterWorkController {
+interface AppUpdateFinderWorkController {
    fun scheduleBackgroundTasks()
 }

@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+   api(projects.common)
    api(libs.kotlin.coroutines)
    api(libs.kotlinova.core)
    api(libs.ktor.core)

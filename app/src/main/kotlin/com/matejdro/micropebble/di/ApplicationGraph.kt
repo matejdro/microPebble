@@ -5,7 +5,8 @@ import android.app.Service
 import android.content.BroadcastReceiver
 import androidx.work.WorkerFactory
 import com.matejdro.micropebble.MainViewModel
-import com.matejdro.micropebble.appstore.api.updater.AppUpdaterWorkController
+import com.matejdro.micropebble.appstore.api.updater.AppUpdateFinder
+import com.matejdro.micropebble.appstore.api.updater.AppUpdateFinderWorkController
 import com.matejdro.micropebble.logging.FileLoggingController
 import com.matejdro.micropebble.logging.TinyLogLoggingThread
 import com.matejdro.micropebble.notifications.NotificationChannelManager
@@ -51,7 +52,8 @@ interface ApplicationGraph {
    fun getFileLoggingController(): FileLoggingController
    fun getTinyLogLoggingThread(): TinyLogLoggingThread
    fun getWorkerFactory(): WorkerFactory
-   fun getAppUpdaterWorkController(): AppUpdaterWorkController
+   fun getAppUpdateFinderWorkController(): AppUpdateFinderWorkController
+   fun getAppUpdateFinder(): AppUpdateFinder
 
    @Multibinds(allowEmpty = true)
    fun provideEmptyConditionalMultibinds(): Map<KClass<*>, ConditionalNavigationHandler>

@@ -12,6 +12,7 @@ import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
@@ -70,6 +71,8 @@ class AppstoreSourceServiceImpl(
    override val isDefault: Flow<Boolean> = sources.map { defaultSources == it }
    override val sources: Flow<List<AppstoreSource>>
       get() = context.appstoreSourcesStore.data
+   override val enabledSources: Flow<List<AppstoreSource>>
+      get() = sources.map { it.filter { source -> source.enabled } }
 
    override suspend fun reorderSource(source: AppstoreSource, newIndex: Int) {
       context.appstoreSourcesStore.updateData { settings ->

@@ -4,16 +4,25 @@ import android.content.Context
 import android.util.Log
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
+import com.matejdro.micropebble.appstore.api.ApiClient
 import com.matejdro.micropebble.appstore.api.AppDownloadFailed
 import com.matejdro.micropebble.appstore.api.AppInstallSource
 import com.matejdro.micropebble.appstore.api.AppInstallationClient
 import com.matejdro.micropebble.appstore.api.AppSideloadFailed
+import com.matejdro.micropebble.appstore.api.AppStatus
+import com.matejdro.micropebble.appstore.api.AppstoreSource
+import com.matejdro.micropebble.appstore.api.store.application.Application
+import com.matejdro.micropebble.appstore.api.store.application.ApplicationList
+import com.matejdro.micropebble.common.util.compareTo
+import com.matejdro.micropebble.common.util.joinUrls
+import com.matejdro.micropebble.common.util.parseVersionString
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
+import io.ktor.client.call.body
+import io.ktor.client.request.get
 import io.rebble.libpebblecommon.connection.LockerApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.io.files.Path
@@ -54,8 +63,9 @@ private val Context.appInstallSources by dataStore(fileName = "appInstallSources
 class AppInstallationClientImpl(
    private val lockerApi: LockerApi,
    private val context: Context,
+   private val api: ApiClient,
 ) : AppInstallationClient {
-   override val appInstallSources: Flow<Map<Uuid, AppInstallSource>> = context.appInstallSources.data
+   override val appInstallSources = context.appInstallSources.data
 
    override suspend fun install(url: URL, source: AppInstallSource?, tmpFileName: String): Outcome<Unit> =
       withContext(Dispatchers.IO) {
@@ -105,6 +115,34 @@ class AppInstallationClientImpl(
          }
       }
    }
+
+   override suspend fun isAppUpdatable(installSource: AppInstallSource?, sources: List<AppstoreSource>): AppStatus {
+      if (installSource == null) {
+         return AppStatus.NotUpdatable
+      }
+      val updateSource = sources.findFor(installSource) ?: return AppStatus.MissingSource
+      val currentVersion =
+         lockerApi.getLockerApp(installSource.appId).first()?.properties?.version?.let { parseVersionString(it) }
+            ?: return AppStatus.Error
+      val response = fetchAppListing(updateSource, installSource) ?: return AppStatus.AppNotFound
+      val latestVersion = parseVersionString(response.latestRelease.version) ?: return AppStatus.Error
+      return if (latestVersion > currentVersion) {
+         AppStatus.Updatable(currentVersion, latestVersion)
+      } else {
+         AppStatus.UpToDate
+      }
+   }
+
+   override suspend fun isAppUpdatable(uuid: Uuid, sources: List<AppstoreSource>) =
+      isAppUpdatable(getInstallationSource(uuid), sources)
+
+   private fun List<AppstoreSource>.findFor(installSource: AppInstallSource) =
+      find { it.enabled && it.id == installSource.sourceId }
+
+   private suspend fun fetchAppListing(updateSource: AppstoreSource, installSource: AppInstallSource): Application? =
+      runCatching {
+         api.http.get(updateSource.url.joinUrls("/v1/apps/id/${installSource.storeId}")).body<ApplicationList>().data.first()
+      }.getOrNull()
 
    override suspend fun getInstallationSource(appId: Uuid) = context.appInstallSources.data.first()[appId]
 }
