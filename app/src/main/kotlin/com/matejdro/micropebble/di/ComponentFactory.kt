@@ -3,10 +3,13 @@ package com.matejdro.micropebble.di
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Intent
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.AppComponentFactory
 import dev.zacsweers.metro.Provider
 import kotlin.reflect.KClass
 
+@RequiresApi(Build.VERSION_CODES.P)
 class ComponentFactory : AppComponentFactory() {
    override fun instantiateServiceCompat(
       cl: ClassLoader,

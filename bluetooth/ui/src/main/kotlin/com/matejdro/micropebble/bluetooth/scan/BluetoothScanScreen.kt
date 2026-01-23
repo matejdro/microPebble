@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.bluetooth.scan
 
+import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.companion.AssociationInfo
@@ -10,7 +11,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Build
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -37,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
+import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.matejdro.micropebble.bluetooth.ui.R
 import com.matejdro.micropebble.navigation.keys.BluetoothScanScreenKey
@@ -61,48 +66,27 @@ class BluetoothScanScreen(
    private val viewmodel: BluetoothScanViewmodel,
    private val notificationsStatus: NotificationsStatus,
 ) : Screen<BluetoothScanScreenKey>() {
+   @Stable
+   data class BluetoothScanStateResult(
+      val turnOnBluetoothIntent: ManagedActivityResultLauncher<Intent, ActivityResult>,
+      val bluetoothPermission: MultiplePermissionsState,
+   )
+
    @Composable
    override fun Content(key: BluetoothScanScreenKey) {
       val state = viewmodel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention()
       Surface() {
-         ProgressErrorSuccessScaffold(state.value) { scanState ->
-            val turnOnBluetoothIntent = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-               if (it.resultCode == Activity.RESULT_OK) {
-                  viewmodel.toggleScan()
-               }
-            }
-
-            val bluetoothPermission = rememberMultiplePermissionsState(
-               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                  listOf(
-                     android.Manifest.permission.BLUETOOTH_SCAN,
-                     android.Manifest.permission.BLUETOOTH_CONNECT,
-                  )
-               } else {
-                  listOf(
-                     android.Manifest.permission.BLUETOOTH,
-                  )
-               }
-            ) { permissions ->
-               if (permissions.values.all { it }) {
-                  if (!scanState.bluetoothOn) {
-                     turnOnBluetoothIntent.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
-                  } else {
-                     viewmodel.toggleScan()
-                  }
-               }
-            }
-
+         ProgressErrorSuccessScaffold(state.value) {
+            val bluetoothScanState = getBluetoothScanState(it)
             val context = LocalContext.current
             val companionManager = context.getSystemService<CompanionDeviceManager>()!!
-
             ScanScreenContent(
-               scanState,
+               it,
                toggleScan = {
-                  if (!bluetoothPermission.allPermissionsGranted) {
-                     bluetoothPermission.launchMultiplePermissionRequest()
-                  } else if (!scanState.bluetoothOn) {
-                     turnOnBluetoothIntent.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+                  if (!bluetoothScanState.bluetoothPermission.allPermissionsGranted) {
+                     bluetoothScanState.bluetoothPermission.launchMultiplePermissionRequest()
+                  } else if (!it.bluetoothOn) {
+                     bluetoothScanState.turnOnBluetoothIntent.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
                   } else {
                      viewmodel.toggleScan()
                   }
@@ -114,6 +98,38 @@ class BluetoothScanScreen(
             )
          }
       }
+   }
+
+   @Composable
+   private fun getBluetoothScanState(scanState: ScanState): BluetoothScanStateResult {
+      val turnOnBluetoothIntent = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+         if (it.resultCode == Activity.RESULT_OK) {
+            viewmodel.toggleScan()
+         }
+      }
+
+      val bluetoothPermission = rememberMultiplePermissionsState(
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            listOf(
+               Manifest.permission.BLUETOOTH_SCAN,
+               Manifest.permission.BLUETOOTH_CONNECT,
+            )
+         } else {
+            listOf(
+               Manifest.permission.BLUETOOTH,
+            )
+         }
+      ) { permissions ->
+         if (permissions.values.all { it }) {
+            if (!scanState.bluetoothOn) {
+               turnOnBluetoothIntent.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+            } else {
+               viewmodel.toggleScan()
+            }
+         }
+      }
+
+      return BluetoothScanStateResult(turnOnBluetoothIntent, bluetoothPermission)
    }
 
    private fun associateWithCompanionManager(
