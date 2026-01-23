@@ -47,7 +47,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.appstore.api.AppstoreSource
@@ -59,6 +58,7 @@ import com.matejdro.micropebble.appstore.ui.common.appGridCells
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
+import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import com.matejdro.micropebble.ui.errors.NoSourcesDisplay
 import dev.zacsweers.metro.Inject
@@ -314,13 +314,12 @@ private fun AppstoreHomepage(
    }
 }
 
-@Preview
+@FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
 internal fun AppstoreHomepagePreview() {
    PreviewTheme {
-      val string = URI("https://appstore-api.rebble.io/api/v1/home/apps?platform=all").toURL()
-         .readText() // val string = Json.encodeToString(Json.parseToJsonElement(rawString).jsonObject["data"]?.jsonArray[0])
+      val string = URI("https://appstore-api.rebble.io/api/v1/home/apps?platform=all").toURL().readText()
       AppstoreHomepage(
          navigator = null,
          state = Outcome.Success(Json.decodeFromString(string)),

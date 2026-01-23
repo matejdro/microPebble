@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.appstore.ui
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,11 +12,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -84,7 +87,7 @@ class AppstoreDetailsScreen(
    @OptIn(ExperimentalMaterial3Api::class)
    @Composable
    override fun Content(key: AppstoreDetailsScreenKey) {
-      val installState = viewModel.appState.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      val installState = viewModel.appState.collectAsStateWithLifecycleAndBlinkingPrevention().value ?: Outcome.Progress()
       val dataState = viewModel.appDataState.collectAsStateWithLifecycleAndBlinkingPrevention().value
       val snackbarHostState = remember { SnackbarHostState() }
       LaunchedEffect(Unit) {
@@ -96,7 +99,7 @@ class AppstoreDetailsScreen(
          AppstoreDetailsContent(
             app = it,
             snackbarHostState,
-            appInstallState = if (installState is Outcome.Success) installState.data else AppInstallState.INSTALLED,
+            appInstallState = installState,
             key.appstoreSource,
             navigator
          ) {
@@ -122,7 +125,7 @@ private fun floatingActionButtonElevation(): ButtonElevation {
 private fun AppstoreDetailsContent(
    app: Application,
    errorsSnackbarState: SnackbarHostState,
-   appInstallState: AppInstallState,
+   appInstallState: Outcome<AppInstallState>,
    appstoreSource: AppstoreSource? = null,
    navigator: Navigator? = null,
    installApp: () -> Unit,
@@ -135,19 +138,22 @@ private fun AppstoreDetailsContent(
    Scaffold(floatingActionButton = {
       ElevatedButton(
          onClick = installApp,
-         enabled = appInstallState != AppInstallState.INSTALLED,
+         enabled = appInstallState.data == AppInstallState.CAN_INSTALL,
          elevation = floatingActionButtonElevation(),
          colors = colors,
-         modifier = Modifier.defaultMinSize(minHeight = 56.dp),
+         modifier = Modifier.defaultMinSize(minHeight = 56.dp).animateContentSize(),
          shape = FloatingActionButtonDefaults.extendedFabShape,
       ) {
-         Row {
+         if (appInstallState is Outcome.Progress) {
+            CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
+         } else {
             Icon(painterResource(R.drawable.ic_download), contentDescription = "Install")
-            val text = when (appInstallState) {
+            val text = when (appInstallState.data) {
                AppInstallState.CAN_INSTALL -> stringResource(R.string.install)
                AppInstallState.INSTALLED -> stringResource(R.string.installed)
+               null -> ""
             }
-            Text(text)
+            Text(text, modifier = Modifier.padding(start = 8.dp))
          }
       }
    }, snackbarHost = {
@@ -359,7 +365,7 @@ internal fun AppstoreDetailsContentPreview() {
       val rawString = URI("https://appstore-api.rebble.io/api/v1/apps/id/67c751c6d2acb30009a3c812").toURL().readText()
       val string = Json.encodeToString(Json.parseToJsonElement(rawString).jsonObject["data"]?.jsonArray[0])
       AppstoreDetailsContent(
-         Json.decodeFromString(string), SnackbarHostState(), AppInstallState.INSTALLED, appstoreSource = null, navigator = null
+         Json.decodeFromString(string), SnackbarHostState(), Outcome.Progress(), appstoreSource = null, navigator = null
       ) {}
    }
 }

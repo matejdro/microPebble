@@ -42,6 +42,7 @@ class AppstoreDetailsViewModel(
       actionLogger.logAction { "AppstoreDetailsViewModel.onServiceRegistered()" }
 
       resources.launchResourceControlTask(_appState) {
+         emit(Outcome.Progress())
          emit(
             if (lockerApi.getLockerApp(key.app.uuid).first() != null) {
                Outcome.Success(AppInstallState.INSTALLED)
@@ -73,6 +74,7 @@ class AppstoreDetailsViewModel(
       }
       val pbwUrl = URL(app.data.latestRelease.pbwFile)
 
+      emit(Outcome.Progress())
       val outcome = installer.install(
          pbwUrl,
          key.appstoreSource?.let { AppInstallSource(app.data.uuid, app.data.id, it.id) }
