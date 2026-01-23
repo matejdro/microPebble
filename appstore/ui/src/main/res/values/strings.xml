@@ -3,7 +3,7 @@
     <string name="watchface">Watchfaces</string>
     <string name="watchapp">Apps</string>
     <string name="install">Install</string>
-    <string name="installed">Installed</string>
+    <string name="uninstall">Uninstall</string>
     <string name="appVersionInfo">Version information</string>
     <string name="appWebsiteLink">Website link</string>
     <string name="appSourceCode">Source code</string>

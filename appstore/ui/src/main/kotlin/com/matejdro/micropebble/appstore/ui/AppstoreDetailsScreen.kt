@@ -14,15 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +41,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -100,24 +96,13 @@ class AppstoreDetailsScreen(
             app = it,
             snackbarHostState,
             appInstallState = installState,
+            { viewModel.uninstall() },
+            { viewModel.install() },
             key.appstoreSource,
-            navigator
-         ) {
-            viewModel.install()
-         }
+            navigator,
+         )
       }
    }
-}
-
-@Composable
-private fun floatingActionButtonElevation(): ButtonElevation {
-   return ButtonDefaults.buttonElevation(
-      defaultElevation = 6.0.dp,
-      pressedElevation = 6.0.dp,
-      focusedElevation = 6.0.dp,
-      hoveredElevation = 8.0.dp,
-      disabledElevation = 4.0.dp,
-   )
 }
 
 @Composable
@@ -126,31 +111,39 @@ private fun AppstoreDetailsContent(
    app: Application,
    errorsSnackbarState: SnackbarHostState,
    appInstallState: Outcome<AppInstallState>,
+   uninstallApp: () -> Unit,
+   installApp: () -> Unit,
    appstoreSource: AppstoreSource? = null,
    navigator: Navigator? = null,
-   installApp: () -> Unit,
 ) {
    val sheetState = rememberModalBottomSheetState()
    var showVersionSheet by remember { mutableStateOf(false) }
-   val colors = ButtonDefaults.buttonColors()
-      .run { copy(disabledContainerColor = disabledContainerColor.compositeOver(MaterialTheme.colorScheme.background)) }
 
    Scaffold(floatingActionButton = {
-      ElevatedButton(
-         onClick = installApp,
-         enabled = appInstallState.data == AppInstallState.CAN_INSTALL,
-         elevation = floatingActionButtonElevation(),
-         colors = colors,
-         modifier = Modifier.defaultMinSize(minHeight = 56.dp).animateContentSize(),
-         shape = FloatingActionButtonDefaults.extendedFabShape,
+      ExtendedFloatingActionButton(
+         onClick = when (appInstallState) {
+            is Outcome.Success if appInstallState.data == AppInstallState.CAN_INSTALL -> installApp
+            is Outcome.Success if appInstallState.data == AppInstallState.INSTALLED -> uninstallApp
+            else -> {
+               {}
+            }
+         },
+         modifier = Modifier
+            .defaultMinSize(minHeight = 56.dp)
+            .animateContentSize(),
       ) {
          if (appInstallState is Outcome.Progress) {
             CircularProgressIndicator(modifier = Modifier.size(24.dp), strokeWidth = 2.dp)
          } else {
-            Icon(painterResource(R.drawable.ic_download), contentDescription = "Install")
+            val icon = when (appInstallState.data) {
+               AppInstallState.CAN_INSTALL -> painterResource(R.drawable.ic_download)
+               AppInstallState.INSTALLED -> painterResource(R.drawable.ic_delete)
+               null -> painterResource(R.drawable.ic_download)
+            }
+            Icon(icon, contentDescription = "Install")
             val text = when (appInstallState.data) {
                AppInstallState.CAN_INSTALL -> stringResource(R.string.install)
-               AppInstallState.INSTALLED -> stringResource(R.string.installed)
+               AppInstallState.INSTALLED -> stringResource(R.string.uninstall)
                null -> ""
             }
             Text(text, modifier = Modifier.padding(start = 8.dp))
@@ -365,7 +358,7 @@ internal fun AppstoreDetailsContentPreview() {
       val rawString = URI("https://appstore-api.rebble.io/api/v1/apps/id/67c751c6d2acb30009a3c812").toURL().readText()
       val string = Json.encodeToString(Json.parseToJsonElement(rawString).jsonObject["data"]?.jsonArray[0])
       AppstoreDetailsContent(
-         Json.decodeFromString(string), SnackbarHostState(), Outcome.Progress(), appstoreSource = null, navigator = null
-      ) {}
+         Json.decodeFromString(string), SnackbarHostState(), Outcome.Progress(), {}, {}
+      )
    }
 }

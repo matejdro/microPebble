@@ -100,6 +100,12 @@ class AppInstallationClientImpl(
          }
       }
 
+   override suspend fun uninstall(uuid: Uuid) = withContext(Dispatchers.IO) {
+      val result = lockerApi.removeApp(uuid)
+      removeFromSources(uuid)
+      result
+   }
+
    override suspend fun removeFromSources(id: Uuid) {
       context.appInstallSources.updateData { data ->
          data.toMutableMap().apply {

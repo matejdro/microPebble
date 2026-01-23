@@ -81,4 +81,15 @@ class AppstoreDetailsViewModel(
       )
       emit(outcome.mapData { AppInstallState.INSTALLED })
    }
+
+   fun uninstall() = resources.launchResourceControlTask(_appState) {
+      actionLogger.logAction { "AppstoreDetailsViewModel.install()" }
+      val app = appDataState.value
+      if (app !is Outcome.Success) {
+         return@launchResourceControlTask
+      }
+      emit(Outcome.Progress())
+      installer.uninstall(app.data.uuid)
+      emit(Outcome.Success(AppInstallState.CAN_INSTALL))
+   }
 }

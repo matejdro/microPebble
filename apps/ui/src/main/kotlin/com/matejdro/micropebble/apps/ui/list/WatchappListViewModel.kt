@@ -155,10 +155,8 @@ class WatchappListViewModel(
 
       withDefault {
          runLibPebbleActionWithErrorConversion<UserFacingError.FailedToRemovePbwFromLocker> {
-            lockerApi.removeApp(uuid)
+            installationClient.uninstall(uuid)
          }
-
-         installationClient.removeFromSources(uuid)
 
          emit(Outcome.Success(Unit))
       }
