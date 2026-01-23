@@ -9,6 +9,7 @@ import android.companion.CompanionDeviceManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
@@ -72,10 +73,16 @@ class BluetoothScanScreen(
             }
 
             val bluetoothPermission = rememberMultiplePermissionsState(
-               listOf(
-                  android.Manifest.permission.BLUETOOTH_SCAN,
-                  android.Manifest.permission.BLUETOOTH_CONNECT,
-               )
+               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                  listOf(
+                     android.Manifest.permission.BLUETOOTH_SCAN,
+                     android.Manifest.permission.BLUETOOTH_CONNECT,
+                  )
+               } else {
+                  listOf(
+                     android.Manifest.permission.BLUETOOTH,
+                  )
+               }
             ) { permissions ->
                if (permissions.values.all { it }) {
                   if (!scanState.bluetoothOn) {
@@ -121,23 +128,40 @@ class BluetoothScanScreen(
                   .setAddress(device.identifier.asString)
                   .build()
             )
-            .setDeviceProfile(AssociationRequest.DEVICE_PROFILE_WATCH)
-            .build(),
-         object : CompanionDeviceManager.Callback() {
-            override fun onFailure(error: CharSequence?) {}
-
-            // New method is only available in the SDK 33, so we
-            // have to use the old one for now.
-            @Suppress("DEPRECATION")
-            @Deprecated("Deprecated in Java")
-            override fun onDeviceFound(intentSender: IntentSender) {
-               super.onDeviceFound(intentSender)
-               context.startIntentSender(intentSender, null, 0, 0, 0)
+            .run {
+               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                  setDeviceProfile(AssociationRequest.DEVICE_PROFILE_WATCH)
+               } else {
+                  this
+               }
             }
+            .build(),
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            object : CompanionDeviceManager.Callback() {
+               override fun onFailure(error: CharSequence?) {}
 
-            override fun onAssociationCreated(associationInfo: AssociationInfo) {
-               notificationsStatus.requestNotificationAccess()
-               viewmodel.connect(device)
+               @Suppress("DEPRECATION")
+               @Deprecated("Deprecated in Java")
+               override fun onDeviceFound(intentSender: IntentSender) {
+                  super.onDeviceFound(intentSender)
+                  context.startIntentSender(intentSender, null, 0, 0, 0)
+               }
+
+               override fun onAssociationCreated(associationInfo: AssociationInfo) {
+                  notificationsStatus.requestNotificationAccess()
+                  viewmodel.connect(device)
+               }
+            }
+         } else {
+            object : CompanionDeviceManager.Callback() {
+               override fun onFailure(error: CharSequence?) {}
+
+               @Suppress("DEPRECATION")
+               @Deprecated("Deprecated in Java")
+               override fun onDeviceFound(intentSender: IntentSender) {
+                  notificationsStatus.requestNotificationAccess()
+                  viewmodel.connect(device)
+               }
             }
          },
          null

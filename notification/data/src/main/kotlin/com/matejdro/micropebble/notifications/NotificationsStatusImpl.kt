@@ -6,6 +6,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.NotificationManagerCompat.getEnabledListenerPackages
 import androidx.core.content.getSystemService
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -42,7 +43,11 @@ class NotificationsStatusImpl(
    }
 
    override val isNotificationAccessEnabled: Boolean
-      get() = notificationManager.isNotificationListenerAccessGranted(getNotificationListenerComponent())
+      get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+         notificationManager.isNotificationListenerAccessGranted(getNotificationListenerComponent())
+      } else {
+         getEnabledListenerPackages(context).contains(context.packageName)
+      }
 
    private fun getNotificationListenerComponent(): ComponentName =
       ComponentName(context, LibPebbleNotificationListener::class.java)
