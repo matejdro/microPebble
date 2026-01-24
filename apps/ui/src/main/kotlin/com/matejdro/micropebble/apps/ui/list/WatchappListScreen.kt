@@ -179,6 +179,7 @@ private fun WatchappListScreenContent(
          item("Divider") { HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.onSurface) }
 
          item("TabBar") {
+            @Suppress("DEPRECATION") // Will be fixed as part of the https://github.com/matejdro/microPebble/pull/42
             TabRow(selectedTabIndex = selectedTab) {
                Tab(selectedTab == 0, onClick = { selectedTab = 0 }, modifier = Modifier.sizeIn(minHeight = 48.dp)) {
                   Text(stringResource(R.string.watchfaces))
