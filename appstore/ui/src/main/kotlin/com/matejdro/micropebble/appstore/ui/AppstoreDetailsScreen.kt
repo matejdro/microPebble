@@ -2,6 +2,7 @@ package com.matejdro.micropebble.appstore.ui
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -52,7 +53,7 @@ import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.appstore.api.AppInstallState
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.store.application.Application
-import com.matejdro.micropebble.appstore.ui.common.APP_IMAGE_ASPECT_RATIO
+import com.matejdro.micropebble.appstore.api.store.application.ApplicationScreenshot
 import com.matejdro.micropebble.appstore.ui.common.BANNER_RATIO
 import com.matejdro.micropebble.appstore.ui.common.formatDate
 import com.matejdro.micropebble.common.util.joinUrls
@@ -179,7 +180,9 @@ private fun AppstoreDetailsContent(
          }
 
          item(contentType = 2) {
-            AppScreenshotCarousel(app, childModifier)
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+               AppScreenshotCarousel(app, childModifier)
+            }
          }
 
          item(contentType = 3) {
@@ -263,12 +266,14 @@ private fun AppScreenshotCarousel(app: Application, modifier: Modifier = Modifie
       modifier = modifier.clip(CardDefaults.shape),
       itemSpacing = 8.dp,
    ) {
+      val ratio = ApplicationScreenshot.Hardware.fromHardwarePlatform(app.screenshotHardware)?.aspectRatio
+         ?: app.screenshotImages[it].imageHardware.aspectRatio
       AsyncImage(
-         model = app.screenshotImages[it].medium,
+         model = app.screenshotImages[it].image,
          contentDescription = "Screenshot image $it for ${app.title}",
          modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(APP_IMAGE_ASPECT_RATIO),
+            .aspectRatio(ratio),
          contentScale = ContentScale.FillWidth,
       )
    }

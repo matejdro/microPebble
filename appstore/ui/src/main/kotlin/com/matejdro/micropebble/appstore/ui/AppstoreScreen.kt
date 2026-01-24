@@ -4,15 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -32,13 +33,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,8 +45,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.appstore.api.AppstoreSource
+import com.matejdro.micropebble.appstore.api.AppstoreSourceService
+import com.matejdro.micropebble.appstore.api.store.application.AlgoliaApplication
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreCollection
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
@@ -62,7 +62,6 @@ import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import com.matejdro.micropebble.ui.errors.NoSourcesDisplay
 import dev.zacsweers.metro.Inject
-import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.outcome.Outcome
@@ -71,7 +70,6 @@ import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 import java.net.URI
-import kotlin.time.Duration.Companion.milliseconds
 import com.matejdro.micropebble.sharedresources.R as sharedR
 
 private const val categoryHeaderContentType = "categoryHeaderContentType"
@@ -86,8 +84,7 @@ class AppstoreScreen(
    @OptIn(ExperimentalMaterial3Api::class)
    @Composable
    override fun Content(key: AppstoreScreenKey) {
-      val coroutineScope = rememberCoroutineScope()
-      val appstoreSources by viewModel.appstoreSources.collectAsState(emptyList(), coroutineScope.coroutineContext)
+      val appstoreSources = viewModel.appstoreSources.collectAsStateWithLifecycle(null).value ?: return
 
       if (appstoreSources.isEmpty()) {
          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -104,133 +101,188 @@ class AppstoreScreen(
          return
       }
 
-      var searchExpanded by rememberSaveable { mutableStateOf(false) }
-      val getSelectedTab = { viewModel.selectedTab }
-      val setSelectedTab: (ApplicationType) -> Unit = { viewModel.selectedTab = it }
-      val searchResultState = viewModel.searchResultState.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      AppstoreScreenScaffold(
+         selectedTab = viewModel.selectedTab,
+         setSelectedTab = { viewModel.selectedTab = it },
+         source = viewModel.appstoreSource,
+         appstoreSources = appstoreSources,
+         setSelectedSource = { viewModel.appstoreSource = it },
+         searchQuery = viewModel.searchQuery,
+         setSearchQuery = { viewModel.searchQuery = it },
+         searchResults = viewModel.searchResults.collectAsStateWithLifecycleAndBlinkingPrevention().value,
+         navigator = navigator,
+         homePageState = viewModel.homePageState.collectAsStateWithLifecycleAndBlinkingPrevention().value,
+         onRefresh = viewModel::reloadHomePage,
+         navigateToCollection = { navigator.navigateTo(viewModel.screenKeyFor(it)) }
+      )
+   }
+}
 
-      val canSearch by remember { derivedStateOf { viewModel.appstoreSource?.algoliaData != null } }
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun AppstoreScreenScaffold(
+   selectedTab: ApplicationType,
+   setSelectedTab: (ApplicationType) -> Unit,
+   source: AppstoreSource?,
+   appstoreSources: List<AppstoreSource>,
+   setSelectedSource: (AppstoreSource) -> Unit,
+   searchQuery: String,
+   setSearchQuery: (String) -> Unit,
+   searchResults: Outcome<List<AlgoliaApplication>>?,
+   navigator: Navigator?,
+   homePageState: Outcome<AppstoreHomePage>?,
+   onRefresh: () -> Unit,
+   navigateToCollection: (AppstoreCollection) -> Unit,
+) {
+   Scaffold { contentPadding ->
+      Column {
+         TypeSelector(
+            selectedTab = selectedTab,
+            setSelectedTab = setSelectedTab,
+            appstoreSources = appstoreSources,
+            source = source,
+            setSelectedSource = setSelectedSource,
+            modifier = Modifier.padding(contentPadding)
+         )
 
-      LaunchedEffect(viewModel.selectedTab, viewModel.appstoreSource) {
-         viewModel.loadHomePage()
+         if (source?.algoliaData != null) {
+            AppsSearchBox(
+               searchQuery = searchQuery,
+               setSearchQuery = setSearchQuery,
+               searchResults = searchResults,
+               navigator = navigator,
+               source = source,
+               modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+         }
+
+         AppstoreHomepage(
+            navigator = navigator,
+            state = homePageState,
+            onRefresh = onRefresh,
+            navigateToCollection = navigateToCollection,
+            appstoreSource = source,
+         )
       }
-      LaunchedEffect(viewModel.searchQuery, viewModel.selectedTab, viewModel.appstoreSource, searchExpanded) {
-         delay(100.milliseconds)
-         if (searchExpanded) {
-            viewModel.loadSearchResults()
+   }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun ColumnScope.AppsSearchBox(
+   searchQuery: String,
+   setSearchQuery: (String) -> Unit,
+   searchResults: Outcome<List<AlgoliaApplication>>?,
+   navigator: Navigator?,
+   source: AppstoreSource,
+   modifier: Modifier = Modifier,
+) {
+   var searchExpanded by rememberSaveable { mutableStateOf(false) }
+   SearchBar(
+      inputField = {
+         SearchBarDefaults.InputField(
+            query = searchQuery,
+            onQueryChange = setSearchQuery,
+            onSearch = {},
+            expanded = searchExpanded,
+            onExpandedChange = { searchExpanded = it },
+            placeholder = { Text(stringResource(R.string.search)) },
+            leadingIcon = {
+               Icon(painterResource(R.drawable.ic_search), contentDescription = null)
+            }
+         )
+      },
+      expanded = searchExpanded,
+      onExpandedChange = { searchExpanded = it },
+      modifier = modifier,
+      windowInsets = WindowInsets(),
+   ) {
+      val outcome = when (searchResults) {
+         is Outcome.Error -> searchResults
+         is Outcome.Progress if searchResults.data != null -> Outcome.Success(searchResults.data!!)
+         else -> searchResults
+      }
+      ProgressErrorSuccessScaffold(outcome) { results ->
+         LazyVerticalStaggeredGrid(
+            columns = appGridCells,
+            modifier = Modifier
+               .fillMaxSize()
+               .padding(8.dp)
+               .clip(CardDefaults.shape),
+            verticalItemSpacing = 8.dp,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+         ) {
+            items(results) {
+               WatchAppDisplay(
+                  it.toApplication(),
+                  navigator,
+                  appstoreSource = source,
+                  onlyPartialData = true
+               )
+            }
          }
       }
+   }
+}
 
-      Scaffold { contentPadding ->
-         Column {
-            SecondaryTabRow(selectedTabIndex = getSelectedTab().ordinal, modifier = Modifier.padding(contentPadding)) {
-               LeadingIconTab(
-                  getSelectedTab() == ApplicationType.Watchface,
-                  onClick = { setSelectedTab(ApplicationType.Watchface) },
-                  text = {
-                     Text(stringResource(R.string.watchface))
-                  },
-                  icon = {
-                     Icon(painterResource(R.drawable.ic_watchfaces), contentDescription = null)
-                  }
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun TypeSelector(
+   selectedTab: ApplicationType,
+   setSelectedTab: (ApplicationType) -> Unit,
+   appstoreSources: List<AppstoreSource>,
+   source: AppstoreSource?,
+   setSelectedSource: (AppstoreSource) -> Unit,
+   modifier: Modifier = Modifier,
+) {
+   SecondaryTabRow(selectedTabIndex = selectedTab.ordinal, modifier = modifier) {
+      LeadingIconTab(
+         selectedTab == ApplicationType.Watchface,
+         onClick = { setSelectedTab(ApplicationType.Watchface) },
+         text = {
+            Text(stringResource(R.string.watchface))
+         },
+         icon = {
+            Icon(painterResource(R.drawable.ic_watchfaces), contentDescription = null)
+         }
+      )
+
+      LeadingIconTab(
+         selectedTab == ApplicationType.Watchapp,
+         onClick = { setSelectedTab(ApplicationType.Watchapp) },
+         text = {
+            Text(stringResource(R.string.watchapp))
+         },
+         icon = {
+            Icon(painterResource(R.drawable.ic_apps), contentDescription = null)
+         }
+      )
+
+      var expanded by remember { mutableStateOf(false) }
+      ExposedDropdownMenuBox(expanded, onExpandedChange = { expanded = it }) {
+         TextField(
+            value = source?.name ?: stringResource(R.string.no_source_selected),
+            onValueChange = {},
+            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+            readOnly = true,
+            singleLine = true,
+            leadingIcon = { Icon(painterResource(R.drawable.ic_appstore_source), contentDescription = null) },
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+               unfocusedContainerColor = Color.Transparent,
+               focusedContainerColor = Color.Transparent,
+            ),
+         )
+         ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+         ) {
+            for (source in appstoreSources.filter { it.enabled }) {
+               DropdownMenuItem(
+                  text = { Text(source.name, style = MaterialTheme.typography.bodyLarge) },
+                  onClick = { setSelectedSource(source) },
+                  contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                )
-
-               LeadingIconTab(
-                  getSelectedTab() == ApplicationType.Watchapp,
-                  onClick = { setSelectedTab(ApplicationType.Watchapp) },
-                  text = {
-                     Text(stringResource(R.string.watchapp))
-                  },
-                  icon = {
-                     Icon(painterResource(R.drawable.ic_apps), contentDescription = null)
-                  }
-               )
-
-               var expanded by remember { mutableStateOf(false) }
-               ExposedDropdownMenuBox(expanded, onExpandedChange = { expanded = it }) {
-                  TextField(
-                     value = viewModel.appstoreSource?.name.toString(),
-                     onValueChange = {},
-                     modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
-                     readOnly = true,
-                     singleLine = true,
-                     leadingIcon = { Icon(painterResource(R.drawable.ic_appstore_source), contentDescription = null) },
-                     colors = ExposedDropdownMenuDefaults.textFieldColors(
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                     ),
-                  )
-                  ExposedDropdownMenu(
-                     expanded = expanded,
-                     onDismissRequest = { expanded = false }
-                  ) {
-                     for (source in appstoreSources.filter { it.enabled }) {
-                        DropdownMenuItem(
-                           text = { Text(source.name, style = MaterialTheme.typography.bodyLarge) },
-                           onClick = {
-                              viewModel.appstoreSource = source
-                           },
-                           contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-                        )
-                     }
-                  }
-               }
             }
-            if (canSearch) {
-               SearchBar(
-                  inputField = {
-                     SearchBarDefaults.InputField(
-                        query = viewModel.searchQuery,
-                        onQueryChange = { viewModel.searchQuery = it },
-                        onSearch = {},
-                        expanded = searchExpanded,
-                        onExpandedChange = { searchExpanded = it },
-                        placeholder = { Text(stringResource(R.string.search)) },
-                        leadingIcon = {
-                           Icon(painterResource(R.drawable.ic_search), contentDescription = null)
-                        }
-                     )
-                  },
-                  expanded = searchExpanded,
-                  onExpandedChange = { searchExpanded = it },
-                  modifier = Modifier.align(Alignment.CenterHorizontally),
-                  windowInsets = WindowInsets(),
-               ) {
-                  val outcome = when (searchResultState) {
-                     is Outcome.Error -> searchResultState
-                     is Outcome.Progress if searchResultState.data != null -> Outcome.Success(searchResultState.data!!)
-                     else -> searchResultState
-                  }
-                  ProgressErrorSuccessScaffold(outcome) { results ->
-                     LazyVerticalGrid(
-                        columns = appGridCells,
-                        modifier = Modifier
-                           .fillMaxSize()
-                           .padding(8.dp)
-                           .clip(CardDefaults.shape),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                     ) {
-                        items(results) {
-                           WatchAppDisplay(
-                              it.toApplication(),
-                              navigator,
-                              appstoreSource = viewModel.appstoreSource,
-                              onlyPartialData = true
-                           )
-                        }
-                     }
-                  }
-               }
-            }
-
-            AppstoreHomepage(
-               navigator = navigator,
-               state = viewModel.homePageState.collectAsStateWithLifecycleAndBlinkingPrevention().value,
-               onRefresh = { viewModel.reloadHomePage() },
-               navigateToCollection = { navigator.navigateTo(viewModel.screenKeyFor(it)) },
-               appstoreSource = viewModel.appstoreSource,
-            )
          }
       }
    }
@@ -252,7 +304,7 @@ private fun AppstoreHomepage(
    ) {
       if (state is Outcome.Success) {
          val data = state.data
-         LazyVerticalGrid(
+         LazyVerticalStaggeredGrid(
             columns = appGridCells,
             modifier = Modifier
                .fillMaxSize()
@@ -260,54 +312,55 @@ private fun AppstoreHomepage(
                .padding(top = 8.dp)
                .clip(CardDefaults.shape),
             contentPadding = PaddingValues(bottom = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalItemSpacing = 8.dp,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
          ) {
             for (collection in data.collections) {
-               item(collection.slug, contentType = categoryHeaderContentType, span = { GridItemSpan(maxLineSpan) }) {
-                  Box(
-                     modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.background),
-                  ) {
-                     TextButton(
-                        onClick = { navigateToCollection(collection) },
-                        modifier = Modifier
-                           .fillMaxWidth()
-                           .padding(8.dp)
-                     ) {
-                        Row(
-                           modifier = Modifier.fillMaxSize(),
-                           horizontalArrangement = Arrangement.SpaceBetween,
-                           verticalAlignment = Alignment.CenterVertically
-                        ) {
-                           Text(collection.name, Modifier.padding(8.dp), style = MaterialTheme.typography.titleLarge)
-                           Row(
-                              horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically
-                           ) {
-                              Text(stringResource(R.string.seeAll))
-                              Icon(
-                                 painter = painterResource(R.drawable.ic_chevron_forward),
-                                 contentDescription = null,
-                                 modifier = Modifier.padding(8.dp)
-                              )
-                           }
-                        }
-                     }
-                  }
+               item(collection.slug, contentType = categoryHeaderContentType, span = StaggeredGridItemSpan.FullLine) {
+                  AppstoreHeader(navigateToCollection, collection)
                }
                for (appId in collection.appIds) {
                   item(contentType = appTileContentType) {
                      val app = data.applicationsById[appId]
-                     if (app == null) {
-                        Text(
-                           "App with ID $appId not found", Modifier.padding(16.dp), color = MaterialTheme.colorScheme.error
-                        )
-                     } else {
+                     if (app != null) {
                         WatchAppDisplay(app, navigator, appstoreSource = appstoreSource)
                      }
                   }
                }
+            }
+         }
+      }
+   }
+}
+
+@Composable
+private fun AppstoreHeader(navigateToCollection: (AppstoreCollection) -> Unit, collection: AppstoreCollection) {
+   Box(
+      modifier = Modifier
+         .fillMaxWidth()
+         .background(MaterialTheme.colorScheme.background),
+   ) {
+      TextButton(
+         onClick = { navigateToCollection(collection) },
+         modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+      ) {
+         Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+         ) {
+            Text(collection.name, Modifier.padding(8.dp), style = MaterialTheme.typography.titleLarge)
+            Row(
+               horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically
+            ) {
+               Text(stringResource(R.string.seeAll))
+               Icon(
+                  painter = painterResource(R.drawable.ic_chevron_forward),
+                  contentDescription = null,
+                  modifier = Modifier.padding(8.dp)
+               )
             }
          }
       }
@@ -320,11 +373,19 @@ private fun AppstoreHomepage(
 internal fun AppstoreHomepagePreview() {
    PreviewTheme {
       val string = URI("https://appstore-api.rebble.io/api/v1/home/apps?platform=all").toURL().readText()
-      AppstoreHomepage(
+      AppstoreScreenScaffold(
+         selectedTab = ApplicationType.Watchface,
+         setSelectedTab = { },
+         source = AppstoreSourceService.defaultSources.first(),
+         appstoreSources = AppstoreSourceService.defaultSources,
+         setSelectedSource = { },
+         searchQuery = "",
+         setSearchQuery = { },
+         searchResults = Outcome.Progress(),
          navigator = null,
-         state = Outcome.Success(Json.decodeFromString(string)),
+         homePageState = Outcome.Success(Json.decodeFromString(string)),
          onRefresh = {},
-         navigateToCollection = {},
+         navigateToCollection = { }
       )
    }
 }

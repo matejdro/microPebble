@@ -3,6 +3,7 @@ package com.matejdro.micropebble.appstore.ui
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import com.algolia.client.api.SearchClient
 import com.algolia.client.model.search.SearchParamsObject
 import com.algolia.client.model.search.TagFilters
@@ -20,63 +21,68 @@ import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
 import si.inova.kotlinova.core.exceptions.DataParsingException
-import si.inova.kotlinova.core.logging.logcat
+import si.inova.kotlinova.core.exceptions.UnknownCauseException
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
+import kotlin.time.Duration.Companion.milliseconds
 
 @Inject
 @ContributesScopedService
 class AppstoreViewModel(
-   private val resources: CoroutineResourceManager,
+   resources: CoroutineResourceManager,
    private val actionLogger: ActionLogger,
    private val appstoreSourceService: AppstoreSourceService,
    private val api: ApiClient,
 ) : SingleScreenViewModel<AppstoreScreenKey>(resources.scope) {
-   private val _loadingState: MutableStateFlow<Outcome<AppstoreHomePage>> = MutableStateFlow(Outcome.Progress())
-   val homePageState: StateFlow<Outcome<AppstoreHomePage>>
-      get() = _loadingState
-   private val _searchResultsState: MutableStateFlow<Outcome<List<AlgoliaApplication>>> = MutableStateFlow(Outcome.Progress())
-   val searchResultState: StateFlow<Outcome<List<AlgoliaApplication>>>
-      get() = _searchResultsState
-
-   private val homePages: MutableMap<Pair<AppstoreSource, ApplicationType>, AppstoreHomePage> = mutableMapOf()
+   private val reloadFlow = MutableSharedFlow<Unit>(replay = 1).apply { tryEmit(Unit) }
 
    var selectedTab by mutableStateOf(ApplicationType.Watchface)
+   val homePageState =
+      combine(snapshotFlow { appstoreSource }, snapshotFlow { selectedTab }, reloadFlow) { source, tab, _ ->
+         source to tab
+      }.transform { (source, tab) ->
+         if (source != null) {
+            emit(Outcome.Progress())
+            emit(getHomePage(source, tab))
+         }
+      }
 
-   val appstoreSources
-      get() = appstoreSourceService.sources.map { source -> source.filter { it.enabled } }
+   val searchResults =
+      combine(
+         snapshotFlow { searchQuery }.debounce(100.milliseconds),
+         snapshotFlow { selectedTab },
+         snapshotFlow { appstoreSource }
+      ) { query, tab, source ->
+         Triple(query, tab, source)
+      }.transform { (query, tab, source) ->
+         if (source != null) {
+            emit(Outcome.Progress())
+            emit(getSearchResults(source, tab))
+         }
+      }
+
+   private val homePagesCache: MutableMap<Pair<AppstoreSource, ApplicationType>, AppstoreHomePage> = mutableMapOf()
+
+   val appstoreSources = appstoreSourceService.enabledSources
    var appstoreSource: AppstoreSource? by mutableStateOf(null)
 
    var searchQuery by mutableStateOf("")
 
-   fun loadHomePage() = resources.launchResourceControlTask(_loadingState) {
-      actionLogger.logAction { "AppstoreViewModel.loadHomePage()" }
-      ensureAppstoreSource()
-      homePages[appstoreSource to selectedTab]?.let {
-         emit(Outcome.Success(it))
-         return@launchResourceControlTask
-      }
-      reloadHomePage()
-   }
-
-   fun reloadHomePage() = resources.launchResourceControlTask(_loadingState) {
-      actionLogger.logAction { "AppstoreViewModel.reloadHomePage()" }
-      try {
-         val result = getHomePage(selectedTab)
-         homePages[ensureAppstoreSource() to selectedTab] = result
-         result.applicationsById
-         emit(Outcome.Success(result))
-      } catch (e: IllegalArgumentException) {
-         emit(Outcome.Error(DataParsingException(e.message, e)))
+   override fun onServiceRegistered() {
+      actionLogger.logAction { "AppstoreViewModel.onServiceRegistered()" }
+      coroutineScope.launch {
+         appstoreSource = appstoreSources.first().firstOrNull()
       }
    }
 
@@ -89,38 +95,48 @@ class AppstoreViewModel(
       )
    }
 
-   fun loadSearchResults() = resources.launchResourceControlTask(_searchResultsState) {
-      actionLogger.logAction { "AppstoreViewModel.loadSearchResults()" }
-      if (searchQuery.isBlank()) {
-         emit(Outcome.Success(emptyList()))
-         return@launchResourceControlTask
+   private suspend fun getHomePage(source: AppstoreSource, tab: ApplicationType): Outcome<AppstoreHomePage> {
+      homePagesCache[source to tab]?.let { return Outcome.Success(it) }
+      try {
+         val result = fetchHomePage(tab)
+         homePagesCache[source to tab] = result
+         return Outcome.Success(result)
+      } catch (e: IllegalArgumentException) {
+         return Outcome.Error(DataParsingException(e.message, e))
       }
-      val algoliaData = ensureAppstoreSource().algoliaData ?: return@launchResourceControlTask
+   }
+
+   private suspend fun getSearchResults(source: AppstoreSource, tab: ApplicationType): Outcome<List<AlgoliaApplication>> {
+      if (searchQuery.isBlank()) {
+         return Outcome.Success(emptyList())
+      }
+      val algoliaData = source.algoliaData ?: return Outcome.Error(UnknownCauseException())
       val client = SearchClient(
          appId = algoliaData.appId,
          apiKey = algoliaData.apiKey,
       )
       val response: List<AlgoliaApplication> = client.searchSingleIndex(
          algoliaData.indexName,
-         SearchParamsObject(query = searchQuery, tagFilters = TagFilters.of(selectedTab.searchTag))
-      ).hits.mapNotNull {
-         it.additionalProperties?.let { content ->
-            logcat { content.toString() }
-            api.json.decodeFromJsonElement(JsonObject(content))
-         }
+         SearchParamsObject(query = searchQuery, tagFilters = TagFilters.of(tab.searchTag))
+      ).hits.mapNotNull { hit ->
+         hit.additionalProperties?.let { api.json.decodeFromJsonElement(JsonObject(it)) }
       }
-      logcat { "Found result count of $response" }
-      emit(Outcome.Success(response))
+      return Outcome.Success(response)
    }
 
-   suspend fun ensureAppstoreSource(): AppstoreSource {
-      actionLogger.logAction { "AppstoreViewModel.ensureAppstoreSource()" }
+   private suspend fun ensureAppstoreSource(): AppstoreSource {
       if (appstoreSource == null) {
          appstoreSource = appstoreSources.first().first()
       }
       return appstoreSource!!
    }
 
-   private suspend fun getHomePage(type: ApplicationType) =
+   private suspend fun fetchHomePage(type: ApplicationType) =
       api.http.get(ensureAppstoreSource().url.joinUrls(type.apiEndpoint)).body<AppstoreHomePage>()
+
+   fun reloadHomePage() {
+      actionLogger.logAction { "AppstoreViewModel.reloadHomePage()" }
+      homePagesCache.clear()
+      reloadFlow.tryEmit(Unit)
+   }
 }

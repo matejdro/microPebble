@@ -4,49 +4,24 @@ import android.content.Context
 import android.util.Log
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
-import com.matejdro.micropebble.appstore.api.AlgoliaData
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.AppstoreSourceService
+import com.matejdro.micropebble.appstore.api.AppstoreSourceService.Companion.defaultSources
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
-import kotlin.uuid.Uuid
-
-private val defaultSources = listOf(
-   AppstoreSource(
-      id = Uuid.parse("a7f9e6d9-0a47-4540-83a8-672d5c5f9139"),
-      url = "https://appstore-api.rebble.io/api",
-      name = "Rebble",
-      algoliaData = AlgoliaData(
-         appId = "7683OW76EQ",
-         apiKey = "252f4938082b8693a8a9fc0157d1d24f",
-         indexName = "rebble-appstore-production"
-      ),
-   ),
-   AppstoreSource(
-      id = Uuid.parse("ddbec6a1-8ea1-42cc-8dee-b0373fbaa5bd"),
-      url = "https://appstore-api.repebble.com/api",
-      name = "Core Devices",
-      algoliaData = AlgoliaData(
-         appId = "GM3S9TRYO4",
-         apiKey = "0b83b4f8e4e8e9793d2f1f93c21894aa",
-         indexName = "apps"
-      ),
-   ),
-)
 
 private object AppstoreSourcesSerializer : Serializer<List<AppstoreSource>> {
    private val json = Json { ignoreUnknownKeys = true }
-   override val defaultValue = defaultSources
+   override val defaultValue = AppstoreSourceService.defaultSources
 
    override suspend fun readFrom(input: InputStream) =
       try {

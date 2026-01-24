@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.store.application.Application
+import com.matejdro.micropebble.appstore.api.store.application.ApplicationScreenshot
 import com.matejdro.micropebble.appstore.ui.R
 import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
 import si.inova.kotlinova.navigation.instructions.navigateTo
@@ -64,13 +65,15 @@ fun WatchAppDisplay(
 
          val padCornerSize = CornerSize(8.dp)
          app.screenshotImages.firstOrNull()?.let {
+            val ratio = ApplicationScreenshot.Hardware.fromHardwarePlatform(app.screenshotHardware)?.aspectRatio
+               ?: it.imageHardware.aspectRatio
             AsyncImage(
-               model = it.medium,
+               model = it.image,
                contentDescription = "App image for ${app.title}",
                modifier = Modifier
                   .fillMaxWidth()
                   .padding(bottom = 8.dp)
-                  .aspectRatio(APP_IMAGE_ASPECT_RATIO)
+                  .aspectRatio(ratio)
                   .clip(
                      RoundedCornerShape(
                         cardShape.topStart - padCornerSize,
@@ -79,7 +82,7 @@ fun WatchAppDisplay(
                         cardShape.bottomStart - padCornerSize
                      )
                   ),
-               contentScale = ContentScale.FillWidth,
+               contentScale = ContentScale.FillBounds,
             )
          }
          Text(
