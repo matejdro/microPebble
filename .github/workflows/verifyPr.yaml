@@ -72,7 +72,7 @@ jobs:
             **/build/*-results/**/*.xml
       - name: Post SARIF findings as comments in the pull request
         if: always()
-        uses: sett-and-hive/sarif-to-comment-action/composite@77c0eda
+        uses: sett-and-hive/sarif-to-comment-action/composite@77c0eda9c886e978d3d914364ce8610a09b66907
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
