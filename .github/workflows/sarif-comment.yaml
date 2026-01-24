@@ -24,13 +24,6 @@ jobs:
           name: pr-sarif
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
-      - uses: actions/checkout@v4
-        if: steps.download.outcome == 'success'
-        with:
-          lfs: true
-          submodules: recursive
-          ref: refs/pull/${{ env.PR_NUM }}/merge
-          fetch-depth: 0
       - name: Unzip and get the variables
         if: steps.download.outcome == 'success'
         run:
@@ -38,6 +31,16 @@ jobs:
           unzip pr-sarif.zip
           unzip pr-number.zip
           pr=$(cat pr_number.txt);echo \"PR_NUM=$pr\" > $GITHUB_ENV
+      - uses: actions/checkout@v4
+        if: steps.download.outcome == 'success'
+        with:
+          lfs: true
+          submodules: recursive
+          ref: refs/pull/${{ env.PR_NUM }}/merge
+          fetch-depth: 0
+      - name: Set git ref
+        if: steps.download.outcome == 'success'
+        run:
           ref=$(git rev-parse HEAD);echo \"GIT_HASH=$ref\" > $GITHUB_ENV
       - name: Post SARIF findings as comments in the pull request
         if: steps.download.outcome == 'success'
