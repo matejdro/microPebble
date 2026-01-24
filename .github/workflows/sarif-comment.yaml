@@ -29,8 +29,8 @@ jobs:
         id: pr-meta
         run: |
           pr=$(cat pr_number.txt)
-          echo \"pr_num=$pr\" > $GITHUB_OUTPUT
-          echo \"pr_ref=refs/pull/$pr/merge\" >> $GITHUB_OUTPUT
+          echo "pr_num=$pr" > $GITHUB_OUTPUT
+          echo "pr_ref=refs/pull/$pr/merge" >> $GITHUB_OUTPUT
           mkdir -p repo
       - uses: actions/checkout@v4
         if: steps.download.outcome == 'success'
@@ -44,7 +44,7 @@ jobs:
         if: steps.download.outcome == 'success'
         id: git-hash
         run:
-          ref=$(git rev-parse HEAD);echo \"git_hash=$ref\" > $GITHUB_OUTPUT
+          ref=$(git rev-parse HEAD);echo "git_hash=$ref" > $GITHUB_OUTPUT
         working-directory: repo
       - run: "ls -la"
       - name: Post SARIF findings as comments in the pull request
@@ -53,7 +53,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
-          branch: "${{ steps.pr-git-hash.outputs.git_hash }}"
+          branch: "${{ steps.git-hash.outputs.git_hash }}"
           pr-number: "${{ steps.pr-meta.outputs.pr_num }}"
           title: Lint report
           show-rule-details: false
