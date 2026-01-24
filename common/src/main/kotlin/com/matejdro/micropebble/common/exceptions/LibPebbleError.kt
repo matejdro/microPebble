@@ -4,7 +4,13 @@ import si.inova.kotlinova.core.outcome.CauseException
 
 class LibPebbleError(
 
+
+
+
    message: String?,
+
+
+
 
    cause: Throwable? = null,
 ) :
