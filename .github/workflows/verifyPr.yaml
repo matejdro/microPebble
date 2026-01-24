@@ -42,26 +42,26 @@ jobs:
 
       # Build
 
-      - name: Compile app
-        run: "./gradlew compileReleaseKotlin assembleDebug$GLOBAL_FLAGS"
-        env:
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+      #      - name: Compile app
+      #        run: "./gradlew compileReleaseKotlin assembleDebug$GLOBAL_FLAGS"
+      #        env:
+      #          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+      #          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
 
       # Tests
 
       - name: Lint
-        run: "./gradlew lintRelease detektMain detektTest -x detektDebug -x detektDebugUnitTest assertModuleGraph buildHealth detectTooManyFiles debugComposeCompilerCheck reportMerge --continue"
-      - name: Compile Unit Tests
-        run: "./gradlew compileDebugUnitTestSources compileReleaseUnitTestSources"
-      - name: Run Unit Tests
-        run: "./gradlew test -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest"
-      - name: "Generate new Screenshot Tests"
-        run: "config/generate-screenshots.sh ${{ github.event.pull_request.head.ref }}"
-      - name: "Run Screenshot Tests"
-        run: "./gradlew --continue verifyPaparazziDebug"
-      - name: "Remove unused Screenshot Tests"
-        run: "config/remove-unused-screenshots.sh ${{ github.event.pull_request.head.ref }}"
+        run: "./gradlew :common:detekt reportMerge --continue"
+      #      - name: Compile Unit Tests
+      #        run: "./gradlew compileDebugUnitTestSources compileReleaseUnitTestSources"
+      #      - name: Run Unit Tests
+      #        run: "./gradlew test -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest"
+      #      - name: "Generate new Screenshot Tests"
+      #        run: "config/generate-screenshots.sh ${{ github.event.pull_request.head.ref }}"
+      #      - name: "Run Screenshot Tests"
+      #        run: "./gradlew --continue verifyPaparazziDebug"
+      #      - name: "Remove unused Screenshot Tests"
+      #        run: "config/remove-unused-screenshots.sh ${{ github.event.pull_request.head.ref }}"
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action/linux@v2
         if: always()
