@@ -8,6 +8,7 @@ import java.net.URL
 import kotlin.uuid.Uuid
 
 enum class AppInstallState {
+   INCOMPATIBLE,
    CAN_INSTALL,
    INSTALLED,
 }

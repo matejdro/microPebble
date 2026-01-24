@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -46,7 +48,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
@@ -60,8 +61,10 @@ import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
 import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
+import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import dev.zacsweers.metro.Inject
+import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -74,6 +77,7 @@ import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 import java.net.URI
+import com.matejdro.micropebble.sharedresources.R as sharedR
 
 @Inject
 @InjectNavigationScreen
@@ -92,16 +96,49 @@ class AppstoreDetailsScreen(
             snackbarHostState.showSnackbar(it.exception.message ?: "Unknown error")
          }
       }
-      ProgressErrorSuccessScaffold(dataState) {
+      var isWarningPopupShown by remember { mutableStateOf(false) }
+      ProgressErrorSuccessScaffold(dataState) { app ->
          AppstoreDetailsContent(
-            app = it,
+            app = app,
             snackbarHostState,
             appInstallState = installState,
             { viewModel.uninstall() },
-            { viewModel.install() },
+            {
+               if (viewModel.appState.value.data == AppInstallState.INCOMPATIBLE) {
+                  isWarningPopupShown = true
+               } else {
+                  viewModel.install()
+               }
+            },
             key.appstoreSource,
             navigator,
          )
+         if (isWarningPopupShown) {
+            AlertDialog(
+               { isWarningPopupShown = false },
+               title = {
+                  Text(stringResource(R.string.install_incompatible_title))
+               },
+               text = {
+                  Text(stringResource(R.string.install_incompatible))
+               },
+               confirmButton = {
+                  TextButton(
+                     onClick = {
+                        viewModel.install()
+                        isWarningPopupShown = false
+                     }
+                  ) {
+                     Text(stringResource(R.string.install))
+                  }
+               },
+               dismissButton = {
+                  TextButton(onClick = { isWarningPopupShown = false }) {
+                     Text(stringResource(sharedR.string.cancel))
+                  }
+               }
+            )
+         }
       }
    }
 }
@@ -117,13 +154,14 @@ private fun AppstoreDetailsContent(
    appstoreSource: AppstoreSource? = null,
    navigator: Navigator? = null,
 ) {
-   val sheetState = rememberModalBottomSheetState()
    var showVersionSheet by remember { mutableStateOf(false) }
+   var showCompatibilitySheet by remember { mutableStateOf(false) }
 
    Scaffold(floatingActionButton = {
       ExtendedFloatingActionButton(
          onClick = when (appInstallState) {
             is Outcome.Success if appInstallState.data == AppInstallState.CAN_INSTALL -> installApp
+            is Outcome.Success if appInstallState.data == AppInstallState.INCOMPATIBLE -> installApp
             is Outcome.Success if appInstallState.data == AppInstallState.INSTALLED -> uninstallApp
             else -> {
                {}
@@ -139,12 +177,14 @@ private fun AppstoreDetailsContent(
             val icon = when (appInstallState.data) {
                AppInstallState.CAN_INSTALL -> painterResource(R.drawable.ic_download)
                AppInstallState.INSTALLED -> painterResource(R.drawable.ic_delete)
+               AppInstallState.INCOMPATIBLE -> painterResource(R.drawable.ic_warning)
                null -> painterResource(R.drawable.ic_download)
             }
             Icon(icon, contentDescription = "Install")
             val text = when (appInstallState.data) {
                AppInstallState.CAN_INSTALL -> stringResource(R.string.install)
                AppInstallState.INSTALLED -> stringResource(R.string.uninstall)
+               AppInstallState.INCOMPATIBLE -> stringResource(R.string.not_installable)
                null -> ""
             }
             Text(text, modifier = Modifier.padding(start = 8.dp))
@@ -171,42 +211,94 @@ private fun AppstoreDetailsContent(
             .clip(CardDefaults.shape),
          contentPadding = PaddingValues(bottom = 88.dp),
       ) {
-         item(contentType = 0) {
+         item(contentType = "banner") {
             Banner(app)
          }
 
-         item(contentType = 1) {
+         item(contentType = "title") {
             TitleCard(app, childModifier)
          }
 
-         item(contentType = 2) {
+         item(contentType = "carousel") {
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
                AppScreenshotCarousel(app, childModifier)
             }
          }
 
-         item(contentType = 3) {
+         item(contentType = "") {
+            Card(onClick = { showCompatibilitySheet = true }, modifier = childModifier.fillMaxWidth()) {
+               Row(
+                  horizontalArrangement = Arrangement.spacedBy(8.dp),
+                  verticalAlignment = Alignment.CenterVertically,
+                  modifier = Modifier
+                     .padding(8.dp)
+                     .align(Alignment.CenterHorizontally)
+               ) {
+                  for ((platform, compatibility) in app.compatibility - "android" - "ios") {
+                     if (compatibility.supported) {
+                        WatchType.fromCodename(platform)?.getIcon()
+                           ?.let { Icon(painterResource(it), contentDescription = null, modifier = Modifier.size(36.dp)) }
+                     }
+                  }
+               }
+            }
+         }
+
+         item(contentType = "description") {
             Card(modifier = childModifier.fillMaxWidth()) {
                Text(app.description, Modifier.padding(8.dp))
             }
          }
 
-         item(contentType = 4) {
+         item(contentType = "info") {
             InfoCard(app, childModifier)
          }
 
-         item(contentType = 5) {
+         item(contentType = "links") {
             LinksCard(actions, childModifier)
          }
       }
 
       if (showVersionSheet) {
-         ModalBottomSheet(onDismissRequest = { showVersionSheet = false }, sheetState = sheetState) {
+         ModalBottomSheet(onDismissRequest = { showVersionSheet = false }, sheetState = rememberModalBottomSheetState()) {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(8.dp)) {
                itemsWithDivider(app.changelog) {
                   Text(it.version, Modifier.padding(8.dp), style = MaterialTheme.typography.titleLarge)
                   Text(it.publishedDate.formatDate(), Modifier.padding(8.dp))
                   Text(it.releaseNotes, Modifier.padding(8.dp))
+               }
+            }
+         }
+      }
+
+      if (showCompatibilitySheet) {
+         ModalBottomSheet(
+            onDismissRequest = { showCompatibilitySheet = false },
+            sheetState = rememberModalBottomSheetState(),
+         ) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(8.dp)) {
+               item {
+                  Text(stringResource(R.string.compatibility_info_header), style = MaterialTheme.typography.titleLarge)
+               }
+               for ((platform, compatibility) in app.compatibility - "android" - "ios") {
+                  if (compatibility.supported) {
+                     val type = WatchType.fromCodename(platform)
+                     type?.let {
+                        item {
+                           Row(
+                              horizontalArrangement = Arrangement.spacedBy(8.dp),
+                              verticalAlignment = Alignment.CenterVertically
+                           ) {
+                              Icon(painterResource(it.getIcon()), contentDescription = null)
+                              val watches = getWatchesForCodename(type.codename).joinToString(", ")
+                              Text(stringResource(R.string.compatibility_info, type.codename, watches))
+                           }
+                        }
+                     }
+                  }
+               }
+               item {
+                  Box(Modifier.height(56.dp))
                }
             }
          }
@@ -355,7 +447,29 @@ private sealed class AppAction(val label: Int)
 private class AppButton(label: Int, val onClick: () -> Unit) : AppAction(label)
 private class AppLink(label: Int, val linkTarget: String) : AppAction(label)
 
-@Preview
+private fun WatchType.getIcon() = when (this) {
+   WatchType.APLITE -> sharedR.drawable.ic_hardware_aplite
+   WatchType.BASALT -> sharedR.drawable.ic_hardware_basalt
+   WatchType.CHALK -> sharedR.drawable.ic_hardware_chalk
+   WatchType.DIORITE -> sharedR.drawable.ic_hardware_diorite
+   WatchType.EMERY -> sharedR.drawable.ic_hardware_emery
+   WatchType.FLINT -> sharedR.drawable.ic_hardware_flint
+}
+
+@Composable
+private fun getWatchesForCodename(codename: String): List<String> =
+   when (codename) {
+      WatchType.APLITE.codename -> listOf(sharedR.string.watch_classic, sharedR.string.watch_classic_steel)
+      WatchType.BASALT.codename -> listOf(sharedR.string.watch_time, sharedR.string.watch_time_steel)
+      WatchType.CHALK.codename -> listOf(sharedR.string.watch_time_round)
+      WatchType.DIORITE.codename -> listOf(sharedR.string.watch_pebble_2)
+      WatchType.EMERY.codename -> listOf(sharedR.string.watch_pebble_time_2)
+      WatchType.FLINT.codename -> listOf(sharedR.string.watch_pebble_2_duo)
+      "gabbro" -> listOf(sharedR.string.watch_round_2)
+      else -> listOf(sharedR.string.watch_classic)
+   }.map { stringResource(it) }
+
+@FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
 internal fun AppstoreDetailsContentPreview() {

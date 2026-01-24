@@ -23,4 +23,10 @@
     <string name="edit_source">Edit %1$s</string>
     <string name="installing">Installing</string>
     <string name="no_source_selected">None</string>
+    <string name="not_installable">Unsupported</string>
+    <string name="install_incompatible">This app is incompatible with currently connected watch, and it may fail to install.</string>
+    <string name="install_incompatible_title">Install incompatible app?</string>
+    <string name="compatibility_info">%1$s (%2$s)</string>
+    <string name="compatibility_info_header">Supported compatibility</string>
+    <string name="unoffical_compatibility_info_header">Unofficially supported compatibility</string>
 </resources>
