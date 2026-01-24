@@ -1,3 +1,4 @@
+name: "pr-sarif-commenter"
 on:
   workflow_run:
     workflows: [ "pull-request-build" ]
@@ -31,7 +32,7 @@ jobs:
         with:
           lfs: true
           submodules: recursive
-          ref: refs/pull/${{ env.PR_NUm }}/merge
+          ref: refs/pull/${{ env.PR_NUM }}/merge
           fetch-depth: 0
       - name: Post SARIF findings as comments in the pull request
         if: steps.download.outcome == 'success'
@@ -39,7 +40,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
-          branch: refs/pull/${{ env.PR_NUm }}/merge
+          branch: refs/pull/${{ env.PR_NUM }}/merge
           pr-number: ${{ env.PR_NUM }}
           title: Lint report
           show-rule-details: false
