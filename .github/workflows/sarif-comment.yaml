@@ -27,13 +27,13 @@ jobs:
       - name: Set the PR_NUM
         if: steps.download.outcome == 'success'
         run: |
-          pr=$(cat pr_number.txt);echo \"PR_NUM=$pr\" > $GITHUB_ENV
+          pr=$(cat pr_number.txt);echo \"PR_NUM=refs/pull/$pr/merge\" > $GITHUB_ENV
       - uses: actions/checkout@v4
         if: steps.download.outcome == 'success'
         with:
           lfs: true
           submodules: recursive
-          ref: refs/pull/${{ env.PR_NUM }}/merge
+          ref: ${{ env.PR_NUM }}
           fetch-depth: 0
       - name: Set git ref
         if: steps.download.outcome == 'success'
