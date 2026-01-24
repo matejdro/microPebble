@@ -35,6 +35,7 @@ jobs:
           submodules: recursive
           ref: ${{ env.PR_NUM }}
           fetch-depth: 0
+          clean: false
       - name: Set git ref
         if: steps.download.outcome == 'success'
         run:
