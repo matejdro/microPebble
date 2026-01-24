@@ -24,12 +24,9 @@ jobs:
           name: pr-sarif
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
-      - name: Unzip and get the variables
+      - name: Set the PR_NUM
         if: steps.download.outcome == 'success'
         run: |
-          ls -la
-          unzip pr-sarif.zip
-          unzip pr-number.zip
           pr=$(cat pr_number.txt);echo \"PR_NUM=$pr\" > $GITHUB_ENV
       - uses: actions/checkout@v4
         if: steps.download.outcome == 'success'
@@ -42,6 +39,7 @@ jobs:
         if: steps.download.outcome == 'success'
         run:
           ref=$(git rev-parse HEAD);echo \"GIT_HASH=$ref\" > $GITHUB_ENV
+      - run: "ls -la"
       - name: Post SARIF findings as comments in the pull request
         if: steps.download.outcome == 'success'
         uses: sett-and-hive/sarif-to-comment-action/composite@77c0eda9c886e978d3d914364ce8610a09b66907
