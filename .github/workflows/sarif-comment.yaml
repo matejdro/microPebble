@@ -1,0 +1,47 @@
+on:
+  workflow_run:
+    workflows: [ "pull-request-build" ]
+    types: [ completed ]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'failure'
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: pr-number
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        id: download
+        with:
+          name: pr-sarif
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Get the PR number
+        run: "v=$(cat pr_number.txt);echo \"PR_NUM=$v\" > $GITHUB_ENV"
+        if: steps.download.outcome == 'success'
+      - uses: actions/checkout@v4
+        if: steps.download.outcome == 'success'
+        with:
+          lfs: true
+          submodules: recursive
+          ref: refs/pull/${{ env.PR_NUm }}/merge
+          fetch-depth: 0
+      - name: Post SARIF findings as comments in the pull request
+        if: steps.download.outcome == 'success'
+        uses: sett-and-hive/sarif-to-comment-action/composite@77c0eda9c886e978d3d914364ce8610a09b66907
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          branch: refs/pull/${{ env.PR_NUm }}/merge
+          pr-number: ${{ env.PR_NUM }}
+          title: Lint report
+          show-rule-details: false
+          sarif-file: 'merge.sarif'
+          simple: true
