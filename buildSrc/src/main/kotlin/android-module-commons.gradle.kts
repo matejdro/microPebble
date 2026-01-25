@@ -30,7 +30,7 @@ commonAndroid {
    }
 
    defaultConfig {
-      minSdk = 26
+      minSdk = 30
 
       testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
    }
