@@ -43,11 +43,7 @@ class NotificationsStatusImpl(
    }
 
    override val isNotificationAccessEnabled: Boolean
-      get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-         notificationManager.isNotificationListenerAccessGranted(getNotificationListenerComponent())
-      } else {
-         getEnabledListenerPackages(context).contains(context.packageName)
-      }
+      get() = notificationManager.isNotificationListenerAccessGranted(getNotificationListenerComponent())
 
    private fun getNotificationListenerComponent(): ComponentName =
       ComponentName(context, LibPebbleNotificationListener::class.java)

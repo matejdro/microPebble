@@ -205,11 +205,7 @@ private fun LocationPermission() {
       }
    }
    val backgroundPermissionState = rememberPermissionState(
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-         Manifest.permission.ACCESS_BACKGROUND_LOCATION
-      } else {
-         Manifest.permission.ACCESS_FINE_LOCATION
-      }
+      Manifest.permission.ACCESS_BACKGROUND_LOCATION
    ) {
       if (!it) {
          rejectedPermission = true

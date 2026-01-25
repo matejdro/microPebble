@@ -1,6 +1,5 @@
 package com.matejdro.micropebble.ui.lists
 
-import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.compose.foundation.lazy.LazyListState
@@ -21,9 +20,6 @@ import com.mohamedrejeb.compose.dnd.reorder.ReorderContainer
 import com.mohamedrejeb.compose.dnd.reorder.ReorderableItem
 import com.mohamedrejeb.compose.dnd.reorder.rememberReorderState
 import kotlinx.coroutines.launch
-
-private const val TICK_DURATION: Long = 30
-private const val CLICK_DURATION: Long = 50
 
 @Composable
 fun <T> ReorderableListContainer(
@@ -66,21 +62,13 @@ fun <T> ReorderableListContainer(
                   if (lastDragIndex != index) {
                      // Sometimes onDragEnter is called twice. Wrap in this check to ensure we don't vibrate twice
                      vibrator?.vibrate(
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                           VibrationEffect.createPredefined(
-                              if (dragging) {
-                                 VibrationEffect.EFFECT_TICK
-                              } else {
-                                 VibrationEffect.EFFECT_CLICK
-                              }
-                           )
-                        } else {
+                        VibrationEffect.createPredefined(
                            if (dragging) {
-                              VibrationEffect.createOneShot(TICK_DURATION, VibrationEffect.DEFAULT_AMPLITUDE)
+                              VibrationEffect.EFFECT_TICK
                            } else {
-                              VibrationEffect.createOneShot(CLICK_DURATION, VibrationEffect.DEFAULT_AMPLITUDE)
+                              VibrationEffect.EFFECT_CLICK
                            }
-                        }
+                        )
                      )
                   }
                   dragging = true
@@ -97,11 +85,7 @@ fun <T> ReorderableListContainer(
             },
             onDrop = {
                vibrator?.vibrate(
-                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                     VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
-                  } else {
-                     VibrationEffect.createOneShot(CLICK_DURATION, VibrationEffect.DEFAULT_AMPLITUDE)
-                  }
+                  VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
                )
                dragging = false
                lastDragIndex = -1

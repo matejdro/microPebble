@@ -157,14 +157,8 @@ open class MicroPebbleApplication : Application() {
          .detectLeakedClosableObjects()
          .detectLeakedRegistrationObjects()
          .detectLeakedSqlLiteObjects()
-         .run {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-               detectCredentialProtectedWhileLocked()
-               detectImplicitDirectBoot()
-            } else {
-               this
-            }
-         }
+         .detectCredentialProtectedWhileLocked()
+         .detectImplicitDirectBoot()
          .run {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                detectUnsafeIntentLaunch()
