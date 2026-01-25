@@ -1,4 +1,4 @@
-fun ReorderableListItem(
+open fun com.matejdro.micropebble.ui.lists.ReorderableListContainer.<no name provided>.ReorderableListItem(
   unstable key: Any
   data: T
   stable setOrder: Function1<@[ParameterName(name = 'toIndex')] Int, Unit>
