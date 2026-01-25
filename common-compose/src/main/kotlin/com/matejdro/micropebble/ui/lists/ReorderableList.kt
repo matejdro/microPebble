@@ -42,7 +42,7 @@ fun <T> ReorderableListContainer(
    val scope = object : ReorderableListScope<T> {
       @Composable
       override fun ReorderableListItem(
-         key: Any,
+         key: String,
          data: T,
          setOrder: (toIndex: Int) -> Unit,
          modifier: Modifier,
@@ -84,7 +84,9 @@ fun <T> ReorderableListContainer(
                }
             },
             onDrop = {
-               vibrator?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK))
+               vibrator?.vibrate(
+                  VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
+               )
                dragging = false
                lastDragIndex = -1
                setOrder(reorderingList.indexOf(it.data))
@@ -116,7 +118,7 @@ fun <T> ReorderableListContainer(
 interface ReorderableListScope<T> {
    @Composable
    fun ReorderableListItem(
-      key: Any,
+      key: String,
       data: T,
       setOrder: (toIndex: Int) -> Unit,
       modifier: Modifier = Modifier,

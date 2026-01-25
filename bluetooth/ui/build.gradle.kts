@@ -20,11 +20,11 @@ dependencies {
    api(projects.common)
    api(projects.notification.api)
    api(libs.kotlinova.navigation)
+   api(libs.accompanist.permissions)
 
    implementation(projects.commonCompose)
    implementation(projects.sharedResources)
    implementation(libs.androidx.core)
-   implementation(libs.accompanist.permissions)
    implementation(libs.androidx.activity.compose)
    implementation(libs.dispatch)
    implementation(libs.libpebble3)
