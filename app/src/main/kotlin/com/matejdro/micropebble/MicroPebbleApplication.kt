@@ -45,10 +45,8 @@ open class MicroPebbleApplication : Application() {
    override fun onCreate() {
       super.onCreate()
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-         ComponentFactory.serviceFactories = applicationGraph.provideServiceFactories()
-         ComponentFactory.receiverFactories = applicationGraph.provideReceiverFactories()
-      }
+      ComponentFactory.serviceFactories = applicationGraph.provideServiceFactories()
+      ComponentFactory.receiverFactories = applicationGraph.provideReceiverFactories()
 
       if (!isMainProcess()) {
          // Do not perform any initialisation in other processes, they are usually library-specific
@@ -144,14 +142,8 @@ open class MicroPebbleApplication : Application() {
             .detectNetwork()
             .detectResourceMismatches()
             .detectUnbufferedIo()
-            .run {
-               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                  penaltyListener(ContextCompat.getMainExecutor(context)) { e: Throwable ->
-                     reportStrictModePenalty(e)
-                  }
-               } else {
-                  this
-               }
+            .penaltyListener(ContextCompat.getMainExecutor(context)) { e: Throwable ->
+               reportStrictModePenalty(e)
             }
             .build()
       )
@@ -187,14 +179,8 @@ open class MicroPebbleApplication : Application() {
                this
             }
          }
-         .run {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-               penaltyListener(ContextCompat.getMainExecutor(this@MicroPebbleApplication)) { e: Throwable ->
-                  reportStrictModePenalty(e)
-               }
-            } else {
-               this
-            }
+         .penaltyListener(ContextCompat.getMainExecutor(this@MicroPebbleApplication)) { e: Throwable ->
+            reportStrictModePenalty(e)
          }
          .build()
    }
