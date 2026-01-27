@@ -1,4 +1,4 @@
-package com.matejdro.micropebble.appstore.data
+package com.matejdro.micropebble.appstore.data.di
 
 import androidx.work.ListenableWorker
 import dev.zacsweers.metro.MapKey

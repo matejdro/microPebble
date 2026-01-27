@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import com.matejdro.micropebble.appstore.api.updater.AppUpdateFinder
+import com.matejdro.micropebble.appstore.data.di.WorkerKey
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
