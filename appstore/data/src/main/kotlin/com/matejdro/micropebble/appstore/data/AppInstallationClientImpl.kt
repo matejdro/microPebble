@@ -1,9 +1,6 @@
 package com.matejdro.micropebble.appstore.data
 
-import android.content.Context
-import android.util.Log
-import androidx.datastore.core.Serializer
-import androidx.datastore.dataStore
+import androidx.datastore.core.DataStore
 import com.matejdro.micropebble.appstore.api.ApiClient
 import com.matejdro.micropebble.appstore.api.AppDownloadFailed
 import com.matejdro.micropebble.appstore.api.AppInstallSource
@@ -26,51 +23,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import kotlinx.io.files.Path
-import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
 import okio.buffer
 import okio.sink
 import okio.source
 import si.inova.kotlinova.core.outcome.Outcome
 import java.io.File
 import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 import java.net.URL
 import kotlin.uuid.Uuid
-
-private object AppInstallSourcesSerializer : Serializer<Map<Uuid, AppInstallSource>> {
-   private val json = Json { ignoreUnknownKeys = true }
-   override val defaultValue = emptyMap<Uuid, AppInstallSource>()
-
-   override suspend fun readFrom(input: InputStream) =
-      try {
-         json.decodeFromString<Map<Uuid, AppInstallSource>>(input.readBytes().decodeToString())
-      } catch (e: SerializationException) {
-         Log.e("AppInstallSourcesSerializer.readFrom", "Failed to load appstore sources", e)
-         defaultValue
-      }
-
-   override suspend fun writeTo(t: Map<Uuid, AppInstallSource>, output: OutputStream) = withContext(Dispatchers.IO) {
-      output.write(json.encodeToString(t).encodeToByteArray())
-   }
-}
-
-private val Context.appInstallSources by dataStore(fileName = "appInstallSources.json", serializer = AppInstallSourcesSerializer)
 
 @Inject
 @ContributesBinding(AppScope::class)
 class AppInstallationClientImpl(
    private val lockerApi: LockerApi,
-   private val context: Context,
    private val api: ApiClient,
+   private val appInstallSourcesStore: DataStore<Map<Uuid, AppInstallSource>>,
 ) : AppInstallationClient {
-   override val appInstallSources = context.appInstallSources.data
+   override val appInstallSources = appInstallSourcesStore.data
 
    override suspend fun install(url: URL, source: AppInstallSource?, tmpFileName: String): Outcome<Unit> =
       withContext(Dispatchers.IO) {
          if (source != null) {
-            context.appInstallSources.updateData { it + (source.appId to source) }
+            appInstallSourcesStore.updateData { it + (source.appId to source) }
          }
 
          val tmpFile = File.createTempFile(tmpFileName, "pbw")
@@ -91,7 +65,7 @@ class AppInstallationClientImpl(
                Outcome.Success(Unit)
             } else {
                if (source != null) {
-                  context.appInstallSources.updateData { it - source.appId }
+                  appInstallSourcesStore.updateData { it - source.appId }
                }
                Outcome.Error(AppSideloadFailed())
             }
@@ -107,7 +81,7 @@ class AppInstallationClientImpl(
    }
 
    override suspend fun removeFromSources(id: Uuid) {
-      context.appInstallSources.updateData { data ->
+      appInstallSourcesStore.updateData { data ->
          data.toMutableMap().apply {
             remove(id)
          }
@@ -115,7 +89,7 @@ class AppInstallationClientImpl(
    }
 
    override suspend fun updateSources(id: Uuid, newSource: AppInstallSource) {
-      context.appInstallSources.updateData { data ->
+      appInstallSourcesStore.updateData { data ->
          data.toMutableMap().apply {
             this[id] = newSource
          }
@@ -150,5 +124,5 @@ class AppInstallationClientImpl(
          api.http.get(updateSource.url.joinUrls("/v1/apps/id/${installSource.storeId}")).body<ApplicationList>().data.first()
       }.getOrNull()
 
-   override suspend fun getInstallationSource(appId: Uuid) = context.appInstallSources.data.first()[appId]
+   override suspend fun getInstallationSource(appId: Uuid) = appInstallSourcesStore.data.first()[appId]
 }

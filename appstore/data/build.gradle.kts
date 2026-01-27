@@ -22,4 +22,5 @@ dependencies {
    implementation(libs.ktor.contentNegotiation)
    implementation(libs.ktor.okhttp)
    implementation(libs.libpebble3)
+   implementation(libs.dispatch)
 }
