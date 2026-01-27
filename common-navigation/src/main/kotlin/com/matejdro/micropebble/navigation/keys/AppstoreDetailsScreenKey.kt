@@ -15,4 +15,5 @@ data class AppstoreDetailsScreenKey(
    val app: Application,
    val onlyPartialData: Boolean,
    val appstoreSource: AppstoreSource? = null,
+   val platformFilter: String? = null,
 ) : BaseScreenKey()

@@ -12,3 +12,7 @@ data class AppstoreHomePage(
 ) {
    val applicationsById by lazy { applications.associateBy { it.id } }
 }
+
+fun AppstoreHomePage.filterApps(predicate: (app: Application) -> Boolean) = copy(
+   applications = applications.filter(predicate)
+)

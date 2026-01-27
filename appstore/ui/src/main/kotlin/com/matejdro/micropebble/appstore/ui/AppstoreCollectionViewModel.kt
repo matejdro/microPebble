@@ -10,6 +10,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.matejdro.micropebble.appstore.api.ApiClient
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.collection.AppstoreCollectionPage
+import com.matejdro.micropebble.appstore.api.store.collection.filterApps
+import com.matejdro.micropebble.appstore.ui.common.isUnofficiallyCompatibleWith
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
 import dev.zacsweers.metro.Inject
@@ -18,6 +20,8 @@ import io.ktor.client.request.get
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
+import com.matejdro.micropebble.appstore.api.store.home.filterApps
+import io.rebble.libpebblecommon.metadata.WatchType
 
 @Inject
 @ContributesScopedService
@@ -26,6 +30,7 @@ class AppstoreCollectionViewModel(
    private val actionLogger: ActionLogger,
    private val api: ApiClient,
 ) : SingleScreenViewModel<AppstoreCollectionScreenKey>(resources.scope) {
+   val platform by lazy { key.platformFilter?.let { WatchType.fromCodename(it) } }
    private val appPager = Pager(
       PagingConfig(
          pageSize = 10
@@ -39,10 +44,11 @@ class AppstoreCollectionViewModel(
             val offset = (params.key ?: 0)
             val page = api.http.get(key.endpoint) {
                url {
+                  platform?.let { parameters["hardware"] = it.codename }
                   parameters["offset"] = offset.toString()
                   parameters["limit"] = params.loadSize.toString()
                }
-            }.body<AppstoreCollectionPage>()
+            }.body<AppstoreCollectionPage>().filterAppsByPlatform()
             return LoadResult.Page(
                data = page.apps,
                prevKey = if (params.loadSize >= offset) null else offset - params.loadSize,
@@ -64,5 +70,11 @@ class AppstoreCollectionViewModel(
          lazyPagingItems = appPager.flow.collectAsLazyPagingItems()
       }
       return lazyPagingItems
+   }
+
+   private fun AppstoreCollectionPage.filterAppsByPlatform() = if (platform == null) {
+      this
+   } else {
+      filterApps { it.isUnofficiallyCompatibleWith(platform) }
    }
 }

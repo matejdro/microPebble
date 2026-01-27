@@ -13,3 +13,7 @@ data class AppstoreCollectionPage(
    val offset: Int,
    val links: PaginationLinks,
 )
+
+fun AppstoreCollectionPage.filterApps(predicate: (app: Application) -> Boolean) = copy(
+   apps = apps.filter(predicate)
+)

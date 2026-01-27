@@ -11,5 +11,6 @@ import kotlinx.parcelize.TypeParceler
 data class AppstoreCollectionScreenKey(
    val title: String,
    val endpoint: String,
+   val platformFilter: String?,
    val appstoreSource: AppstoreSource? = null,
 ) : BaseScreenKey()

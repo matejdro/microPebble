@@ -6,6 +6,7 @@ import com.matejdro.micropebble.appstore.api.AppInstallState
 import com.matejdro.micropebble.appstore.api.AppInstallationClient
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.collection.AppstoreCollectionPage
+import com.matejdro.micropebble.appstore.ui.common.isCompatibleWith
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
@@ -38,6 +39,7 @@ class AppstoreDetailsViewModel(
    private val api: ApiClient,
    private val watches: Watches,
 ) : SingleScreenViewModel<AppstoreDetailsScreenKey>(resources.scope) {
+   val platform by lazy { key.platformFilter?.let { WatchType.fromCodename(it) } }
    private val _appState = MutableStateFlow<Outcome<AppInstallState>>(Outcome.Progress())
    val appState: StateFlow<Outcome<AppInstallState>> = _appState
 
@@ -46,7 +48,7 @@ class AppstoreDetailsViewModel(
 
    val unofficialSupportedPlatforms by lazy {
       WatchType.entries.filter {
-         it.getCompatibleAppVariants().any { variant -> key.app.isCompatible(variant) }
+         it.getCompatibleAppVariants().any { variant -> key.app.isCompatibleWith(variant) }
       }
    }
 
@@ -60,7 +62,7 @@ class AppstoreDetailsViewModel(
          }.first().first()
          val isAppCompatible =
             connectedWatch.watchType.watchType.getCompatibleAppVariants()
-               .any { key.app.isCompatible(it) }
+               .any { key.app.isCompatibleWith(it) }
          if (!isAppCompatible) {
             emit(Outcome.Success(AppInstallState.INCOMPATIBLE))
          } else {
@@ -114,6 +116,4 @@ class AppstoreDetailsViewModel(
       installer.uninstall(app.data.uuid)
       emit(Outcome.Success(AppInstallState.CAN_INSTALL))
    }
-
-   private fun Application.isCompatible(type: WatchType) = compatibility[type.codename]?.supported == true
 }

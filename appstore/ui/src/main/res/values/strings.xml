@@ -29,4 +29,8 @@
     <string name="compatibility_info">%1$s (%2$s)</string>
     <string name="compatibility_info_header">Supported compatibility</string>
     <string name="unoffical_compatibility_info_header">Unofficially supported compatibility</string>
+    <string name="appstore_source">Store source</string>
+    <string name="all">All</string>
+    <string name="platform_filter">Platform filter</string>
+    <string name="appstore_collection_title">Apps from %1$s</string>
 </resources>

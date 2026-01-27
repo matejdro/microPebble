@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ApplicationScreenshot(
    @SerialName("144x168")
-   val medium: String? = null,
+   val rectangle: String? = null,
    @SerialName("180x180")
    val circle: String? = null,
 ) {
@@ -22,11 +22,12 @@ data class ApplicationScreenshot(
          }
       }
    }
+}
 
-   val image: String? = medium ?: circle
-   val imageHardware = if (circle != null) {
-      Hardware.CIRCLE
-   } else {
-      Hardware.RECTANGLE
-   }
+fun ApplicationScreenshot.getImage(preferCircle: Boolean = false) = when {
+   circle != null && preferCircle -> circle to ApplicationScreenshot.Hardware.CIRCLE
+   rectangle != null && preferCircle -> rectangle to ApplicationScreenshot.Hardware.RECTANGLE
+   rectangle != null -> rectangle to ApplicationScreenshot.Hardware.RECTANGLE
+   circle != null -> circle to ApplicationScreenshot.Hardware.CIRCLE
+   else -> "" to if (preferCircle) ApplicationScreenshot.Hardware.CIRCLE else ApplicationScreenshot.Hardware.RECTANGLE
 }

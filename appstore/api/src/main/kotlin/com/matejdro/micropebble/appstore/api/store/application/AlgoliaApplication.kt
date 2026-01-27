@@ -81,7 +81,7 @@ data class AlgoliaApplication(
       listImage = ApplicationImage(small = listImage, medium = listImage.replace("144x144", "80x80") /* cursed */),
       publishedDate = Instant.DISTANT_PAST,
       screenshotHardware = screenshotHardware ?: "basalt",
-      screenshotImages = screenshotImages.map { ApplicationScreenshot(medium = it) },
+      screenshotImages = screenshotImages.map { ApplicationScreenshot(rectangle = it) },
       source = source,
       title = title,
       type = type,

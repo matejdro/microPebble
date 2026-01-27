@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -55,8 +56,11 @@ import com.matejdro.micropebble.appstore.api.AppInstallState
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationScreenshot
+import com.matejdro.micropebble.appstore.api.store.application.getImage
 import com.matejdro.micropebble.appstore.ui.common.BANNER_RATIO
 import com.matejdro.micropebble.appstore.ui.common.formatDate
+import com.matejdro.micropebble.appstore.ui.common.getIcon
+import com.matejdro.micropebble.appstore.ui.common.getWatchesForCodename
 import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
 import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
@@ -110,6 +114,7 @@ class AppstoreDetailsScreen(
                   viewModel.install()
                }
             },
+            viewModel.platform,
             key.appstoreSource,
             navigator,
          )
@@ -151,6 +156,7 @@ private fun AppstoreDetailsContent(
    appInstallState: Outcome<AppInstallState>,
    uninstallApp: () -> Unit,
    installApp: () -> Unit,
+   platform: WatchType?,
    appstoreSource: AppstoreSource? = null,
    navigator: Navigator? = null,
 ) {
@@ -193,13 +199,14 @@ private fun AppstoreDetailsContent(
    }, snackbarHost = {
       SnackbarHost(hostState = errorsSnackbarState)
    }) { _ ->
-      val childModifier = Modifier.padding(horizontal = 0.dp)
+      val childModifier = Modifier
+      val collectionTitle = stringResource(R.string.appstore_collection_title, app.author)
       val actions = remember {
          listOf(
             AppButton(R.string.appVersionInfo) {
                showVersionSheet = true
             }
-         ) + getActionsFor(app, navigator, appstoreSource)
+         ) + getActionsFor(app, collectionTitle, navigator, platform, appstoreSource)
       }
 
       LazyColumn(
@@ -358,14 +365,21 @@ private fun AppScreenshotCarousel(app: Application, modifier: Modifier = Modifie
       modifier = modifier.clip(CardDefaults.shape),
       itemSpacing = 8.dp,
    ) {
+      val (imageUrl, hardware) = app.screenshotImages[it].getImage()
       val ratio = ApplicationScreenshot.Hardware.fromHardwarePlatform(app.screenshotHardware)?.aspectRatio
-         ?: app.screenshotImages[it].imageHardware.aspectRatio
+         ?: hardware.aspectRatio
       AsyncImage(
-         model = app.screenshotImages[it].image,
+         model = imageUrl,
          contentDescription = "Screenshot image $it for ${app.title}",
          modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(ratio),
+            .aspectRatio(ratio).run {
+               if (hardware == ApplicationScreenshot.Hardware.CIRCLE) {
+                  maskClip(CircleShape)
+               } else {
+                  maskClip(CardDefaults.shape)
+               }
+            },
          contentScale = ContentScale.FillWidth,
       )
    }
@@ -425,7 +439,9 @@ private fun LinksCard(actions: List<AppAction>, modifier: Modifier = Modifier) {
 
 private fun getActionsFor(
    app: Application,
+   title: String,
    navigator: Navigator? = null,
+   platformFilter: WatchType? = null,
    appstoreSource: AppstoreSource? = null,
 ): List<AppAction> = buildList {
    app.website?.let { add(AppLink(R.string.appWebsiteLink, it)) }
@@ -435,7 +451,10 @@ private fun getActionsFor(
          AppButton(R.string.appFromDeveloper) {
             navigator.navigateTo(
                AppstoreCollectionScreenKey(
-                  "Apps from ${app.author}", appstoreSource.url.joinUrls("v1/apps/dev/${app.developerId}"), appstoreSource
+                  title = title,
+                  endpoint = appstoreSource.url.joinUrls("v1/apps/dev/${app.developerId}"),
+                  platformFilter = platformFilter?.codename,
+                  appstoreSource = appstoreSource
                )
             )
          }
@@ -447,28 +466,6 @@ private sealed class AppAction(val label: Int)
 private class AppButton(label: Int, val onClick: () -> Unit) : AppAction(label)
 private class AppLink(label: Int, val linkTarget: String) : AppAction(label)
 
-private fun WatchType.getIcon() = when (this) {
-   WatchType.APLITE -> sharedR.drawable.ic_hardware_aplite
-   WatchType.BASALT -> sharedR.drawable.ic_hardware_basalt
-   WatchType.CHALK -> sharedR.drawable.ic_hardware_chalk
-   WatchType.DIORITE -> sharedR.drawable.ic_hardware_diorite
-   WatchType.EMERY -> sharedR.drawable.ic_hardware_emery
-   WatchType.FLINT -> sharedR.drawable.ic_hardware_flint
-}
-
-@Composable
-private fun getWatchesForCodename(codename: String): List<String> =
-   when (codename) {
-      WatchType.APLITE.codename -> listOf(sharedR.string.watch_classic, sharedR.string.watch_classic_steel)
-      WatchType.BASALT.codename -> listOf(sharedR.string.watch_time, sharedR.string.watch_time_steel)
-      WatchType.CHALK.codename -> listOf(sharedR.string.watch_time_round)
-      WatchType.DIORITE.codename -> listOf(sharedR.string.watch_pebble_2)
-      WatchType.EMERY.codename -> listOf(sharedR.string.watch_pebble_time_2)
-      WatchType.FLINT.codename -> listOf(sharedR.string.watch_pebble_2_duo)
-      "gabbro" -> listOf(sharedR.string.watch_round_2)
-      else -> listOf(sharedR.string.watch_classic)
-   }.map { stringResource(it) }
-
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
@@ -476,8 +473,6 @@ internal fun AppstoreDetailsContentPreview() {
    PreviewTheme {
       val rawString = URI("https://appstore-api.rebble.io/api/v1/apps/id/67c751c6d2acb30009a3c812").toURL().readText()
       val string = Json.encodeToString(Json.parseToJsonElement(rawString).jsonObject["data"]?.jsonArray[0])
-      AppstoreDetailsContent(
-         Json.decodeFromString(string), SnackbarHostState(), Outcome.Progress(), {}, {}
-      )
+      AppstoreDetailsContent(Json.decodeFromString(string), SnackbarHostState(), Outcome.Progress(), {}, {}, platform = null)
    }
 }

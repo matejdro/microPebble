@@ -61,7 +61,9 @@ class AppstoreCollectionScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
          ) {
             items(apps.itemCount, contentType = { appTileContentType }) { index ->
-               apps[index]?.let { WatchAppDisplay(it, navigator, appstoreSource = key.appstoreSource) }
+               apps[index]?.let {
+                  WatchAppDisplay(it, navigator, appstoreSource = key.appstoreSource, platform = viewModel.platform)
+               }
             }
             if (!apps.loadState.isIdle) {
                item(span = StaggeredGridItemSpan.FullLine) {

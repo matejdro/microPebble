@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -30,8 +31,10 @@ import coil3.compose.AsyncImage
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationScreenshot
+import com.matejdro.micropebble.appstore.api.store.application.getImage
 import com.matejdro.micropebble.appstore.ui.R
 import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
+import io.rebble.libpebblecommon.metadata.WatchType
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 
@@ -42,9 +45,16 @@ fun WatchAppDisplay(
    modifier: Modifier = Modifier,
    appstoreSource: AppstoreSource? = null,
    onlyPartialData: Boolean = false,
+   platform: WatchType? = null,
 ) {
+   val detailsKey = AppstoreDetailsScreenKey(
+      app,
+      onlyPartialData,
+      appstoreSource,
+      platformFilter = platform?.codename
+   )
    Card(
-      onClick = { navigator?.navigateTo(AppstoreDetailsScreenKey(app, onlyPartialData, appstoreSource)) },
+      onClick = { navigator?.navigateTo(detailsKey) },
       modifier = modifier.fillMaxSize(),
    ) {
       Column(
@@ -65,23 +75,30 @@ fun WatchAppDisplay(
 
          val padCornerSize = CornerSize(8.dp)
          app.screenshotImages.firstOrNull()?.let {
+            val (imageUrl, hardware) = it.getImage(platform?.isCircular() == true)
             val ratio = ApplicationScreenshot.Hardware.fromHardwarePlatform(app.screenshotHardware)?.aspectRatio
-               ?: it.imageHardware.aspectRatio
+               ?: hardware.aspectRatio
             AsyncImage(
-               model = it.image,
+               model = imageUrl,
                contentDescription = "App image for ${app.title}",
                modifier = Modifier
                   .fillMaxWidth()
                   .padding(bottom = 8.dp)
                   .aspectRatio(ratio)
-                  .clip(
-                     RoundedCornerShape(
-                        cardShape.topStart - padCornerSize,
-                        cardShape.topEnd - padCornerSize,
-                        cardShape.bottomEnd - padCornerSize,
-                        cardShape.bottomStart - padCornerSize
-                     )
-                  ),
+                  .run {
+                     if (hardware == ApplicationScreenshot.Hardware.CIRCLE) {
+                        clip(CircleShape)
+                     } else {
+                        clip(
+                           RoundedCornerShape(
+                              cardShape.topStart - padCornerSize,
+                              cardShape.topEnd - padCornerSize,
+                              cardShape.bottomEnd - padCornerSize,
+                              cardShape.bottomStart - padCornerSize
+                           )
+                        )
+                     }
+                  },
                contentScale = ContentScale.FillBounds,
             )
          }

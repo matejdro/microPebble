@@ -4,13 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -18,19 +20,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LeadingIconTab
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,9 +43,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
@@ -55,15 +57,20 @@ import com.matejdro.micropebble.appstore.api.store.home.AppstoreCollection
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
 import com.matejdro.micropebble.appstore.ui.common.WatchAppDisplay
 import com.matejdro.micropebble.appstore.ui.common.appGridCells
+import com.matejdro.micropebble.appstore.ui.common.getIcon
+import com.matejdro.micropebble.appstore.ui.common.isCircular
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
+import com.matejdro.micropebble.ui.components.BasicExposedDropdownMenuBox
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import com.matejdro.micropebble.ui.errors.NoSourcesDisplay
 import dev.zacsweers.metro.Inject
+import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.serialization.json.Json
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
+import si.inova.kotlinova.core.logging.logcat
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
@@ -105,8 +112,10 @@ class AppstoreScreen(
          selectedTab = viewModel.selectedTab,
          setSelectedTab = { viewModel.selectedTab = it },
          source = viewModel.appstoreSource,
-         appstoreSources = appstoreSources,
          setSelectedSource = { viewModel.appstoreSource = it },
+         platformFilter = viewModel.platformFilter,
+         setPlatformFilter = { viewModel.platformFilter = it },
+         appstoreSources = appstoreSources,
          searchQuery = viewModel.searchQuery,
          setSearchQuery = { viewModel.searchQuery = it },
          searchResults = viewModel.searchResults.collectAsStateWithLifecycleAndBlinkingPrevention().value,
@@ -124,8 +133,10 @@ private fun AppstoreScreenScaffold(
    selectedTab: ApplicationType,
    setSelectedTab: (ApplicationType) -> Unit,
    source: AppstoreSource?,
-   appstoreSources: List<AppstoreSource>,
    setSelectedSource: (AppstoreSource) -> Unit,
+   platformFilter: WatchType?,
+   setPlatformFilter: (WatchType?) -> Unit,
+   appstoreSources: List<AppstoreSource>,
    searchQuery: String,
    setSearchQuery: (String) -> Unit,
    searchResults: Outcome<List<AlgoliaApplication>>?,
@@ -134,17 +145,28 @@ private fun AppstoreScreenScaffold(
    onRefresh: () -> Unit,
    navigateToCollection: (AppstoreCollection) -> Unit,
 ) {
-   Scaffold { contentPadding ->
-      Column {
+   var bottomPanelExpanded by remember { mutableStateOf(false) }
+   Scaffold(
+      topBar = {
          TypeSelector(
             selectedTab = selectedTab,
             setSelectedTab = setSelectedTab,
-            appstoreSources = appstoreSources,
-            source = source,
-            setSelectedSource = setSelectedSource,
-            modifier = Modifier.padding(contentPadding)
+            onMoreClick = {
+               bottomPanelExpanded = true
+            }
          )
-
+      }
+   ) { contentPadding ->
+      // The SearchBox has a little bit of forced padding over it which stacks with the forced padding on the bottom of the
+      // TopAppBar, which when not compensated for looks bad.
+      val realPadding = object : PaddingValues by contentPadding {
+         override fun calculateTopPadding() = (contentPadding.calculateTopPadding() - 8.dp).coerceAtLeast(0.dp)
+      }
+      Column(
+         Modifier
+            .padding(realPadding)
+            .consumeWindowInsets(contentPadding)
+      ) {
          if (source?.algoliaData != null) {
             AppsSearchBox(
                searchQuery = searchQuery,
@@ -152,29 +174,79 @@ private fun AppstoreScreenScaffold(
                searchResults = searchResults,
                navigator = navigator,
                source = source,
-               modifier = Modifier.align(Alignment.CenterHorizontally)
+               platformFilter,
+               modifier = Modifier.align(Alignment.CenterHorizontally),
             )
          }
 
+         logcat { (platformFilter?.isCircular()).toString() }
          AppstoreHomepage(
             navigator = navigator,
             state = homePageState,
             onRefresh = onRefresh,
             navigateToCollection = navigateToCollection,
+            platformFilter = platformFilter,
             appstoreSource = source,
          )
+      }
+
+      if (bottomPanelExpanded) {
+         ModalBottomSheet({ bottomPanelExpanded = false }) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(8.dp)) {
+               BasicExposedDropdownMenuBox(
+                  textFieldValue = source?.name ?: stringResource(R.string.no_source_selected),
+                  modifier = Modifier.fillMaxWidth(),
+                  textFieldLeadingIcon = { Icon(painterResource(R.drawable.ic_appstore_source), contentDescription = null) },
+                  textFieldLabel = { Text(stringResource(R.string.appstore_source)) },
+               ) {
+                  for (source in appstoreSources.filter { it.enabled }) {
+                     DropdownMenuItem(
+                        text = { Text(source.name) },
+                        onClick = { setSelectedSource(source) },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                     )
+                  }
+               }
+               BasicExposedDropdownMenuBox(
+                  textFieldValue = platformFilter?.codename ?: stringResource(R.string.all),
+                  modifier = Modifier.fillMaxWidth(),
+                  textFieldLeadingIcon = {
+                     Icon(
+                        painterResource(platformFilter?.getIcon() ?: R.drawable.ic_apps),
+                        contentDescription = null
+                     )
+                  },
+                  textFieldLabel = { Text(stringResource(R.string.platform_filter)) },
+               ) {
+                  for (platform in listOf(null) + WatchType.entries) {
+                     DropdownMenuItem(
+                        text = { Text(platform?.codename ?: stringResource(R.string.all)) },
+                        onClick = { setPlatformFilter(platform) },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                        leadingIcon = {
+                           Icon(
+                              painterResource(platform?.getIcon() ?: R.drawable.ic_apps),
+                              contentDescription = null
+                           )
+                        }
+                     )
+                  }
+               }
+            }
+         }
       }
    }
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun ColumnScope.AppsSearchBox(
+private fun AppsSearchBox(
    searchQuery: String,
    setSearchQuery: (String) -> Unit,
    searchResults: Outcome<List<AlgoliaApplication>>?,
    navigator: Navigator?,
    source: AppstoreSource,
+   platformFilter: WatchType?,
    modifier: Modifier = Modifier,
 ) {
    var searchExpanded by rememberSaveable { mutableStateOf(false) }
@@ -195,7 +267,7 @@ private fun ColumnScope.AppsSearchBox(
       expanded = searchExpanded,
       onExpandedChange = { searchExpanded = it },
       modifier = modifier,
-      windowInsets = WindowInsets(),
+      windowInsets = WindowInsets(left = 8.dp, right = 8.dp),
    ) {
       val outcome = when (searchResults) {
          is Outcome.Error -> searchResults
@@ -217,6 +289,7 @@ private fun ColumnScope.AppsSearchBox(
                   it.toApplication(),
                   navigator,
                   appstoreSource = source,
+                  platform = platformFilter,
                   onlyPartialData = true
                )
             }
@@ -230,62 +303,40 @@ private fun ColumnScope.AppsSearchBox(
 private fun TypeSelector(
    selectedTab: ApplicationType,
    setSelectedTab: (ApplicationType) -> Unit,
-   appstoreSources: List<AppstoreSource>,
-   source: AppstoreSource?,
-   setSelectedSource: (AppstoreSource) -> Unit,
-   modifier: Modifier = Modifier,
+   onMoreClick: () -> Unit,
 ) {
-   SecondaryTabRow(selectedTabIndex = selectedTab.ordinal, modifier = modifier) {
-      LeadingIconTab(
-         selectedTab == ApplicationType.Watchface,
-         onClick = { setSelectedTab(ApplicationType.Watchface) },
-         text = {
-            Text(stringResource(R.string.watchface))
-         },
-         icon = {
-            Icon(painterResource(R.drawable.ic_watchfaces), contentDescription = null)
-         }
-      )
+   TopAppBar(
+      title = {
+         SecondaryTabRow(selectedTabIndex = selectedTab.ordinal) {
+            LeadingIconTab(
+               selectedTab == ApplicationType.Watchface,
+               onClick = { setSelectedTab(ApplicationType.Watchface) },
+               text = {
+                  Text(stringResource(R.string.watchface))
+               },
+               icon = {
+                  Icon(painterResource(R.drawable.ic_watchfaces), contentDescription = null)
+               },
+            )
 
-      LeadingIconTab(
-         selectedTab == ApplicationType.Watchapp,
-         onClick = { setSelectedTab(ApplicationType.Watchapp) },
-         text = {
-            Text(stringResource(R.string.watchapp))
-         },
-         icon = {
-            Icon(painterResource(R.drawable.ic_apps), contentDescription = null)
+            LeadingIconTab(
+               selectedTab == ApplicationType.Watchapp,
+               onClick = { setSelectedTab(ApplicationType.Watchapp) },
+               text = {
+                  Text(stringResource(R.string.watchapp))
+               },
+               icon = {
+                  Icon(painterResource(R.drawable.ic_apps), contentDescription = null)
+               },
+            )
          }
-      )
-
-      var expanded by remember { mutableStateOf(false) }
-      ExposedDropdownMenuBox(expanded, onExpandedChange = { expanded = it }) {
-         TextField(
-            value = source?.name ?: stringResource(R.string.no_source_selected),
-            onValueChange = {},
-            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
-            readOnly = true,
-            singleLine = true,
-            leadingIcon = { Icon(painterResource(R.drawable.ic_appstore_source), contentDescription = null) },
-            colors = ExposedDropdownMenuDefaults.textFieldColors(
-               unfocusedContainerColor = Color.Transparent,
-               focusedContainerColor = Color.Transparent,
-            ),
-         )
-         ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-         ) {
-            for (source in appstoreSources.filter { it.enabled }) {
-               DropdownMenuItem(
-                  text = { Text(source.name, style = MaterialTheme.typography.bodyLarge) },
-                  onClick = { setSelectedSource(source) },
-                  contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
-               )
-            }
+      },
+      actions = {
+         IconButton(onClick = onMoreClick, modifier = Modifier.width(48.dp)) {
+            Icon(painterResource(R.drawable.ic_more), contentDescription = null, modifier = Modifier.sizeIn(minWidth = 24.dp))
          }
       }
-   }
+   )
 }
 
 @Composable
@@ -295,6 +346,7 @@ private fun AppstoreHomepage(
    state: Outcome<AppstoreHomePage>?,
    onRefresh: () -> Unit,
    navigateToCollection: (AppstoreCollection) -> Unit,
+   platformFilter: WatchType?,
    appstoreSource: AppstoreSource? = null,
 ) {
    PullToRefreshBox(
@@ -320,10 +372,10 @@ private fun AppstoreHomepage(
                   AppstoreHeader(navigateToCollection, collection)
                }
                for (appId in collection.appIds) {
-                  item(contentType = appTileContentType) {
-                     val app = data.applicationsById[appId]
-                     if (app != null) {
-                        WatchAppDisplay(app, navigator, appstoreSource = appstoreSource)
+                  val app = data.applicationsById[appId]
+                  if (app != null) {
+                     item(contentType = appTileContentType) {
+                        WatchAppDisplay(app, navigator, appstoreSource = appstoreSource, platform = platformFilter)
                      }
                   }
                }
@@ -377,15 +429,16 @@ internal fun AppstoreHomepagePreview() {
          selectedTab = ApplicationType.Watchface,
          setSelectedTab = { },
          source = AppstoreSourceService.defaultSources.first(),
-         appstoreSources = AppstoreSourceService.defaultSources,
          setSelectedSource = { },
+         platformFilter = null,
+         setPlatformFilter = {},
+         appstoreSources = AppstoreSourceService.defaultSources,
          searchQuery = "",
          setSearchQuery = { },
          searchResults = Outcome.Progress(),
          navigator = null,
          homePageState = Outcome.Success(Json.decodeFromString(string)),
-         onRefresh = {},
-         navigateToCollection = { }
-      )
+         onRefresh = {}
+      ) { }
    }
 }

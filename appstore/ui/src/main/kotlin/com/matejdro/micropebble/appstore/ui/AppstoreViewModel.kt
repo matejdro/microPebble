@@ -14,6 +14,8 @@ import com.matejdro.micropebble.appstore.api.store.application.AlgoliaApplicatio
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreCollection
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
+import com.matejdro.micropebble.appstore.api.store.home.filterApps
+import com.matejdro.micropebble.appstore.ui.common.isUnofficiallyCompatibleWith
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
@@ -21,11 +23,11 @@ import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -42,42 +44,47 @@ import kotlin.time.Duration.Companion.milliseconds
 class AppstoreViewModel(
    resources: CoroutineResourceManager,
    private val actionLogger: ActionLogger,
-   private val appstoreSourceService: AppstoreSourceService,
+   appstoreSourceService: AppstoreSourceService,
    private val api: ApiClient,
 ) : SingleScreenViewModel<AppstoreScreenKey>(resources.scope) {
    private val reloadFlow = MutableSharedFlow<Unit>(replay = 1).apply { tryEmit(Unit) }
 
    var selectedTab by mutableStateOf(ApplicationType.Watchface)
    val homePageState =
-      combine(snapshotFlow { appstoreSource }, snapshotFlow { selectedTab }, reloadFlow) { source, tab, _ ->
-         source to tab
-      }.transform { (source, tab) ->
+      combineTransform(
+         snapshotFlow { appstoreSource },
+         snapshotFlow { selectedTab },
+         reloadFlow,
+         snapshotFlow { platformFilter }.debounce(100.milliseconds)
+      ) { source, tab, _, platform ->
          if (source != null) {
             emit(Outcome.Progress())
-            emit(getHomePage(source, tab))
+            emit(getHomePage(source, tab, platform))
          }
       }
 
    val searchResults =
-      combine(
+      combineTransform(
          snapshotFlow { searchQuery }.debounce(100.milliseconds),
          snapshotFlow { selectedTab },
-         snapshotFlow { appstoreSource }
-      ) { query, tab, source ->
-         Triple(query, tab, source)
-      }.transform { (query, tab, source) ->
+         snapshotFlow { appstoreSource },
+         snapshotFlow { platformFilter }.debounce(100.milliseconds)
+      ) { query, tab, source, platform ->
          if (source != null) {
             emit(Outcome.Progress())
-            emit(getSearchResults(source, tab))
+            emit(getSearchResults(query, source, tab, platform))
          }
       }
 
-   private val homePagesCache: MutableMap<Pair<AppstoreSource, ApplicationType>, AppstoreHomePage> = mutableMapOf()
+   private val homePagesCache: MutableMap<Pair<Pair<AppstoreSource, ApplicationType>, WatchType?>, AppstoreHomePage> =
+      mutableMapOf()
 
    val appstoreSources = appstoreSourceService.enabledSources
    var appstoreSource: AppstoreSource? by mutableStateOf(null)
 
    var searchQuery by mutableStateOf("")
+
+   var platformFilter: WatchType? by mutableStateOf(null)
 
    override fun onServiceRegistered() {
       actionLogger.logAction { "AppstoreViewModel.onServiceRegistered()" }
@@ -91,22 +98,32 @@ class AppstoreViewModel(
       return AppstoreCollectionScreenKey(
          collection.name,
          appstoreSource!!.url.joinUrls(collection.links.apps.trimStart('/').removePrefix("api")),
-         appstoreSource
+         platformFilter?.codename,
+         appstoreSource,
       )
    }
 
-   private suspend fun getHomePage(source: AppstoreSource, tab: ApplicationType): Outcome<AppstoreHomePage> {
-      homePagesCache[source to tab]?.let { return Outcome.Success(it) }
+   private suspend fun getHomePage(
+      source: AppstoreSource,
+      tab: ApplicationType,
+      platformFilter: WatchType?,
+   ): Outcome<AppstoreHomePage> {
+      homePagesCache[source to tab to platformFilter]?.let { return Outcome.Success(it) }
       try {
-         val result = fetchHomePage(tab)
-         homePagesCache[source to tab] = result
+         val result = fetchHomePage(tab, platformFilter).filterApps { it.isUnofficiallyCompatibleWith(platformFilter) }
+         homePagesCache[source to tab to platformFilter] = result
          return Outcome.Success(result)
-      } catch (e: IllegalArgumentException) {
+      } catch (e: Exception) {
          return Outcome.Error(DataParsingException(e.message, e))
       }
    }
 
-   private suspend fun getSearchResults(source: AppstoreSource, tab: ApplicationType): Outcome<List<AlgoliaApplication>> {
+   private suspend fun getSearchResults(
+      query: String,
+      source: AppstoreSource,
+      tab: ApplicationType,
+      platform: WatchType?,
+   ): Outcome<List<AlgoliaApplication>> {
       if (searchQuery.isBlank()) {
          return Outcome.Success(emptyList())
       }
@@ -115,9 +132,17 @@ class AppstoreViewModel(
          appId = algoliaData.appId,
          apiKey = algoliaData.apiKey,
       )
+      val filters = TagFilters.of(
+         buildList {
+            add(TagFilters.of(tab.searchTag))
+            if (platform != null) {
+               add(TagFilters.of(platform.codename))
+            }
+         }
+      )
       val response: List<AlgoliaApplication> = client.searchSingleIndex(
          algoliaData.indexName,
-         SearchParamsObject(query = searchQuery, tagFilters = TagFilters.of(tab.searchTag))
+         SearchParamsObject(query, tagFilters = filters)
       ).hits.mapNotNull { hit ->
          hit.additionalProperties?.let { api.json.decodeFromJsonElement(JsonObject(it)) }
       }
@@ -131,8 +156,16 @@ class AppstoreViewModel(
       return appstoreSource!!
    }
 
-   private suspend fun fetchHomePage(type: ApplicationType) =
-      api.http.get(ensureAppstoreSource().url.joinUrls(type.apiEndpoint)).body<AppstoreHomePage>()
+   private suspend fun fetchHomePage(type: ApplicationType, platformFilter: WatchType?): AppstoreHomePage {
+      val baseUrl = ensureAppstoreSource().url.joinUrls(type.apiEndpoint)
+      return api.http.get(baseUrl) {
+         url {
+            if (platformFilter != null) {
+               parameters["hardware"] = platformFilter.codename
+            }
+         }
+      }.body<AppstoreHomePage>()
+   }
 
    fun reloadHomePage() {
       actionLogger.logAction { "AppstoreViewModel.reloadHomePage()" }
