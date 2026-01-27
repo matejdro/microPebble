@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.bluetooth.scan
 
+import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.companion.AssociationInfo
@@ -9,7 +10,10 @@ import android.companion.CompanionDeviceManager
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.os.Build
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.getSystemService
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
+import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.matejdro.micropebble.bluetooth.ui.R
 import com.matejdro.micropebble.navigation.keys.BluetoothScanScreenKey
@@ -60,42 +66,27 @@ class BluetoothScanScreen(
    private val viewmodel: BluetoothScanViewmodel,
    private val notificationsStatus: NotificationsStatus,
 ) : Screen<BluetoothScanScreenKey>() {
+   @Stable
+   data class BluetoothScanStateResult(
+      val turnOnBluetoothIntent: ManagedActivityResultLauncher<Intent, ActivityResult>,
+      val bluetoothPermission: MultiplePermissionsState,
+   )
+
    @Composable
    override fun Content(key: BluetoothScanScreenKey) {
       val state = viewmodel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention()
       Surface() {
          ProgressErrorSuccessScaffold(state.value) { scanState ->
-            val turnOnBluetoothIntent = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-               if (it.resultCode == Activity.RESULT_OK) {
-                  viewmodel.toggleScan()
-               }
-            }
-
-            val bluetoothPermission = rememberMultiplePermissionsState(
-               listOf(
-                  android.Manifest.permission.BLUETOOTH_SCAN,
-                  android.Manifest.permission.BLUETOOTH_CONNECT,
-               )
-            ) { permissions ->
-               if (permissions.values.all { it }) {
-                  if (!scanState.bluetoothOn) {
-                     turnOnBluetoothIntent.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
-                  } else {
-                     viewmodel.toggleScan()
-                  }
-               }
-            }
-
+            val bluetoothScanState = getBluetoothScanState(scanState)
             val context = LocalContext.current
             val companionManager = context.getSystemService<CompanionDeviceManager>()!!
-
             ScanScreenContent(
                scanState,
                toggleScan = {
-                  if (!bluetoothPermission.allPermissionsGranted) {
-                     bluetoothPermission.launchMultiplePermissionRequest()
+                  if (!bluetoothScanState.bluetoothPermission.allPermissionsGranted) {
+                     bluetoothScanState.bluetoothPermission.launchMultiplePermissionRequest()
                   } else if (!scanState.bluetoothOn) {
-                     turnOnBluetoothIntent.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+                     bluetoothScanState.turnOnBluetoothIntent.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
                   } else {
                      viewmodel.toggleScan()
                   }
@@ -107,6 +98,38 @@ class BluetoothScanScreen(
             )
          }
       }
+   }
+
+   @Composable
+   private fun getBluetoothScanState(scanState: ScanState): BluetoothScanStateResult {
+      val turnOnBluetoothIntent = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+         if (it.resultCode == Activity.RESULT_OK) {
+            viewmodel.toggleScan()
+         }
+      }
+
+      val bluetoothPermission = rememberMultiplePermissionsState(
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            listOf(
+               Manifest.permission.BLUETOOTH_SCAN,
+               Manifest.permission.BLUETOOTH_CONNECT,
+            )
+         } else {
+            listOf(
+               Manifest.permission.BLUETOOTH,
+            )
+         }
+      ) { permissions ->
+         if (permissions.values.all { it }) {
+            if (!scanState.bluetoothOn) {
+               turnOnBluetoothIntent.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+            } else {
+               viewmodel.toggleScan()
+            }
+         }
+      }
+
+      return BluetoothScanStateResult(turnOnBluetoothIntent, bluetoothPermission)
    }
 
    private fun associateWithCompanionManager(
@@ -121,23 +144,40 @@ class BluetoothScanScreen(
                   .setAddress(device.identifier.asString)
                   .build()
             )
-            .setDeviceProfile(AssociationRequest.DEVICE_PROFILE_WATCH)
-            .build(),
-         object : CompanionDeviceManager.Callback() {
-            override fun onFailure(error: CharSequence?) {}
-
-            // New method is only available in the SDK 33, so we
-            // have to use the old one for now.
-            @Suppress("DEPRECATION")
-            @Deprecated("Deprecated in Java")
-            override fun onDeviceFound(intentSender: IntentSender) {
-               super.onDeviceFound(intentSender)
-               context.startIntentSender(intentSender, null, 0, 0, 0)
+            .run {
+               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                  setDeviceProfile(AssociationRequest.DEVICE_PROFILE_WATCH)
+               } else {
+                  this
+               }
             }
+            .build(),
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            object : CompanionDeviceManager.Callback() {
+               override fun onFailure(error: CharSequence?) {}
 
-            override fun onAssociationCreated(associationInfo: AssociationInfo) {
-               notificationsStatus.requestNotificationAccess()
-               viewmodel.connect(device)
+               @Suppress("DEPRECATION")
+               @Deprecated("Deprecated in Java")
+               override fun onDeviceFound(intentSender: IntentSender) {
+                  super.onDeviceFound(intentSender)
+                  context.startIntentSender(intentSender, null, 0, 0, 0)
+               }
+
+               override fun onAssociationCreated(associationInfo: AssociationInfo) {
+                  notificationsStatus.requestNotificationAccess()
+                  viewmodel.connect(device)
+               }
+            }
+         } else {
+            object : CompanionDeviceManager.Callback() {
+               override fun onFailure(error: CharSequence?) {}
+
+               @Suppress("DEPRECATION")
+               @Deprecated("Deprecated in Java")
+               override fun onDeviceFound(intentSender: IntentSender) {
+                  notificationsStatus.requestNotificationAccess()
+                  viewmodel.connect(device)
+               }
             }
          },
          null

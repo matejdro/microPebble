@@ -12,7 +12,7 @@ android {
    namespace = "com.matejdro.micropebble.sharedresources"
 
    defaultConfig {
-      minSdk = 26
+      minSdk = 30
    }
 
    buildFeatures {

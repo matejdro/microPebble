@@ -1,0 +1,60 @@
+name: "pr-sarif-commenter"
+on:
+  workflow_run:
+    workflows: [ "pull-request-build" ]
+    types: [ completed ]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'failure'
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: pr-number
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        id: download
+        with:
+          name: pr-sarif
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Set the PR_NUM
+        if: steps.download.outcome == 'success'
+        id: pr-meta
+        run: |
+          pr=$(cat pr_number.txt)
+          echo "pr_num=$pr" > $GITHUB_OUTPUT
+          echo "pr_ref=refs/pull/$pr/merge" >> $GITHUB_OUTPUT
+          mkdir -p repo
+      - uses: actions/checkout@v4
+        if: steps.download.outcome == 'success'
+        with:
+          lfs: true
+          submodules: recursive
+          ref: ${{ steps.pr-meta.outputs.pr_ref }}
+          fetch-depth: 0
+          path: repo
+      - name: Set git ref
+        if: steps.download.outcome == 'success'
+        id: git-hash
+        run:
+          ref=$(git rev-parse HEAD);echo "git_hash=$ref" > $GITHUB_OUTPUT
+        working-directory: repo
+      - name: Post SARIF findings as comments in the pull request
+        if: steps.download.outcome == 'success'
+        uses: sett-and-hive/sarif-to-comment-action/composite@77c0eda9c886e978d3d914364ce8610a09b66907
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          branch: "${{ steps.git-hash.outputs.git_hash }}"
+          pr-number: "${{ steps.pr-meta.outputs.pr_num }}"
+          title: Lint report
+          show-rule-details: false
+          sarif-file: 'merge.sarif'
+          simple: true

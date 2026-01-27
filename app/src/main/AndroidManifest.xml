@@ -28,7 +28,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MicroPebble"
         android:windowSoftInputMode="adjustResize"
-        tools:ignore="UnusedAttribute"
+        tools:ignore="UnusedAttribute, newApi"
         android:appComponentFactory="com.matejdro.micropebble.di.ComponentFactory"
         tools:replace="android:appComponentFactory">
         <profileable android:shell="true" />

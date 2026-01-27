@@ -189,7 +189,7 @@ private fun AppstoreSourcesContent(
                modifier = { Modifier.animateItem() }
             ) { source ->
                ReorderableListItem(
-                  key = source.id,
+                  key = source.id.toString(),
                   data = source,
                   setOrder = { setOrder(source, it) },
                   modifier = Modifier

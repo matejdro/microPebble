@@ -5,7 +5,6 @@ import android.app.Application
 import android.os.Build
 import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
-import android.os.strictmode.Violation
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -134,30 +133,10 @@ open class MicroPebbleApplication : Application(), WorkConfiguration.Provider {
       if (!BuildConfig.DEBUG) {
          return
       }
+      val context = this
 
       StrictMode.setVmPolicy(
-         VmPolicy.Builder()
-            .detectActivityLeaks()
-            .detectContentUriWithoutPermission()
-            .detectFileUriExposure()
-            .detectLeakedClosableObjects()
-            .detectLeakedRegistrationObjects()
-            .detectLeakedSqlLiteObjects()
-            .detectCredentialProtectedWhileLocked()
-            .detectImplicitDirectBoot()
-            .detectUnsafeIntentLaunch()
-            .run {
-               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
-                  detectBlockedBackgroundActivityLaunch()
-               } else {
-                  this
-               }
-            }
-
-            .penaltyListener(ContextCompat.getMainExecutor(this@MicroPebbleApplication)) { e ->
-               reportStrictModePenalty(e)
-            }
-            .build()
+         buildVmPolicy()
       )
 
       StrictMode.setThreadPolicy(
@@ -168,14 +147,44 @@ open class MicroPebbleApplication : Application(), WorkConfiguration.Provider {
             .detectNetwork()
             .detectResourceMismatches()
             .detectUnbufferedIo()
-            .penaltyListener(ContextCompat.getMainExecutor(this)) { e ->
+            .penaltyListener(ContextCompat.getMainExecutor(context)) { e: Throwable ->
                reportStrictModePenalty(e)
             }
             .build()
       )
    }
 
-   private fun reportStrictModePenalty(e: Violation) {
+   private fun buildVmPolicy(): VmPolicy? {
+      return VmPolicy.Builder()
+         .detectActivityLeaks()
+         .detectContentUriWithoutPermission()
+         .detectFileUriExposure()
+         .detectLeakedClosableObjects()
+         .detectLeakedRegistrationObjects()
+         .detectLeakedSqlLiteObjects()
+         .detectCredentialProtectedWhileLocked()
+         .detectImplicitDirectBoot()
+         .run {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+               detectUnsafeIntentLaunch()
+            } else {
+               this
+            }
+         }
+         .run {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+               detectBlockedBackgroundActivityLaunch()
+            } else {
+               this
+            }
+         }
+         .penaltyListener(ContextCompat.getMainExecutor(this@MicroPebbleApplication)) { e: Throwable ->
+            reportStrictModePenalty(e)
+         }
+         .build()
+   }
+
+   private fun reportStrictModePenalty(e: Throwable) {
       if (
          e.cause == null &&
          (

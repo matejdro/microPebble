@@ -306,7 +306,7 @@ private fun WatchappListScreenContent(
                modifier = { Modifier.animateItem() }
             ) { app ->
                ReorderableListItem(
-                  key = app.properties.id, data = app, setOrder = {
+                  key = app.properties.id.toString(), data = app, setOrder = {
                      setOrder(app.properties.id, it)
                   }, modifier = Modifier.fillMaxWidth()
                ) { modifier ->
@@ -337,7 +337,8 @@ private fun WatchappListScreenContent(
       var expanded by remember { mutableStateOf(false) }
 
       FloatingActionButtonMenu(
-         expanded, button = {
+         expanded && actionStatus !is Outcome.Progress,
+         button = {
             ToggleFloatingActionButton(expanded, onCheckedChange = { expanded = it }) {
                val close = painterResource(R.drawable.ic_close) as VectorPainter
                val open = painterResource(R.drawable.ic_open) as VectorPainter
@@ -347,11 +348,15 @@ private fun WatchappListScreenContent(
                      if (checkedProgress > 0.5f) close else open
                   }
                }
-               Icon(
-                  painter = imageVector,
-                  contentDescription = null,
-                  modifier = Modifier.animateIcon({ checkedProgress }),
-               )
+               if (actionStatus is Outcome.Progress) {
+                  CircularProgressIndicator(Modifier.padding(8.dp))
+               } else {
+                  Icon(
+                     painter = imageVector,
+                     contentDescription = null,
+                     modifier = Modifier.animateIcon({ checkedProgress }),
+                  )
+               }
             }
          },
          modifier = Modifier
