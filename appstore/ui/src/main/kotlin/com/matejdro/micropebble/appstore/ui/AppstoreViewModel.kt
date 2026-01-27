@@ -49,7 +49,7 @@ class AppstoreViewModel(
 ) : SingleScreenViewModel<AppstoreScreenKey>(resources.scope) {
    private val reloadFlow = MutableSharedFlow<Unit>(replay = 1).apply { tryEmit(Unit) }
 
-   var selectedTab by mutableStateOf(ApplicationType.Watchface)
+   var selectedTab by mutableStateOf(ApplicationType.Watchface as ApplicationType)
    val homePageState =
       combineTransform(
          snapshotFlow { appstoreSource },
