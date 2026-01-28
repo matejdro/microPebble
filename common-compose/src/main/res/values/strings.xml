@@ -6,4 +6,7 @@
     <string name="ok">OK</string>
     <string name="error">Error</string>
     <string name="error_watch_not_connected">Watch not connected</string>
+    <string name="no_sources_enabled_title">You don\'t have any sources enabled.</string>
+    <string name="no_sources_enabled_body">Updating apps won\'t function properly, and you won\'t be able to install new ones
+    </string>
 </resources>

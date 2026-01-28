@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.work.WorkManager
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
@@ -31,6 +32,9 @@ interface CommonInjectionsProviders {
       context: Context,
       errorReporter: ErrorReporter,
    ): AndroidDateTimeFormatter = AndroidDateTimeFormatterImpl(context, errorReporter)
+
+   @Provides
+   fun provideAndroidWorkManager(context: Context): WorkManager = WorkManager.getInstance(context)
 
    @Provides
    fun provideAndroidTimeProvider(): AndroidTimeProvider {

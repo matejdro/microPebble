@@ -21,6 +21,8 @@ dependencies {
    api(libs.androidx.core)
    api(libs.kotlinova.core)
    api(libs.kotlinova.navigation)
+
+   implementation(projects.sharedResources)
    implementation(projects.commonCompose)
    implementation(libs.accompanist.permissions)
    implementation(libs.composePreference)
