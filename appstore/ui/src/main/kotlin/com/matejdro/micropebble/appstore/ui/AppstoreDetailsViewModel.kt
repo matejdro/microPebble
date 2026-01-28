@@ -22,7 +22,6 @@ import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
-import java.net.URL
 
 @Inject
 @ContributesScopedService
@@ -88,11 +87,9 @@ class AppstoreDetailsViewModel(
       if (app !is Outcome.Success) {
          return@launchResourceControlTask
       }
-      val pbwUrl = URL(app.data.latestRelease.pbwFile)
 
-      emit(Outcome.Progress())
       val outcome = installer.install(
-         pbwUrl,
+         app.data.latestRelease.pbwFile,
          key.appstoreSource?.let { AppInstallSource(app.data.uuid, app.data.id, it.id) }
       )
       emit(outcome.mapData { AppInstallState.INSTALLED })

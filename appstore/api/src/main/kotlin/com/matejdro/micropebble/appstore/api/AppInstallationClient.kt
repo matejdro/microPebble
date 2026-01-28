@@ -4,7 +4,6 @@ import kotlinx.coroutines.flow.Flow
 import si.inova.kotlinova.core.outcome.CauseException
 import si.inova.kotlinova.core.outcome.Outcome
 import java.io.IOException
-import java.net.URL
 import kotlin.uuid.Uuid
 
 enum class AppInstallState {
@@ -19,7 +18,7 @@ class AppDownloadFailed(cause: IOException) : CauseException(message = "App down
 interface AppInstallationClient {
    val appInstallSources: Flow<Map<Uuid, AppInstallSource>>
    suspend fun install(
-      url: URL,
+      url: String,
       source: AppInstallSource? = null,
       tmpFileName: String = Uuid.random().toString(),
    ): Outcome<Unit>

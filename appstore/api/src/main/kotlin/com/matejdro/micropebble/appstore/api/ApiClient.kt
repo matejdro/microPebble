@@ -4,6 +4,7 @@ import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
 import com.matejdro.micropebble.appstore.api.store.collection.AppstoreCollectionPage
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
+import io.ktor.utils.io.ByteReadChannel
 import kotlinx.serialization.json.Json
 
 interface ApiClient {
@@ -13,4 +14,5 @@ interface ApiClient {
    suspend fun fetchAppListing(updateSource: AppstoreSource, appstoreId: String): Application
    suspend fun fetchHomePage(source: AppstoreSource, type: ApplicationType, platformFilter: String?): AppstoreHomePage
    suspend fun fetchCollection(platformFilter: String?, endpoint: String, offset: Int, limit: Int): AppstoreCollectionPage
+   suspend fun openInputStream(url: String): ByteReadChannel
 }

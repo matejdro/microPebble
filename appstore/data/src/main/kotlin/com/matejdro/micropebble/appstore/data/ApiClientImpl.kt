@@ -15,7 +15,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsChannel
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.utils.io.ByteReadChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -63,4 +65,8 @@ class ApiClientImpl : ApiClient {
             parameters["limit"] = limit.toString()
          }
       }.body<AppstoreCollectionPage>()
+
+   override suspend fun openInputStream(url: String): ByteReadChannel {
+      return getHttp().get(url).bodyAsChannel()
+   }
 }

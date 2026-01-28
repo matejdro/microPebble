@@ -46,7 +46,6 @@ import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 import java.io.File
-import java.net.URL
 import kotlin.time.Duration.Companion.seconds
 import kotlin.uuid.Uuid
 
@@ -187,8 +186,7 @@ class WatchappListViewModel(
          ?: return Outcome.Error(UnknownCauseException("No app update source"))
       val appListing = api.fetchAppListing(updateSource, installSource)
          ?: return Outcome.Error(UnknownCauseException("Failed to fetch app listing"))
-      val pbwUrl = URL(appListing.latestRelease.pbwFile)
-      return installationClient.install(pbwUrl, installSource)
+      return installationClient.install(appListing.latestRelease.pbwFile, installSource)
    }
 
    fun reorderApp(uuid: Uuid, index: Int) = resources.launchResourceControlTask(_actionStatus) {

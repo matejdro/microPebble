@@ -2,10 +2,8 @@ package com.matejdro.micropebble.appstore.data
 
 import androidx.datastore.core.DataStore
 import com.matejdro.micropebble.appstore.api.ApiClient
-import com.matejdro.micropebble.appstore.api.AppDownloadFailed
 import com.matejdro.micropebble.appstore.api.AppInstallSource
 import com.matejdro.micropebble.appstore.api.AppInstallationClient
-import com.matejdro.micropebble.appstore.api.AppSideloadFailed
 import com.matejdro.micropebble.appstore.api.AppStatus
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.common.util.compareTo
@@ -13,18 +11,14 @@ import com.matejdro.micropebble.common.util.parseVersionString
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
+import dispatch.core.withIO
+import io.ktor.utils.io.readTo
 import io.rebble.libpebblecommon.connection.LockerApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withContext
+import kotlinx.io.asSink
 import kotlinx.io.files.Path
-import okio.buffer
-import okio.sink
-import okio.source
 import si.inova.kotlinova.core.outcome.Outcome
 import java.io.File
-import java.io.IOException
-import java.net.URL
 import kotlin.uuid.Uuid
 
 @Inject
@@ -36,40 +30,23 @@ class AppInstallationClientImpl(
 ) : AppInstallationClient {
    override val appInstallSources = appInstallSourcesStore.data
 
-   override suspend fun install(url: URL, source: AppInstallSource?, tmpFileName: String): Outcome<Unit> =
-      withContext(Dispatchers.IO) {
-         if (source != null) {
-            appInstallSourcesStore.updateData { it + (source.appId to source) }
-         }
-
-         val tmpFile = File.createTempFile(tmpFileName, "pbw")
-
-         try {
-            url.openConnection().getInputStream().use { input ->
-               tmpFile.sink().buffer().use {
-                  it.writeAll(input.source())
-               }
-            }
-         } catch (e: IOException) {
-            return@withContext Outcome.Error(AppDownloadFailed(e))
-         }
-
-         try {
-            val result = lockerApi.sideloadApp(Path(tmpFile.absolutePath))
-            if (result) {
-               Outcome.Success(Unit)
-            } else {
-               if (source != null) {
-                  appInstallSourcesStore.updateData { it - source.appId }
-               }
-               Outcome.Error(AppSideloadFailed())
-            }
-         } finally {
-            tmpFile.delete()
-         }
+   override suspend fun install(url: String, source: AppInstallSource?, tmpFileName: String) = withIO {
+      if (source != null) {
+         appInstallSourcesStore.updateData { it + (source.appId to source) }
       }
 
-   override suspend fun uninstall(uuid: Uuid) = withContext(Dispatchers.IO) {
+      val tmpFile = File.createTempFile(tmpFileName, "pbw")
+
+      try {
+         tmpFile.outputStream().asSink().use { api.openInputStream(url).readTo(it) }
+         lockerApi.sideloadApp(Path(tmpFile.absolutePath))
+         Outcome.Success(Unit)
+      } finally {
+         tmpFile.delete()
+      }
+   }
+
+   override suspend fun uninstall(uuid: Uuid) = withIO {
       val result = lockerApi.removeApp(uuid)
       removeFromSources(uuid)
       result
