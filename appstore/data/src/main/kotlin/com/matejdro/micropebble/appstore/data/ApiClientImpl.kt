@@ -28,7 +28,7 @@ class ApiClientImpl : ApiClient {
       ignoreUnknownKeys = true
    }
 
-   override val http by lazy {
+   private val http by lazy {
       runBlocking(Dispatchers.IO) {
          HttpClient {
             install(ContentNegotiation) {
