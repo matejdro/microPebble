@@ -17,7 +17,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
 @Inject
@@ -28,35 +28,35 @@ class ApiClientImpl : ApiClient {
       ignoreUnknownKeys = true
    }
 
-   private val http by lazy {
-      runBlocking(Dispatchers.IO) {
-         HttpClient {
-            install(ContentNegotiation) {
-               json(json)
-            }
+   private var client: HttpClient? = null
+
+   private suspend fun getHttp() = client ?: withContext(Dispatchers.IO) {
+      HttpClient {
+         install(ContentNegotiation) {
+            json(json)
          }
       }
-   }
+   }.also { client = it }
 
    override suspend fun fetchAppListing(updateSource: AppstoreSource, installSource: AppInstallSource) = runCatching {
-      http.get(updateSource.url.joinUrls("/v1/apps/id/${installSource.storeId}")).body<ApplicationList>().data.first()
+      getHttp().get(updateSource.url.joinUrls("/v1/apps/id/${installSource.storeId}")).body<ApplicationList>().data.first()
    }.getOrNull()
 
    override suspend fun fetchAppListing(updateSource: AppstoreSource, appstoreId: String) =
-      http.get(updateSource.url.joinUrls("/v1/apps/id/$appstoreId")).body<AppstoreCollectionPage>().apps.first()
+      getHttp().get(updateSource.url.joinUrls("/v1/apps/id/$appstoreId")).body<AppstoreCollectionPage>().apps.first()
 
    override suspend fun fetchHomePage(
       source: AppstoreSource,
       type: ApplicationType,
       platformFilter: String?,
-   ) = http.get(source.url.joinUrls(type.apiEndpoint)) {
+   ) = getHttp().get(source.url.joinUrls(type.apiEndpoint)) {
       url {
          platformFilter?.let { parameters["hardware"] = it }
       }
    }.body<AppstoreHomePage>()
 
    override suspend fun fetchCollection(platformFilter: String?, endpoint: String, offset: Int, limit: Int) =
-      http.get(endpoint) {
+      getHttp().get(endpoint) {
          url {
             platformFilter?.let { parameters["hardware"] = it }
             parameters["offset"] = offset.toString()
