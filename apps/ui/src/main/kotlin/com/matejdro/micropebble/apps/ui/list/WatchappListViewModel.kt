@@ -11,16 +11,11 @@ import com.matejdro.micropebble.appstore.api.AppInstallationClient
 import com.matejdro.micropebble.appstore.api.AppStatus
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.AppstoreSourceService
-import com.matejdro.micropebble.appstore.api.store.application.Application
-import com.matejdro.micropebble.appstore.api.store.application.ApplicationList
 import com.matejdro.micropebble.common.exceptions.LibPebbleError
 import com.matejdro.micropebble.common.logging.ActionLogger
-import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
 import dev.zacsweers.metro.Inject
 import dispatch.core.withDefault
-import io.ktor.client.call.body
-import io.ktor.client.request.get
 import io.rebble.libpebblecommon.connection.Errors
 import io.rebble.libpebblecommon.connection.LockerApi
 import io.rebble.libpebblecommon.connection.UserFacingError
@@ -190,7 +185,7 @@ class WatchappListViewModel(
    private suspend fun asyncUpdateApp(installSource: AppInstallSource): Outcome<Unit> {
       val updateSource = appstoreSourceService.sources.first().findFor(installSource)
          ?: return Outcome.Error(UnknownCauseException("No app update source"))
-      val appListing = fetchAppListing(updateSource, installSource)
+      val appListing = api.fetchAppListing(updateSource, installSource)
          ?: return Outcome.Error(UnknownCauseException("Failed to fetch app listing"))
       val pbwUrl = URL(appListing.latestRelease.pbwFile)
       return installationClient.install(pbwUrl, installSource)
@@ -246,9 +241,4 @@ class WatchappListViewModel(
 
    private fun List<AppstoreSource>.findFor(installSource: AppInstallSource) =
       find { it.enabled && it.id == installSource.sourceId }
-
-   private suspend fun fetchAppListing(updateSource: AppstoreSource, installSource: AppInstallSource): Application? =
-      runCatching {
-         api.http.get(updateSource.url.joinUrls("/v1/apps/id/${installSource.storeId}")).body<ApplicationList>().data.first()
-      }.getOrNull()
 }

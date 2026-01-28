@@ -15,13 +15,10 @@ import com.matejdro.micropebble.appstore.ui.common.isUnofficiallyCompatibleWith
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
 import dev.zacsweers.metro.Inject
-import io.ktor.client.call.body
-import io.ktor.client.request.get
+import io.rebble.libpebblecommon.metadata.WatchType
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
-import com.matejdro.micropebble.appstore.api.store.home.filterApps
-import io.rebble.libpebblecommon.metadata.WatchType
 
 @Inject
 @ContributesScopedService
@@ -42,13 +39,7 @@ class AppstoreCollectionViewModel(
 
          override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Application> {
             val offset = (params.key ?: 0)
-            val page = api.http.get(key.endpoint) {
-               url {
-                  platform?.let { parameters["hardware"] = it.codename }
-                  parameters["offset"] = offset.toString()
-                  parameters["limit"] = params.loadSize.toString()
-               }
-            }.body<AppstoreCollectionPage>().filterAppsByPlatform()
+            val page = api.fetchCollection(key.platformFilter, key.endpoint, offset, params.loadSize).filterAppsByPlatform()
             return LoadResult.Page(
                data = page.apps,
                prevKey = if (params.loadSize >= offset) null else offset - params.loadSize,

@@ -21,8 +21,6 @@ import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import dev.zacsweers.metro.Inject
-import io.ktor.client.call.body
-import io.ktor.client.request.get
 import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combineTransform
@@ -110,7 +108,8 @@ class AppstoreViewModel(
    ): Outcome<AppstoreHomePage> {
       homePagesCache[source to tab to platformFilter]?.let { return Outcome.Success(it) }
       try {
-         val result = fetchHomePage(tab, platformFilter).filterApps { it.isUnofficiallyCompatibleWith(platformFilter) }
+         val result = api.fetchHomePage(ensureAppstoreSource(), tab, platformFilter?.codename)
+            .filterApps { it.isUnofficiallyCompatibleWith(platformFilter) }
          homePagesCache[source to tab to platformFilter] = result
          return Outcome.Success(result)
       } catch (e: Exception) {
@@ -154,17 +153,6 @@ class AppstoreViewModel(
          appstoreSource = appstoreSources.first().first()
       }
       return appstoreSource!!
-   }
-
-   private suspend fun fetchHomePage(type: ApplicationType, platformFilter: WatchType?): AppstoreHomePage {
-      val baseUrl = ensureAppstoreSource().url.joinUrls(type.apiEndpoint)
-      return api.http.get(baseUrl) {
-         url {
-            if (platformFilter != null) {
-               parameters["hardware"] = platformFilter.codename
-            }
-         }
-      }.body<AppstoreHomePage>()
    }
 
    fun reloadHomePage() {

@@ -5,14 +5,10 @@ import com.matejdro.micropebble.appstore.api.AppInstallSource
 import com.matejdro.micropebble.appstore.api.AppInstallState
 import com.matejdro.micropebble.appstore.api.AppInstallationClient
 import com.matejdro.micropebble.appstore.api.store.application.Application
-import com.matejdro.micropebble.appstore.api.store.collection.AppstoreCollectionPage
 import com.matejdro.micropebble.appstore.ui.common.isCompatibleWith
 import com.matejdro.micropebble.common.logging.ActionLogger
-import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
 import dev.zacsweers.metro.Inject
-import io.ktor.client.call.body
-import io.ktor.client.request.get
 import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
 import io.rebble.libpebblecommon.connection.LockerApi
 import io.rebble.libpebblecommon.connection.Watches
@@ -27,7 +23,6 @@ import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 import java.net.URL
-import kotlin.collections.first
 
 @Inject
 @ContributesScopedService
@@ -79,10 +74,7 @@ class AppstoreDetailsViewModel(
       val source = key.appstoreSource
       if (key.onlyPartialData && source != null) {
          resources.launchResourceControlTask(_appDataState) {
-            val realData =
-               api.http
-                  .get(source.url.joinUrls("/v1/apps/id/${key.app.id}"))
-                  .body<AppstoreCollectionPage>().apps.first()
+            val realData = api.fetchAppListing(source, key.app.id)
             emit(Outcome.Success(realData))
          }
       } else {

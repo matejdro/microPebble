@@ -8,16 +8,11 @@ import com.matejdro.micropebble.appstore.api.AppInstallationClient
 import com.matejdro.micropebble.appstore.api.AppSideloadFailed
 import com.matejdro.micropebble.appstore.api.AppStatus
 import com.matejdro.micropebble.appstore.api.AppstoreSource
-import com.matejdro.micropebble.appstore.api.store.application.Application
-import com.matejdro.micropebble.appstore.api.store.application.ApplicationList
 import com.matejdro.micropebble.common.util.compareTo
-import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.common.util.parseVersionString
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
-import io.ktor.client.call.body
-import io.ktor.client.request.get
 import io.rebble.libpebblecommon.connection.LockerApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -104,7 +99,7 @@ class AppInstallationClientImpl(
       val currentVersion =
          lockerApi.getLockerApp(installSource.appId).first()?.properties?.version?.let { parseVersionString(it) }
             ?: return AppStatus.Error
-      val response = fetchAppListing(updateSource, installSource) ?: return AppStatus.AppNotFound
+      val response = api.fetchAppListing(updateSource, installSource) ?: return AppStatus.AppNotFound
       val latestVersion = parseVersionString(response.latestRelease.version) ?: return AppStatus.Error
       return if (latestVersion > currentVersion) {
          AppStatus.Updatable(currentVersion, latestVersion)
@@ -118,11 +113,6 @@ class AppInstallationClientImpl(
 
    private fun List<AppstoreSource>.findFor(installSource: AppInstallSource) =
       find { it.enabled && it.id == installSource.sourceId }
-
-   private suspend fun fetchAppListing(updateSource: AppstoreSource, installSource: AppInstallSource): Application? =
-      runCatching {
-         api.http.get(updateSource.url.joinUrls("/v1/apps/id/${installSource.storeId}")).body<ApplicationList>().data.first()
-      }.getOrNull()
 
    override suspend fun getInstallationSource(appId: Uuid) = appInstallSourcesStore.data.first()[appId]
 }
