@@ -49,7 +49,7 @@ class AppstoreCollectionViewModel(
       }
    }
 
-   private lateinit var lazyPagingItems: LazyPagingItems<Application>
+   private var lazyPagingItems: LazyPagingItems<Application>? = null
 
    /**
     * Cache the [LazyPagingItems] in the viewmodel so that the loading progress doesn't get reset on navigation.
@@ -57,10 +57,7 @@ class AppstoreCollectionViewModel(
    @Composable
    fun getLazyPagingItems(): LazyPagingItems<Application> {
       actionLogger.logAction { "AppstoreCollectionViewModel.getLazyPagingItems()" }
-      if (!this::lazyPagingItems.isInitialized) {
-         lazyPagingItems = appPager.flow.collectAsLazyPagingItems()
-      }
-      return lazyPagingItems
+      return lazyPagingItems ?: appPager.flow.collectAsLazyPagingItems().also { lazyPagingItems = it }
    }
 
    private fun AppstoreCollectionPage.filterAppsByPlatform() = if (platform == null) {
