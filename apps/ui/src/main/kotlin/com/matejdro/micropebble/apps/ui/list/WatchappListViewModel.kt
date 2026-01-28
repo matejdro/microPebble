@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -68,50 +69,61 @@ class WatchappListViewModel(
    private val appstoreSourceService: AppstoreSourceService,
    private val api: ApiClient,
 ) : SingleScreenViewModel<WatchappListKey>(resources.scope) {
-   private val _uiState = MutableStateFlow<Outcome<WatchappListState>>(Outcome.Progress())
-   val uiState: StateFlow<Outcome<WatchappListState>> = _uiState
+   private val _apps = MutableStateFlow<Outcome<WatchappListState>>(Outcome.Progress())
    private val _actionStatus = MutableStateFlow<Outcome<Unit>>(Outcome.Success(Unit))
    val actionStatus: StateFlow<Outcome<Unit>> = _actionStatus
-   val appInstallSourceStatus = combine(
-      uiState,
-      installationClient.appInstallSources,
-   ) { state, sources ->
-      state.mapData { data ->
-         (data.watchfaces + data.watchapps).map { it.properties.id }.associateWith { sources[it] }
-      }
-   }
-   val updatableWatchapps = combine(appInstallSourceStatus, appstoreSourceService.sources) { apps, sources ->
+
+   val installationSources = installationClient.appInstallSources
+
+   private val _appUpdatingStatus = MutableStateFlow<Map<Uuid, AppStatus>>(emptyMap())
+   private val _uiStateWithoutUpdateStatus = combineTransform(
+      _apps,
+      installationSources,
+      appstoreSourceService.sources,
+   ) { apps, installSources, sources ->
+      emit(apps)
       if (apps is Outcome.Success) {
-         val map = mutableMapOf<Uuid, AppStatus>()
-         for ((id, installSource) in apps.data) {
-            map[id] = installationClient.isAppUpdatable(installSource, sources)
+         val appsWithStatusUpdate = apps.data.map {
+            val appId = it.app.properties.id
+            val installSource = installSources[appId]
+            val status = installationClient.isAppUpdatable(installSource, sources)
+            it.copy(appStatus = status)
          }
-         Outcome.Success(map)
-      } else {
-         Outcome.Progress<Map<Uuid, AppStatus>>()
+         emit(Outcome.Success(appsWithStatusUpdate))
       }
    }
-   private val _appUpdatingStatus = MutableStateFlow<Map<Uuid, Outcome<Unit>>>(emptyMap())
-   val appUpdatingStatus: StateFlow<Map<Uuid, Outcome<Unit>>> = _appUpdatingStatus
+   val uiState: Flow<Outcome<WatchappListState>> =
+      combine(_uiStateWithoutUpdateStatus, _appUpdatingStatus) { state, allStatus ->
+         if (allStatus.isNotEmpty()) {
+            state.mapData { state ->
+               state.map { it.copy(appStatus = allStatus[it.app.properties.id] ?: it.appStatus) }
+            }
+         } else {
+            state
+         }
+      }
 
    val appstoreSources
       get() = appstoreSourceService.sources.map { it.filter { s -> s.enabled } }
-   val appInstallationSources
-      get() = installationClient.appInstallSources
 
    override fun onServiceRegistered() {
       actionLogger.logAction { "WatchappListViewModel.onServiceRegistered()" }
 
-      resources.launchResourceControlTask(_uiState) {
+      resources.launchResourceControlTask(_apps) {
          emitAll(
             combine(
                lockerApi.getLocker(AppType.Watchface, null, Int.MAX_VALUE),
                lockerApi.getLocker(AppType.Watchapp, null, Int.MAX_VALUE),
             ) { watchfaces, watchapps ->
+               val mapWatch: List<LockerWrapper>.() -> List<WatchappListApp> = {
+                  map {
+                     WatchappListApp(it, AppStatus.CheckingForUpdates)
+                  }
+               }
                Outcome.Success(
                   WatchappListState(
-                     watchfaces.filterIsInstance<LockerWrapper.NormalApp>(),
-                     watchapps
+                     watchfaces.filterIsInstance<LockerWrapper.NormalApp>().mapWatch(),
+                     watchapps.mapWatch()
                   )
                )
             }
@@ -165,14 +177,18 @@ class WatchappListViewModel(
    fun updateApp(uuid: Uuid) {
       actionLogger.logAction { "WatchappListViewModel.updateApp($uuid)" }
       resources.launchWithExceptionReporting {
-         _appUpdatingStatus.emit(appUpdatingStatus.value + (uuid to Outcome.Progress()))
+         _appUpdatingStatus.emit(_appUpdatingStatus.value + (uuid to AppStatus.Updating))
+         val sources = installationSources.first()
          val result =
-            appInstallSourceStatus.filterIsSuccess().first().data[uuid]?.let {
-               asyncUpdateApp(it)
-            } ?: Outcome.Error(UnknownCauseException("No app update source"))
-         _appUpdatingStatus.emit(appUpdatingStatus.value + (uuid to result))
+            sources[uuid]?.let { asyncUpdateApp(it) } ?: Outcome.Error(UnknownCauseException("No app update source"))
+         val status = if (result is Outcome.Error) {
+            AppStatus.UpdateFailed(result.exception)
+         } else {
+            AppStatus.JustUpdated
+         }
+         _appUpdatingStatus.emit(_appUpdatingStatus.value + (uuid to status))
          delay(10.seconds)
-         _appUpdatingStatus.emit(appUpdatingStatus.value - uuid)
+         _appUpdatingStatus.emit(_appUpdatingStatus.value - uuid)
       }
    }
 
@@ -192,10 +208,11 @@ class WatchappListViewModel(
       emit(Outcome.Success(Unit))
    }
 
-   fun changeAppInstallSource(installSource: AppInstallSource, newAppstoreId: Uuid) {
+   fun changeAppInstallSource(appId: Uuid, newAppstoreId: Uuid) {
       resources.launchWithExceptionReporting {
-         actionLogger.logAction { "WatchappListViewModel.changeAppInstallSource($installSource, $newAppstoreId)" }
-         installationClient.updateSources(installSource.appId, installSource.copy(sourceId = newAppstoreId))
+         actionLogger.logAction { "WatchappListViewModel.changeAppInstallSource($appId, $newAppstoreId)" }
+         val installSource = installationClient.appInstallSources.first()[appId] ?: error("Install source not found for $appId")
+         installationClient.updateSources(appId, installSource.copy(sourceId = newAppstoreId))
       }
    }
 
@@ -239,6 +256,4 @@ class WatchappListViewModel(
       runCatching {
          api.http.get(updateSource.url.joinUrls("/v1/apps/id/${installSource.storeId}")).body<ApplicationList>().data.first()
       }.getOrNull()
-
-   private fun <T> Flow<Outcome<T>>.filterIsSuccess() = filterIsInstance<Outcome.Success<T>>()
 }

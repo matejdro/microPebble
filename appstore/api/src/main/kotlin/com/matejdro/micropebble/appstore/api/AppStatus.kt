@@ -49,4 +49,6 @@ sealed class AppStatus {
     * The update is happening as we speak.
     */
    data object Updating : AppStatus()
+
+   data object CheckingForUpdates : AppStatus()
 }

@@ -63,19 +63,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.apps.ui.R
 import com.matejdro.micropebble.apps.ui.errors.installUserFriendlyErrorMessage
 import com.matejdro.micropebble.apps.ui.webviewconfig.AppConfigScreenKey
 import com.matejdro.micropebble.appstore.api.AppStatus
 import com.matejdro.micropebble.appstore.api.AppstoreSource
-import com.matejdro.micropebble.common.util.parseVersionString
+import com.matejdro.micropebble.common.util.VersionInfo
 import com.matejdro.micropebble.common.util.toVersionString
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import com.matejdro.micropebble.navigation.keys.HomeScreenKey
@@ -92,9 +92,7 @@ import io.rebble.libpebblecommon.locker.SystemApps
 import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.exceptions.NoNetworkException
-import si.inova.kotlinova.core.exceptions.UnknownCauseException
 import si.inova.kotlinova.core.outcome.Outcome
-import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.navigation.di.ContributesScreenBinding
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.instructions.replaceTopWith
@@ -114,13 +112,7 @@ class WatchappListScreen(
    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
    override fun Content(key: WatchappListKey) {
       val state = viewModel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention().value
-      val appSources = viewModel.appInstallSourceStatus.collectAsState(null).value?.data
-      val appStatuses =
-         viewModel.updatableWatchapps.collectAsState(null).value ?: Outcome.Progress()
-      val appInstallSources =
-         viewModel.appInstallSourceStatus.collectAsState(null).value ?: Outcome.Progress()
-      val sources by viewModel.appstoreSources.collectAsState(emptyList())
-      val appUpdatingStatus = viewModel.appUpdatingStatus.collectAsState().value
+      val appInstallSources = viewModel.installationSources.collectAsState(emptyMap()).value
       val selectPbwResult = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { pbwUri ->
          if (pbwUri != null) {
             viewModel.startInstall(pbwUri)
@@ -137,8 +129,6 @@ class WatchappListScreen(
       ) {
          WatchappListScreenContent(
             it,
-            appStatuses,
-            appUpdatingStatus,
             viewModel.actionStatus.collectAsStateWithLifecycleAndBlinkingPrevention().value,
             installFromPbw = {
                selectPbwResult.launch(arrayOf("*/*"))
@@ -156,17 +146,14 @@ class WatchappListScreen(
          )
       }
 
+      val sources = viewModel.appstoreSources.collectAsStateWithLifecycle(emptyList()).value
       PbwInstallDialog(key)
-      if (fixMissingSourceAppId != null) {
+      fixMissingSourceAppId?.let { appId ->
          FixMissingSourceDialog(
             sources,
-            startingSource = { appInstallSources.data?.get(fixMissingSourceAppId)?.sourceId },
+            startingSource = appInstallSources[appId]?.sourceId,
             onSubmitted = { sourceId ->
-               fixMissingSourceAppId?.let { appId ->
-                  appSources?.get(appId)?.let { source ->
-                     viewModel.changeAppInstallSource(source, sourceId)
-                  }
-               }
+               viewModel.changeAppInstallSource(appId, sourceId)
                fixMissingSourceAppId = null
             },
             onCanceled = {
@@ -202,11 +189,11 @@ class WatchappListScreen(
    @Composable
    private fun FixMissingSourceDialog(
       sources: List<AppstoreSource>,
-      startingSource: () -> Uuid?,
+      startingSource: Uuid?,
       onSubmitted: (sourceId: Uuid) -> Unit,
       onCanceled: () -> Unit,
    ) {
-      var id: Uuid? by remember { mutableStateOf(startingSource()) }
+      var id: Uuid? by remember { mutableStateOf(startingSource) }
       AlertDialog(
          onDismissRequest = onCanceled,
          title = {
@@ -249,8 +236,6 @@ class WatchappListScreen(
 @Composable
 private fun WatchappListScreenContent(
    state: WatchappListState,
-   appStatuses: Outcome<Map<Uuid, AppStatus>>,
-   appUpdatingStatus: Map<Uuid, Outcome<Unit>>,
    actionStatus: Outcome<Unit>?,
    installFromPbw: () -> Unit,
    installFromAppstore: () -> Unit,
@@ -301,29 +286,22 @@ private fun WatchappListScreenContent(
 
             itemsWithDivider(
                displayedItems,
-               key = { it.properties.id.toString() },
+               key = { it.app.properties.id.toString() },
                contentType = { "app" },
                modifier = { Modifier.animateItem() }
-            ) { app ->
+            ) { listApp ->
+               val (app, status) = listApp
                ReorderableListItem(
-                  key = app.properties.id.toString(), data = app, setOrder = {
-                     setOrder(app.properties.id, it)
-                  }, modifier = Modifier.fillMaxWidth()
+                  key = app.properties.id.toString(),
+                  data = listApp,
+                  setOrder = { setOrder(app.properties.id, it) },
+                  modifier = Modifier.fillMaxWidth()
                ) { modifier ->
                   val id = app.properties.id
-                  // If the app has an updating status, then use it. Otherwise, use the normal app status.
-                  val appStatus = appUpdatingStatus[id]?.let {
-                     when (it) {
-                        is Outcome.Success -> Outcome.Success(AppStatus.JustUpdated)
-                        is Outcome.Progress -> Outcome.Progress(AppStatus.Updating)
-                        is Outcome.Error -> Outcome.Success(AppStatus.UpdateFailed(it.exception))
-                     }
-                  } ?: appStatuses.mapData { it[id] ?: AppStatus.NotUpdatable }
                   App(
-                     app,
+                     listApp,
                      actionStatus !is Outcome.Progress,
                      delete = { deleteApp(id) },
-                     appStatus = appStatus,
                      update = { updateApp(id) },
                      changeAppSource = { fixMissingSource(id) },
                      openConfiguration = { openConfiguration(id) },
@@ -340,8 +318,8 @@ private fun WatchappListScreenContent(
          expanded && actionStatus !is Outcome.Progress,
          button = {
             ToggleFloatingActionButton(expanded, onCheckedChange = { expanded = it }) {
-               val close = painterResource(R.drawable.ic_close) as VectorPainter
-               val open = painterResource(R.drawable.ic_open) as VectorPainter
+               val close = painterResource(R.drawable.ic_close)
+               val open = painterResource(R.drawable.ic_open)
                val imageVector by remember {
                   derivedStateOf {
                      @Suppress("MagicNumber")
@@ -380,15 +358,15 @@ private fun WatchappListScreenContent(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun App(
-   app: LockerWrapper,
+   listApp: WatchappListApp,
    enableActions: Boolean,
    delete: () -> Unit,
-   appStatus: Outcome<AppStatus>,
    update: () -> Unit,
    changeAppSource: () -> Unit,
    openConfiguration: () -> Unit,
    modifier: Modifier = Modifier,
 ) {
+   val (app, status) = listApp
    Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -401,20 +379,17 @@ private fun App(
          Text(app.properties.title, style = MaterialTheme.typography.bodyMedium)
       }
 
-      if (appStatus is Outcome.Success) {
-         when (val status = appStatus.data) {
-            is AppStatus.UpdateFailed -> UpdateFailedIndicator()
-            is AppStatus.Updatable -> UpdateButton(update, status)
-            AppStatus.JustUpdated -> UpdateInstalledIndicator()
-            AppStatus.NotUpdatable -> {}
-            AppStatus.UpToDate -> {}
-            else -> AppStatusFailedIndicator(status)
-         }
-      } else {
-         AppStatusIndicator(appStatus)
+      when (status) {
+         is AppStatus.UpdateFailed -> UpdateFailedIndicator()
+         is AppStatus.Updatable -> UpdateButton(update, status)
+         AppStatus.JustUpdated -> UpdateInstalledIndicator()
+         AppStatus.NotUpdatable -> {}
+         AppStatus.UpToDate -> {}
+         AppStatus.Updating, AppStatus.CheckingForUpdates -> AppStatusIndicator(status)
+         else -> AppStatusFailedIndicator(status)
       }
 
-      ChangeSourceButton(appStatus, changeAppSource) {
+      ChangeSourceButton(status, changeAppSource) {
          Icon(painterResource(R.drawable.ic_appstore_source), contentDescription = stringResource(R.string.fix_missing_source))
       }
 
@@ -434,11 +409,11 @@ private fun App(
 
 @Composable
 private fun ChangeSourceButton(
-   appStatus: Outcome<AppStatus>,
+   appStatus: AppStatus,
    changeAppSource: () -> Unit,
    content: @Composable (RowScope.() -> Unit),
 ) {
-   if (appStatus.data == AppStatus.MissingSource) {
+   if (appStatus == AppStatus.MissingSource) {
       Button(
          onClick = changeAppSource,
          contentPadding = PaddingValues(8.dp),
@@ -448,7 +423,7 @@ private fun ChangeSourceButton(
          ),
          content = content
       )
-   } else if (appStatus is Outcome.Success && appStatus.data != AppStatus.NotUpdatable) {
+   } else if (appStatus != AppStatus.NotUpdatable) {
       OutlinedButton(onClick = changeAppSource, contentPadding = PaddingValues(8.dp), content = content)
    }
 }
@@ -512,9 +487,9 @@ private fun AppStatusFailedIndicator(status: AppStatus) {
 
 @Composable
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
-private fun AppStatusIndicator(appStatus: Outcome<AppStatus>) {
+private fun AppStatusIndicator(appStatus: AppStatus) {
    Box(Modifier.padding(horizontal = 8.dp)) {
-      if (appStatus.data == AppStatus.Updating) {
+      if (appStatus == AppStatus.Updating) {
          val stroke = WavyProgressIndicatorDefaults.circularIndicatorStroke.apply {
             Stroke(
                width = width / 2.0f,
@@ -538,7 +513,7 @@ private fun AppStatusIndicator(appStatus: Outcome<AppStatus>) {
          CircularProgressIndicator(strokeWidth = 2.dp)
       }
       Icon(
-         if (appStatus.data == AppStatus.Updating) {
+         if (appStatus == AppStatus.Updating) {
             painterResource(R.drawable.ic_download)
          } else {
             painterResource(R.drawable.ic_update)
@@ -559,28 +534,6 @@ internal fun WatchappListScreenContentPreview() {
 
       WatchappListScreenContent(
          state,
-         Outcome.Success(
-            mapOf(
-               fakeApps[2].properties.id to AppStatus.Updatable(
-                  parseVersionString("1.0")!!,
-                  parseVersionString("1.2")!!
-               ),
-               fakeApps[4].properties.id to AppStatus.Updatable(
-                  parseVersionString("1.0")!!,
-                  parseVersionString("1.2")!!
-               ),
-               fakeApps[6].properties.id to AppStatus.Updatable(
-                  parseVersionString("1.0")!!,
-                  parseVersionString("1.2")!!
-               ),
-               fakeApps[8].properties.id to AppStatus.Error
-            )
-         ),
-         mapOf(
-            fakeApps[2].properties.id to Outcome.Progress(Unit),
-            fakeApps[4].properties.id to Outcome.Success(Unit),
-            fakeApps[6].properties.id to Outcome.Error(UnknownCauseException()),
-         ),
          Outcome.Success(Unit),
          {},
          {},
@@ -601,8 +554,6 @@ internal fun WatchappListInstallingPreview() {
 
       WatchappListScreenContent(
          state,
-         Outcome.Success(emptyMap()),
-         emptyMap(),
          Outcome.Progress(Unit),
          {},
          {},
@@ -623,8 +574,6 @@ internal fun WatchappListInstallingErrorPreview() {
 
       WatchappListScreenContent(
          state,
-         Outcome.Success(emptyMap()),
-         emptyMap(),
          Outcome.Error(NoNetworkException()),
          {},
          {},
@@ -645,8 +594,6 @@ internal fun WatchappListScreenContentEmptyPreview() {
 
       WatchappListScreenContent(
          state,
-         Outcome.Success(emptyMap()),
-         emptyMap(),
          Outcome.Success(Unit),
          {},
          {},
@@ -660,30 +607,54 @@ internal fun WatchappListScreenContentEmptyPreview() {
 
 private val fakeApps = List(10) {
    if (it % 2 == 0) {
-      LockerWrapper.NormalApp(
-         AppProperties(
-            Uuid.fromLongs(0L, it.toLong()), AppType.Watchapp, "App $it", "Dev $it", emptyList(), null, null, null, null, null, it
+      WatchappListApp(
+         LockerWrapper.NormalApp(
+            AppProperties(
+               Uuid.fromLongs(0L, it.toLong()),
+               AppType.Watchapp,
+               "App $it",
+               "Dev $it",
+               emptyList(),
+               null,
+               null,
+               null,
+               null,
+               null,
+               it
+            ),
+            true,
+            it % 4 == 0,
+            false
          ),
-         true,
-         it % 4 == 0,
-         false
+         appStatus = if (it % 3 == 0) {
+            AppStatus.Updatable(VersionInfo(1, 0), VersionInfo(1, 2))
+         } else {
+            AppStatus.UpToDate
+         }
       )
    } else {
-      LockerWrapper.SystemApp(
-         AppProperties(
-            Uuid.fromLongs(0L, it.toLong()),
-            if (it % 4 == 0) AppType.Watchapp else AppType.Watchface,
-            "System App $it",
-            "Dev $it",
-            emptyList(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            it
+      WatchappListApp(
+         LockerWrapper.SystemApp(
+            AppProperties(
+               Uuid.fromLongs(0L, it.toLong()),
+               if (it % 4 == 0) AppType.Watchapp else AppType.Watchface,
+               "System App $it",
+               "Dev $it",
+               emptyList(),
+               null,
+               null,
+               null,
+               null,
+               null,
+               it
+            ),
+            SystemApps.entries.first()
          ),
-         SystemApps.entries.first()
+         appStatus = if (it % 7 == 5) {
+            AppStatus.Updatable(VersionInfo(1, 0), VersionInfo(1, it))
+         } else {
+            AppStatus.UpToDate
+         }
       )
    }
 }
