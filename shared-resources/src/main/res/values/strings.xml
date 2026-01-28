@@ -15,4 +15,5 @@
     <string name="watch_pebble_2_duo">Pebble 2 Duo</string>
     <string name="watch_pebble_time_2">Pebble Time 2*</string>
     <string name="watch_round_2">Pebble Round 2</string>
+    <string name="watch_unknown">Unknown</string>
 </resources>

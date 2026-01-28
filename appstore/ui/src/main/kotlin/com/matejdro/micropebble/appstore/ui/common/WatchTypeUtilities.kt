@@ -25,7 +25,7 @@ fun getWatchesForCodename(codename: String): List<String> =
       WatchType.EMERY.codename -> listOf(R.string.watch_pebble_time_2)
       WatchType.FLINT.codename -> listOf(R.string.watch_pebble_2_duo)
       "gabbro" -> listOf(R.string.watch_round_2)
-      else -> listOf(R.string.watch_classic)
+      else -> listOf(R.string.watch_unknown)
    }.map { stringResource(it) }
 
 fun Application.isUnofficiallyCompatibleWith(watchType: WatchType?) =
