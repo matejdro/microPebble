@@ -4,8 +4,7 @@ import android.util.Log
 import androidx.datastore.core.Serializer
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.AppstoreSourceService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import dispatch.core.withIO
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.InputStream
@@ -23,7 +22,7 @@ internal object AppstoreSourcesSerializer : Serializer<List<AppstoreSource>> {
          defaultValue
       }
 
-   override suspend fun writeTo(t: List<AppstoreSource>, output: OutputStream) = withContext(Dispatchers.IO) {
+   override suspend fun writeTo(t: List<AppstoreSource>, output: OutputStream) = withIO {
       output.write(json.encodeToString(t).encodeToByteArray())
    }
 }
