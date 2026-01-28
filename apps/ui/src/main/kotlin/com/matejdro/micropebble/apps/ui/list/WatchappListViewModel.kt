@@ -30,7 +30,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.buffer
@@ -75,25 +74,24 @@ class WatchappListViewModel(
 
    val installationSources = installationClient.appInstallSources
 
-   private val _appUpdatingStatus = MutableStateFlow<Map<Uuid, AppStatus>>(emptyMap())
-   private val _uiStateWithoutUpdateStatus = combineTransform(
-      _apps,
-      installationSources,
-      appstoreSourceService.sources,
-   ) { apps, installSources, sources ->
-      emit(apps)
-      if (apps is Outcome.Success) {
-         val appsWithStatusUpdate = apps.data.map {
-            val appId = it.app.properties.id
-            val installSource = installSources[appId]
-            val status = installationClient.isAppUpdatable(installSource, sources)
-            it.copy(appStatus = status)
+   private val _appUpdatingStatus = MutableStateFlow(emptyMap<Uuid, AppStatus>())
+   val uiState =
+      combineTransform(
+         _apps,
+         installationSources,
+         appstoreSourceService.sources,
+      ) { apps, installSources, sources ->
+         emit(apps)
+         if (apps is Outcome.Success) {
+            val appsWithStatusUpdate = apps.data.map {
+               val appId = it.app.properties.id
+               val installSource = installSources[appId]
+               val status = installationClient.isAppUpdatable(installSource, sources)
+               it.copy(appStatus = status)
+            }
+            emit(Outcome.Success(appsWithStatusUpdate))
          }
-         emit(Outcome.Success(appsWithStatusUpdate))
-      }
-   }
-   val uiState: Flow<Outcome<WatchappListState>> =
-      combine(_uiStateWithoutUpdateStatus, _appUpdatingStatus) { state, allStatus ->
+      }.combine(_appUpdatingStatus) { state, allStatus ->
          if (allStatus.isNotEmpty()) {
             state.mapData { state ->
                state.map { it.copy(appStatus = allStatus[it.app.properties.id] ?: it.appStatus) }
@@ -103,8 +101,7 @@ class WatchappListViewModel(
          }
       }
 
-   val appstoreSources
-      get() = appstoreSourceService.sources.map { it.filter { s -> s.enabled } }
+   val appstoreSources = appstoreSourceService.sources.map { it.filter { s -> s.enabled } }
 
    override fun onServiceRegistered() {
       actionLogger.logAction { "WatchappListViewModel.onServiceRegistered()" }
@@ -115,10 +112,8 @@ class WatchappListViewModel(
                lockerApi.getLocker(AppType.Watchface, null, Int.MAX_VALUE),
                lockerApi.getLocker(AppType.Watchapp, null, Int.MAX_VALUE),
             ) { watchfaces, watchapps ->
-               val mapWatch: List<LockerWrapper>.() -> List<WatchappListApp> = {
-                  map {
-                     WatchappListApp(it, AppStatus.CheckingForUpdates)
-                  }
+               val mapWatch = fun List<LockerWrapper>.() = map {
+                  WatchappListApp(it, AppStatus.CheckingForUpdates)
                }
                Outcome.Success(
                   WatchappListState(
