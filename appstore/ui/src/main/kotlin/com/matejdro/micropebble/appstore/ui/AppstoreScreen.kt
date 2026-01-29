@@ -11,11 +11,15 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridScope
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -43,6 +47,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.coerceAtLeast
@@ -58,7 +66,6 @@ import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
 import com.matejdro.micropebble.appstore.ui.common.WatchAppDisplay
 import com.matejdro.micropebble.appstore.ui.common.appGridCells
 import com.matejdro.micropebble.appstore.ui.common.getIcon
-import com.matejdro.micropebble.appstore.ui.common.isCircular
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
 import com.matejdro.micropebble.ui.components.BasicExposedDropdownMenuBox
@@ -70,7 +77,6 @@ import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.serialization.json.Json
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
-import si.inova.kotlinova.core.logging.logcat
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
@@ -167,19 +173,9 @@ private fun AppstoreScreenScaffold(
             .padding(realPadding)
             .consumeWindowInsets(contentPadding)
       ) {
-         if (source?.algoliaData != null) {
-            AppsSearchBox(
-               searchQuery = searchQuery,
-               setSearchQuery = setSearchQuery,
-               searchResults = searchResults,
-               navigator = navigator,
-               source = source,
-               platformFilter,
-               modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
-         }
-
-         logcat { (platformFilter?.isCircular()).toString() }
+         var lastLayoutCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
+         val gridState = rememberLazyStaggeredGridState()
+         var searchActive by rememberSaveable { mutableStateOf(false) }
          AppstoreHomepage(
             navigator = navigator,
             state = homePageState,
@@ -187,6 +183,46 @@ private fun AppstoreScreenScaffold(
             navigateToCollection = navigateToCollection,
             platformFilter = platformFilter,
             appstoreSource = source,
+            onGloballyPositioned = {
+               lastLayoutCoordinates = it
+            },
+            gridState = gridState,
+            {
+               if (source?.algoliaData != null) {
+                  item(span = StaggeredGridItemSpan.FullLine) {
+                     Box(
+                        Modifier
+                           .align(Alignment.CenterHorizontally)
+                           // Because the search box is in a lazy grid, its height must be constrained otherwise it tries to
+                           // expand too large.
+                           // The height is smaller than the screen height, so if no maximum is available, screen height is
+                           // pretty reasonable.
+                           .requiredHeightIn(
+                              max = with(LocalDensity.current) { lastLayoutCoordinates?.size?.height?.toDp() }
+                                 ?: LocalConfiguration.current.screenHeightDp.dp,
+                           )
+                     ) {
+                        AppsSearchBox(
+                           searchQuery = searchQuery,
+                           setSearchQuery = setSearchQuery,
+                           searchResults = searchResults,
+                           navigator = navigator,
+                           source = source,
+                           platformFilter,
+                           searchExpanded = searchActive,
+                           onSearchExpandedChange = {
+                              searchActive = it
+                              if (it) {
+                                 gridState.requestScrollToItem(0)
+                              }
+                           },
+                           modifier = Modifier.align(Alignment.Center),
+                        )
+                     }
+                  }
+               }
+            },
+            scrollEnabled = !searchActive,
          )
       }
 
@@ -247,9 +283,10 @@ private fun AppsSearchBox(
    navigator: Navigator?,
    source: AppstoreSource,
    platformFilter: WatchType?,
+   searchExpanded: Boolean,
+   onSearchExpandedChange: (Boolean) -> Unit,
    modifier: Modifier = Modifier,
 ) {
-   var searchExpanded by rememberSaveable { mutableStateOf(false) }
    SearchBar(
       inputField = {
          SearchBarDefaults.InputField(
@@ -257,7 +294,7 @@ private fun AppsSearchBox(
             onQueryChange = setSearchQuery,
             onSearch = {},
             expanded = searchExpanded,
-            onExpandedChange = { searchExpanded = it },
+            onExpandedChange = onSearchExpandedChange,
             placeholder = { Text(stringResource(R.string.search)) },
             leadingIcon = {
                Icon(painterResource(R.drawable.ic_search), contentDescription = null)
@@ -265,7 +302,7 @@ private fun AppsSearchBox(
          )
       },
       expanded = searchExpanded,
-      onExpandedChange = { searchExpanded = it },
+      onExpandedChange = onSearchExpandedChange,
       modifier = modifier,
       windowInsets = WindowInsets(left = 8.dp, right = 8.dp),
    ) {
@@ -347,7 +384,11 @@ private fun AppstoreHomepage(
    onRefresh: () -> Unit,
    navigateToCollection: (AppstoreCollection) -> Unit,
    platformFilter: WatchType?,
-   appstoreSource: AppstoreSource? = null,
+   appstoreSource: AppstoreSource?,
+   onGloballyPositioned: (LayoutCoordinates) -> Unit,
+   gridState: LazyStaggeredGridState,
+   topItem: LazyStaggeredGridScope.() -> Unit,
+   scrollEnabled: Boolean,
 ) {
    PullToRefreshBox(
       isRefreshing = state is Outcome.Progress,
@@ -362,11 +403,15 @@ private fun AppstoreHomepage(
                .fillMaxSize()
                .padding(horizontal = 8.dp)
                .padding(top = 8.dp)
-               .clip(CardDefaults.shape),
+               .clip(CardDefaults.shape)
+               .onGloballyPositioned(onGloballyPositioned),
             contentPadding = PaddingValues(bottom = 8.dp),
             verticalItemSpacing = 8.dp,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
+            state = gridState,
+            userScrollEnabled = scrollEnabled,
          ) {
+            topItem()
             for (collection in data.collections) {
                item(collection.slug, contentType = categoryHeaderContentType, span = StaggeredGridItemSpan.FullLine) {
                   AppstoreHeader(navigateToCollection, collection)

@@ -50,7 +50,6 @@ class AppstoreDetailsViewModel(
       actionLogger.logAction { "AppstoreDetailsViewModel.onServiceRegistered()" }
 
       resources.launchResourceControlTask(_appState) {
-         emit(Outcome.Progress())
          val connectedWatch = watches.watches.mapNotNull { watchList ->
             watchList.filterIsInstance<ConnectedPebbleDevice>().takeIf { it.isNotEmpty() }
          }.first().first()
@@ -101,7 +100,6 @@ class AppstoreDetailsViewModel(
       if (app !is Outcome.Success) {
          return@launchResourceControlTask
       }
-      emit(Outcome.Progress())
       installer.uninstall(app.data.uuid)
       emit(Outcome.Success(AppInstallState.CAN_INSTALL))
    }
