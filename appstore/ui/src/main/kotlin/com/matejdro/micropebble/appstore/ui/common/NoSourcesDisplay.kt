@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,7 +18,7 @@ import com.matejdro.micropebble.ui.R
 
 @Composable
 fun NoSourcesDisplay(
-   modifier: Modifier = Modifier.padding(horizontal = 16.dp),
+   modifier: Modifier = Modifier,
    content: @Composable ColumnScope.() -> Unit = {},
 ) {
    Column(

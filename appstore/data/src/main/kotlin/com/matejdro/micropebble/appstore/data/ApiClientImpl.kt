@@ -32,6 +32,7 @@ class ApiClientImpl : ApiClient {
 
    private var client: HttpClient? = null
 
+   @Suppress("InjectDispatcher") // withIO doesn't work because the IO dispatcher isn't injected somehow
    private suspend fun getHttp() = client ?: withContext(Dispatchers.IO) {
       HttpClient {
          install(ContentNegotiation) {

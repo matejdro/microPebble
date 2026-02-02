@@ -119,7 +119,7 @@ class AppstoreScreen(
       AppstoreScreenScaffold(
          selectedTab = state.selectedTab,
          setSelectedTab = viewModel::setSelectedTab,
-         source = state.appstoreSource,
+         selectedSource = state.appstoreSource,
          setSelectedSource = viewModel::setAppstoreSource,
          platformFilter = state.platformFilter,
          setPlatformFilter = viewModel::setPlatformFilter,
@@ -140,7 +140,7 @@ class AppstoreScreen(
 private fun AppstoreScreenScaffold(
    selectedTab: ApplicationType,
    setSelectedTab: (ApplicationType) -> Unit,
-   source: AppstoreSource?,
+   selectedSource: AppstoreSource?,
    setSelectedSource: (AppstoreSource) -> Unit,
    platformFilter: WatchType?,
    setPlatformFilter: (WatchType?) -> Unit,
@@ -184,13 +184,13 @@ private fun AppstoreScreenScaffold(
             onRefresh = onRefresh,
             navigateToCollection = navigateToCollection,
             platformFilter = platformFilter,
-            appstoreSource = source,
+            appstoreSource = selectedSource,
             onGloballyPositioned = {
                lastLayoutCoordinates = it
             },
             gridState = gridState,
             {
-               if (source?.algoliaData != null) {
+               if (selectedSource?.algoliaData != null) {
                   item(span = StaggeredGridItemSpan.FullLine) {
                      Box(
                         Modifier
@@ -209,7 +209,7 @@ private fun AppstoreScreenScaffold(
                            setSearchQuery = setSearchQuery,
                            searchResults = searchResults,
                            navigator = navigator,
-                           source = source,
+                           source = selectedSource,
                            platformFilter,
                            searchExpanded = searchActive,
                            onSearchExpandedChange = {
@@ -232,7 +232,7 @@ private fun AppstoreScreenScaffold(
          ModalBottomSheet({ bottomPanelExpanded = false }) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(8.dp)) {
                BasicExposedDropdownMenuBox(
-                  textFieldValue = source?.name ?: stringResource(R.string.no_source_selected),
+                  textFieldValue = selectedSource?.name ?: stringResource(R.string.no_source_selected),
                   modifier = Modifier.fillMaxWidth(),
                   textFieldLeadingIcon = { Icon(painterResource(R.drawable.ic_appstore_source), contentDescription = null) },
                   textFieldLabel = { Text(stringResource(R.string.appstore_source)) },
@@ -475,7 +475,7 @@ internal fun AppstoreHomepagePreview() {
       AppstoreScreenScaffold(
          selectedTab = ApplicationType.Watchface,
          setSelectedTab = { },
-         source = AppstoreSourceService.defaultSources.first(),
+         selectedSource = AppstoreSourceService.defaultSources.first(),
          setSelectedSource = { },
          platformFilter = null,
          setPlatformFilter = {},

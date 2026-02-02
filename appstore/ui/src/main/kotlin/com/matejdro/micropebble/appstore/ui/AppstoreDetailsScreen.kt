@@ -173,6 +173,7 @@ private fun AppstoreDetailsContent(
    var showVersionSheet by remember { mutableStateOf(false) }
    var showCompatibilitySheet by remember { mutableStateOf(false) }
 
+   @Suppress("UnusedMaterial3ScaffoldPaddingParameter") // It doesn't seem to need it, other things consume the padding
    Scaffold(floatingActionButton = {
       ExtendedFloatingActionButton(
          onClick = when (appInstallState) {
@@ -251,9 +252,9 @@ private fun AppstoreDetailsContent(
                      .padding(8.dp)
                      .align(Alignment.CenterHorizontally)
                ) {
-                  for ((platform, compatibility) in app.compatibility - "android" - "ios") {
-                     if (compatibility.supported) {
-                        WatchType.fromCodename(platform)?.getIcon()
+                  for ((appPlatform, appCompatibility) in app.compatibility - "android" - "ios") {
+                     if (appCompatibility.supported) {
+                        WatchType.fromCodename(appPlatform)?.getIcon()
                            ?.let { Icon(painterResource(it), contentDescription = null, modifier = Modifier.size(36.dp)) }
                      }
                   }
@@ -297,9 +298,9 @@ private fun AppstoreDetailsContent(
                item {
                   Text(stringResource(R.string.compatibility_info_header), style = MaterialTheme.typography.titleLarge)
                }
-               for ((platform, compatibility) in app.compatibility - "android" - "ios") {
-                  if (compatibility.supported) {
-                     val type = WatchType.fromCodename(platform)
+               for ((appPlatform, appCompatibility) in app.compatibility - "android" - "ios") {
+                  if (appCompatibility.supported) {
+                     val type = WatchType.fromCodename(appPlatform)
                      type?.let {
                         item {
                            Row(

@@ -290,11 +290,11 @@ private fun AppstoreSourceConfigurator(
 ) {
    val id = source?.id ?: remember { Uuid.random() }
    var name by remember { mutableStateOf(source?.name ?: "New source") }
-   var url by remember { mutableStateOf(source?.url ?: "") }
+   var url by remember { mutableStateOf(source?.url.orEmpty()) }
    var algoliaEnabled by remember { mutableStateOf(source?.algoliaData != null) }
-   var algoliaAppId by remember { mutableStateOf(source?.algoliaData?.appId ?: "") }
-   var algoliaApiKey by remember { mutableStateOf(source?.algoliaData?.apiKey ?: "") }
-   var algoliaIndexName by remember { mutableStateOf(source?.algoliaData?.indexName ?: "") }
+   var algoliaAppId by remember { mutableStateOf(source?.algoliaData?.appId.orEmpty()) }
+   var algoliaApiKey by remember { mutableStateOf(source?.algoliaData?.apiKey.orEmpty()) }
+   var algoliaIndexName by remember { mutableStateOf(source?.algoliaData?.indexName.orEmpty()) }
    val newSource by remember {
       derivedStateOf {
          AppstoreSource(

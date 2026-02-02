@@ -169,11 +169,13 @@ class AppstoreViewModel(
    }
 
    fun setAppstoreSource(value: AppstoreSource?) {
+      @Suppress("NullableToStringCall") // That's fine
       actionLogger.logAction { "AppstoreViewModel.setAppstoreSource($value)" }
       updateState { copy(appstoreSource = value) }
    }
 
    fun setPlatformFilter(value: WatchType?) {
+      @Suppress("NullableToStringCall") // That's fine
       actionLogger.logAction { "AppstoreViewModel.setPlatformFilter($value)" }
       updateState { copy(platformFilter = value) }
    }
