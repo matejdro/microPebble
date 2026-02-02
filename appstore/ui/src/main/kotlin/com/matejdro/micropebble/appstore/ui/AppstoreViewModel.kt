@@ -1,5 +1,8 @@
 package com.matejdro.micropebble.appstore.ui
 
+import android.os.Parcel
+import android.os.Parcelable
+import androidx.compose.runtime.Stable
 import com.algolia.client.api.SearchClient
 import com.algolia.client.model.search.SearchParamsObject
 import com.algolia.client.model.search.TagFilters
@@ -19,14 +22,15 @@ import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
+import okio.`-DeprecatedOkio`.source
 import si.inova.kotlinova.core.exceptions.DataParsingException
 import si.inova.kotlinova.core.exceptions.UnknownCauseException
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
@@ -34,6 +38,25 @@ import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 import kotlin.time.Duration.Companion.milliseconds
+
+@Stable
+data class AppstoreScreenState(
+   val appstoreSource: AppstoreSource? = null,
+   val selectedTab: ApplicationType = ApplicationType.Watchface,
+   val platformFilter: WatchType? = null,
+   val searchQuery: String = "",
+) : Parcelable {
+   override fun describeContents() = 0
+
+   override fun writeToParcel(dest: Parcel, flags: Int) = dest.writeString(Json.encodeToString(this))
+
+   companion object CREATOR : Parcelable.Creator<AppstoreScreenState> {
+      override fun createFromParcel(source: Parcel?) =
+         runCatching { source?.readString()?.let { Json.decodeFromString<AppstoreScreenState>(it) } }.getOrNull()
+
+      override fun newArray(size: Int) = arrayOfNulls<AppstoreScreenState?>(size)
+   }
+}
 
 @Inject
 @ContributesScopedService
@@ -47,22 +70,11 @@ class AppstoreViewModel(
 
    val appstoreSources = appstoreSourceService.enabledSources
 
-   private val _selectedTab = MutableStateFlow<ApplicationType>(ApplicationType.Watchface)
-   val selectedTab: StateFlow<ApplicationType> = _selectedTab
-   private val _appstoreSource = MutableStateFlow<AppstoreSource?>(null)
-   val appstoreSource: StateFlow<AppstoreSource?> = _appstoreSource
-   private val _platformFilter = MutableStateFlow<WatchType?>(null)
-   val platformFilter: StateFlow<WatchType?> = _platformFilter
-   private val _searchQuery = MutableStateFlow("")
-   val searchQuery: StateFlow<String> = _searchQuery
+   private val _state by savedFlow { AppstoreScreenState() }
+   val state: StateFlow<AppstoreScreenState> = _state
 
    val homePageState =
-      combineTransform(
-         _appstoreSource,
-         _selectedTab,
-         reloadFlow,
-         _platformFilter.debounce(100.milliseconds)
-      ) { source, tab, _, platform ->
+      state.transform { (source, tab, platform) ->
          if (source != null) {
             emit(Outcome.Progress())
             emit(getHomePage(source, tab, platform))
@@ -70,15 +82,10 @@ class AppstoreViewModel(
       }
 
    val searchResults =
-      combineTransform(
-         _searchQuery.debounce(100.milliseconds),
-         _selectedTab,
-         _appstoreSource,
-         _platformFilter.debounce(100.milliseconds)
-      ) { query, tab, source, platform ->
-         if (source != null) {
+      state.debounce(100.milliseconds).transform {
+         if (it.appstoreSource != null) {
             emit(Outcome.Progress())
-            emit(getSearchResults(query, source, tab, platform))
+            emit(getSearchResults(it))
          }
       }
 
@@ -88,7 +95,7 @@ class AppstoreViewModel(
    override fun onServiceRegistered() {
       actionLogger.logAction { "AppstoreViewModel.onServiceRegistered()" }
       coroutineScope.launch {
-         _appstoreSource.value = appstoreSources.first().firstOrNull()
+         updateState { copy(appstoreSource = appstoreSources.first().firstOrNull()) }
       }
    }
 
@@ -96,9 +103,9 @@ class AppstoreViewModel(
       actionLogger.logAction { "AppstoreViewModel.screenKeyFor()" }
       return AppstoreCollectionScreenKey(
          collection.name,
-         _appstoreSource.value!!.url.joinUrls(collection.links.apps.trimStart('/').removePrefix("api")),
-         _platformFilter.value?.codename,
-         _appstoreSource.value,
+         state.value.appstoreSource!!.url.joinUrls(collection.links.apps.trimStart('/').removePrefix("api")),
+         state.value.platformFilter?.codename,
+         state.value.appstoreSource,
       )
    }
 
@@ -118,31 +125,26 @@ class AppstoreViewModel(
       }
    }
 
-   private suspend fun getSearchResults(
-      query: String,
-      source: AppstoreSource,
-      tab: ApplicationType,
-      platform: WatchType?,
-   ): Outcome<List<AlgoliaApplication>> {
-      if (_searchQuery.value.isBlank()) {
+   private suspend fun getSearchResults(state: AppstoreScreenState): Outcome<List<AlgoliaApplication>> {
+      if (state.searchQuery.isBlank()) {
          return Outcome.Success(emptyList())
       }
-      val algoliaData = source.algoliaData ?: return Outcome.Error(UnknownCauseException())
+      val algoliaData = state.appstoreSource?.algoliaData ?: return Outcome.Error(UnknownCauseException())
       val client = SearchClient(
          appId = algoliaData.appId,
          apiKey = algoliaData.apiKey,
       )
       val filters = TagFilters.of(
          buildList {
-            add(TagFilters.of(tab.searchTag))
-            if (platform != null) {
-               add(TagFilters.of(platform.codename))
+            add(TagFilters.of(state.selectedTab.searchTag))
+            if (state.platformFilter != null) {
+               add(TagFilters.of(state.platformFilter.codename))
             }
          }
       )
       val response: List<AlgoliaApplication> = client.searchSingleIndex(
          algoliaData.indexName,
-         SearchParamsObject(query, tagFilters = filters)
+         SearchParamsObject(state.searchQuery, tagFilters = filters)
       ).hits.mapNotNull { hit ->
          hit.additionalProperties?.let { api.json.decodeFromJsonElement(JsonObject(it)) }
       }
@@ -150,10 +152,10 @@ class AppstoreViewModel(
    }
 
    private suspend fun ensureAppstoreSource(): AppstoreSource {
-      if (_appstoreSource.value == null) {
-         _appstoreSource.value = appstoreSources.first().first()
+      if (state.value.appstoreSource == null) {
+         updateState { copy(appstoreSource = appstoreSources.first().first()) }
       }
-      return _appstoreSource.value!!
+      return state.value.appstoreSource!!
    }
 
    fun reloadHomePage() {
@@ -164,21 +166,25 @@ class AppstoreViewModel(
 
    fun setSelectedTab(value: ApplicationType) {
       actionLogger.logAction { "AppstoreViewModel.setSelectedTab($value)" }
-      _selectedTab.value = value
+      updateState { copy(selectedTab = value) }
    }
 
    fun setAppstoreSource(value: AppstoreSource?) {
       actionLogger.logAction { "AppstoreViewModel.setAppstoreSource($value)" }
-      _appstoreSource.value = value
+      updateState { copy(appstoreSource = value) }
    }
 
    fun setPlatformFilter(value: WatchType?) {
       actionLogger.logAction { "AppstoreViewModel.setPlatformFilter($value)" }
-      _platformFilter.value = value
+      updateState { copy(platformFilter = value) }
    }
 
    fun setSearchQuery(value: String) {
       actionLogger.logAction { "AppstoreViewModel.setSearchQuery($value)" }
-      _searchQuery.value = value
+      updateState { copy(searchQuery = value) }
+   }
+
+   private inline fun updateState(block: AppstoreScreenState.() -> AppstoreScreenState) {
+      _state.value = _state.value.block()
    }
 }

@@ -114,15 +114,17 @@ class AppstoreScreen(
          return
       }
 
+      val state = viewModel.state.collectAsStateWithLifecycle().value
+
       AppstoreScreenScaffold(
-         selectedTab = viewModel.selectedTab.collectAsStateWithLifecycle().value,
+         selectedTab = state.selectedTab,
          setSelectedTab = viewModel::setSelectedTab,
-         source = viewModel.appstoreSource.collectAsStateWithLifecycle().value,
+         source = state.appstoreSource,
          setSelectedSource = viewModel::setAppstoreSource,
-         platformFilter = viewModel.platformFilter.collectAsStateWithLifecycle().value,
+         platformFilter = state.platformFilter,
          setPlatformFilter = viewModel::setPlatformFilter,
          appstoreSources = appstoreSources,
-         searchQuery = viewModel.searchQuery.collectAsStateWithLifecycle().value,
+         searchQuery = state.searchQuery,
          setSearchQuery = viewModel::setSearchQuery,
          searchResults = viewModel.searchResults.collectAsStateWithLifecycleAndBlinkingPrevention().value,
          navigator = navigator,
