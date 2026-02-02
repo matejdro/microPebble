@@ -1,4 +1,4 @@
-package com.matejdro.micropebble.appstore.ui.keys
+package com.matejdro.micropebble.navigation.keys
 
 import com.matejdro.micropebble.navigation.keys.base.BaseScreenKey
 import kotlinx.parcelize.Parcelize

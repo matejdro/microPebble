@@ -1,4 +1,4 @@
-package com.matejdro.micropebble.navigation.keys.helper
+package com.matejdro.micropebble.appstore.ui.keys
 
 import android.os.Parcel
 import com.matejdro.micropebble.appstore.api.AppstoreSource

@@ -16,6 +16,8 @@ import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.metadata.WatchType
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
@@ -27,7 +29,8 @@ class AppstoreCollectionViewModel(
    private val actionLogger: ActionLogger,
    private val api: ApiClient,
 ) : SingleScreenViewModel<AppstoreCollectionScreenKey>(resources.scope) {
-   val platform by lazy { key.platformFilter?.let { WatchType.fromCodename(it) } }
+   private val _platform = MutableStateFlow<WatchType?>(null)
+   val platform: StateFlow<WatchType?> = _platform
    private val appPager = Pager(
       PagingConfig(
          pageSize = 10
@@ -51,6 +54,11 @@ class AppstoreCollectionViewModel(
 
    private var lazyPagingItems: LazyPagingItems<Application>? = null
 
+   override fun onServiceRegistered() {
+      actionLogger.logAction { "AppstoreCollectionViewModel.onServiceRegistered()" }
+      _platform.value = key.platformFilter?.let { WatchType.fromCodename(it) }
+   }
+
    /**
     * Cache the [LazyPagingItems] in the viewmodel so that the loading progress doesn't get reset on navigation.
     */
@@ -60,9 +68,9 @@ class AppstoreCollectionViewModel(
       return lazyPagingItems ?: appPager.flow.collectAsLazyPagingItems().also { lazyPagingItems = it }
    }
 
-   private fun AppstoreCollectionPage.filterAppsByPlatform() = if (platform == null) {
+   private fun AppstoreCollectionPage.filterAppsByPlatform() = if (platform.value == null) {
       this
    } else {
-      filterApps { it.isUnofficiallyCompatibleWith(platform) }
+      filterApps { it.isUnofficiallyCompatibleWith(platform.value) }
    }
 }

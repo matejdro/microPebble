@@ -3,8 +3,6 @@ package com.matejdro.micropebble.appstore.ui.keys
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.navigation.keys.base.BaseScreenKey
-import com.matejdro.micropebble.navigation.keys.helper.ApplicationParceler
-import com.matejdro.micropebble.navigation.keys.helper.AppstoreSourceParceler
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.TypeParceler
 

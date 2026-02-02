@@ -18,7 +18,7 @@ import com.matejdro.micropebble.appstore.ui.common.isUnofficiallyCompatibleWith
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
-import com.matejdro.micropebble.appstore.ui.keys.AppstoreScreenKey
+import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.coroutines.flow.MutableSharedFlow

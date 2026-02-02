@@ -66,7 +66,7 @@ import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
 import com.matejdro.micropebble.appstore.ui.common.WatchAppDisplay
 import com.matejdro.micropebble.appstore.ui.common.appGridCells
 import com.matejdro.micropebble.appstore.ui.common.getIcon
-import com.matejdro.micropebble.appstore.ui.keys.AppstoreScreenKey
+import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
 import com.matejdro.micropebble.ui.components.BasicExposedDropdownMenuBox
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold

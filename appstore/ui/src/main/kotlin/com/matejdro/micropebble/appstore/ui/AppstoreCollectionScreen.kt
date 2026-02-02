@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matejdro.micropebble.appstore.ui.common.WatchAppDisplay
 import com.matejdro.micropebble.appstore.ui.common.appGridCells
 import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
@@ -39,6 +40,7 @@ class AppstoreCollectionScreen(
    @Composable
    override fun Content(key: AppstoreCollectionScreenKey) {
       val apps = viewModel.getLazyPagingItems()
+      val platform = viewModel.platform.collectAsStateWithLifecycle().value
 
       val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
@@ -62,7 +64,7 @@ class AppstoreCollectionScreen(
          ) {
             items(apps.itemCount, contentType = { appTileContentType }) { index ->
                apps[index]?.let {
-                  WatchAppDisplay(it, navigator, appstoreSource = key.appstoreSource, platform = viewModel.platform)
+                  WatchAppDisplay(it, navigator, appstoreSource = key.appstoreSource, platform = platform)
                }
             }
             if (!apps.loadState.isIdle) {
