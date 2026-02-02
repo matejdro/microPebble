@@ -63,8 +63,8 @@ import com.matejdro.micropebble.appstore.ui.common.BANNER_RATIO
 import com.matejdro.micropebble.appstore.ui.common.getIcon
 import com.matejdro.micropebble.appstore.ui.common.getWatchesForCodename
 import com.matejdro.micropebble.common.util.joinUrls
-import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
-import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
+import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
+import com.matejdro.micropebble.appstore.ui.keys.AppstoreDetailsScreenKey
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme

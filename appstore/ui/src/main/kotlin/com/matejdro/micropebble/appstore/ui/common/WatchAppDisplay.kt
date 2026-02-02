@@ -33,7 +33,7 @@ import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationScreenshot
 import com.matejdro.micropebble.appstore.api.store.application.getImage
 import com.matejdro.micropebble.appstore.ui.R
-import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
+import com.matejdro.micropebble.appstore.ui.keys.AppstoreDetailsScreenKey
 import io.rebble.libpebblecommon.metadata.WatchType
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator

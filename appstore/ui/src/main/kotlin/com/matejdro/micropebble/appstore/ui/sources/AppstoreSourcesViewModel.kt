@@ -3,7 +3,7 @@ package com.matejdro.micropebble.appstore.ui.sources
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.AppstoreSourceService
 import com.matejdro.micropebble.common.logging.ActionLogger
-import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
+import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager

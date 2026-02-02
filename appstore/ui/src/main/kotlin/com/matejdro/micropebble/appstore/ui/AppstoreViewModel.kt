@@ -17,8 +17,8 @@ import com.matejdro.micropebble.appstore.api.store.home.filterApps
 import com.matejdro.micropebble.appstore.ui.common.isUnofficiallyCompatibleWith
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.common.util.joinUrls
-import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
-import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
+import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
+import com.matejdro.micropebble.appstore.ui.keys.AppstoreScreenKey
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,7 +30,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
-import okio.`-DeprecatedOkio`.source
 import si.inova.kotlinova.core.exceptions.DataParsingException
 import si.inova.kotlinova.core.exceptions.UnknownCauseException
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager

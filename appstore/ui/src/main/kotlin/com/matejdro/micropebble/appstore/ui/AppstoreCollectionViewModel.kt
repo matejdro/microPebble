@@ -13,7 +13,7 @@ import com.matejdro.micropebble.appstore.api.store.collection.AppstoreCollection
 import com.matejdro.micropebble.appstore.api.store.collection.filterApps
 import com.matejdro.micropebble.appstore.ui.common.isUnofficiallyCompatibleWith
 import com.matejdro.micropebble.common.logging.ActionLogger
-import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
+import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.metadata.WatchType
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager

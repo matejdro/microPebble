@@ -21,7 +21,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.matejdro.micropebble.appstore.ui.common.WatchAppDisplay
 import com.matejdro.micropebble.appstore.ui.common.appGridCells
-import com.matejdro.micropebble.navigation.keys.AppstoreCollectionScreenKey
+import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
 import dev.zacsweers.metro.Inject
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen

@@ -7,7 +7,7 @@ import com.matejdro.micropebble.appstore.api.AppInstallationClient
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.ui.common.isCompatibleWith
 import com.matejdro.micropebble.common.logging.ActionLogger
-import com.matejdro.micropebble.navigation.keys.AppstoreDetailsScreenKey
+import com.matejdro.micropebble.appstore.ui.keys.AppstoreDetailsScreenKey
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
 import io.rebble.libpebblecommon.connection.LockerApi

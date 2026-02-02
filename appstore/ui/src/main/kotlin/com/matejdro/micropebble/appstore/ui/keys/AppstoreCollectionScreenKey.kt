@@ -1,4 +1,4 @@
-package com.matejdro.micropebble.navigation.keys
+package com.matejdro.micropebble.appstore.ui.keys
 
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.navigation.keys.base.BaseScreenKey
