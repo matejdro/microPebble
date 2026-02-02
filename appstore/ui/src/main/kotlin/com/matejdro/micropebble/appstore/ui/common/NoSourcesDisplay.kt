@@ -1,4 +1,4 @@
-package com.matejdro.micropebble.ui.errors
+package com.matejdro.micropebble.appstore.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

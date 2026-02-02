@@ -50,7 +50,7 @@ import com.matejdro.micropebble.appstore.ui.R
 import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
-import com.matejdro.micropebble.ui.errors.NoSourcesDisplay
+import com.matejdro.micropebble.appstore.ui.common.NoSourcesDisplay
 import com.matejdro.micropebble.ui.lists.ReorderableListContainer
 import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.navigation.di.ContributesScreenBinding

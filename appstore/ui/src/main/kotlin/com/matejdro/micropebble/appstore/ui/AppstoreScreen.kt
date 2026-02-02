@@ -63,6 +63,7 @@ import com.matejdro.micropebble.appstore.api.store.application.AlgoliaApplicatio
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreCollection
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
+import com.matejdro.micropebble.appstore.ui.common.NoSourcesDisplay
 import com.matejdro.micropebble.appstore.ui.common.WatchAppDisplay
 import com.matejdro.micropebble.appstore.ui.common.appGridCells
 import com.matejdro.micropebble.appstore.ui.common.getIcon
@@ -72,7 +73,6 @@ import com.matejdro.micropebble.ui.components.BasicExposedDropdownMenuBox
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
-import com.matejdro.micropebble.ui.errors.NoSourcesDisplay
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.serialization.json.Json
