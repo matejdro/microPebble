@@ -37,9 +37,7 @@ import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,9 +60,9 @@ import com.matejdro.micropebble.appstore.api.store.application.getImage
 import com.matejdro.micropebble.appstore.ui.common.BANNER_RATIO
 import com.matejdro.micropebble.appstore.ui.common.getIcon
 import com.matejdro.micropebble.appstore.ui.common.getWatchesForCodename
-import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
 import com.matejdro.micropebble.appstore.ui.keys.AppstoreDetailsScreenKey
+import com.matejdro.micropebble.common.util.joinUrls
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
@@ -76,32 +74,28 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
+import si.inova.kotlinova.compose.time.LocalDateFormatter
 import si.inova.kotlinova.core.outcome.Outcome
-import si.inova.kotlinova.core.time.AndroidDateTimeFormatter
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 import java.net.URI
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
 import com.matejdro.micropebble.sharedresources.R as sharedR
 
-private val LocalDateTimeFormatter = compositionLocalOf { DateTimeFormatter.ISO_INSTANT }
-
 @Composable
 private fun Instant.formatDate(): String =
-   this.toJavaInstant().atZone(ZoneId.systemDefault()).format(LocalDateTimeFormatter.current)
+   this.toJavaInstant().atZone(ZoneId.systemDefault()).format(LocalDateFormatter.current.ofLocalizedDateTime(FormatStyle.SHORT))
 
 @Inject
 @InjectNavigationScreen
 class AppstoreDetailsScreen(
    private val viewModel: AppstoreDetailsViewModel,
    private val navigator: Navigator,
-   private val dateTimeFormatter: AndroidDateTimeFormatter,
 ) : Screen<AppstoreDetailsScreenKey>() {
    @OptIn(ExperimentalMaterial3Api::class)
    @Composable
@@ -116,51 +110,49 @@ class AppstoreDetailsScreen(
          }
       }
 
-      CompositionLocalProvider(LocalDateTimeFormatter provides dateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)) {
-         var isWarningPopupShown by remember { mutableStateOf(false) }
-         ProgressErrorSuccessScaffold(dataState) { app ->
-            AppstoreDetailsContent(
-               app = app,
-               snackbarHostState,
-               appInstallState = installState,
-               { viewModel.uninstall() },
-               {
-                  if (viewModel.appState.value.data == AppInstallState.INCOMPATIBLE) {
-                     isWarningPopupShown = true
-                  } else {
-                     viewModel.install()
+      var isWarningPopupShown by remember { mutableStateOf(false) }
+      ProgressErrorSuccessScaffold(dataState) { app ->
+         AppstoreDetailsContent(
+            app = app,
+            snackbarHostState,
+            appInstallState = installState,
+            { viewModel.uninstall() },
+            {
+               if (viewModel.appState.value.data == AppInstallState.INCOMPATIBLE) {
+                  isWarningPopupShown = true
+               } else {
+                  viewModel.install()
+               }
+            },
+            viewModel.platform,
+            key.appstoreSource,
+            navigator,
+         )
+         if (isWarningPopupShown) {
+            AlertDialog(
+               { isWarningPopupShown = false },
+               title = {
+                  Text(stringResource(R.string.install_incompatible_title))
+               },
+               text = {
+                  Text(stringResource(R.string.install_incompatible))
+               },
+               confirmButton = {
+                  TextButton(
+                     onClick = {
+                        viewModel.install()
+                        isWarningPopupShown = false
+                     }
+                  ) {
+                     Text(stringResource(R.string.install))
                   }
                },
-               viewModel.platform,
-               key.appstoreSource,
-               navigator,
-            )
-            if (isWarningPopupShown) {
-               AlertDialog(
-                  { isWarningPopupShown = false },
-                  title = {
-                     Text(stringResource(R.string.install_incompatible_title))
-                  },
-                  text = {
-                     Text(stringResource(R.string.install_incompatible))
-                  },
-                  confirmButton = {
-                     TextButton(
-                        onClick = {
-                           viewModel.install()
-                           isWarningPopupShown = false
-                        }
-                     ) {
-                        Text(stringResource(R.string.install))
-                     }
-                  },
-                  dismissButton = {
-                     TextButton(onClick = { isWarningPopupShown = false }) {
-                        Text(stringResource(sharedR.string.cancel))
-                     }
+               dismissButton = {
+                  TextButton(onClick = { isWarningPopupShown = false }) {
+                     Text(stringResource(sharedR.string.cancel))
                   }
-               )
-            }
+               }
+            )
          }
       }
    }
