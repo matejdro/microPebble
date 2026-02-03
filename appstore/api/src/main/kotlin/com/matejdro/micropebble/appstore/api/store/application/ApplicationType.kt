@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.appstore.api.store.application
 
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -10,6 +11,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
+@Immutable
 @Serializable(with = ApplicationType.Serializer::class)
 sealed class ApplicationType(val ordinal: Int, val apiEndpoint: String, val searchTag: String) {
    @SerialName("watchface")

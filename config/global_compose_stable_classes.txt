@@ -2,6 +2,9 @@
 java.time.*
 // Consider kotlin collections stable
 kotlin.collections.*
+// Uuid & Instant are stable
+kotlin.uuid.Uuid
+kotlin.time.Instant
 
 // Library classes
 com.zhuinden.simplestack.Backstack

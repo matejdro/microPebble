@@ -1,8 +1,10 @@
 package com.matejdro.micropebble.appstore.api.store.home
 
+import androidx.compose.runtime.Immutable
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import kotlinx.serialization.Serializable
 
+@Immutable
 @Serializable
 data class AppstoreHomePage(
    val applications: List<Application>,

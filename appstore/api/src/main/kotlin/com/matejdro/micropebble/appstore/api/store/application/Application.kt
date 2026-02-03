@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.appstore.api.store.application
 
+import androidx.compose.runtime.Immutable
 import com.matejdro.micropebble.appstore.api.serializer.BlankStringSerializer
 import com.matejdro.micropebble.appstore.api.serializer.HeaderImagesSerializer
 import com.matejdro.micropebble.appstore.api.serializer.PebbleAPIInstantSerializer
@@ -8,6 +9,7 @@ import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
+@Immutable
 @Serializable
 data class Application(
    val author: String,

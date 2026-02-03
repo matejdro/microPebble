@@ -1,8 +1,10 @@
 package com.matejdro.micropebble.appstore.api
 
+import androidx.compose.runtime.Immutable
 import com.matejdro.micropebble.common.util.VersionInfo
 import si.inova.kotlinova.core.outcome.CauseException
 
+@Immutable
 sealed class AppStatus {
 
    /**

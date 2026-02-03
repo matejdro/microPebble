@@ -39,6 +39,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -88,6 +89,7 @@ import com.matejdro.micropebble.sharedresources.R as sharedR
 private const val categoryHeaderContentType = "categoryHeaderContentType"
 private const val appTileContentType = "appTileContentType"
 
+@Stable
 @Inject
 @InjectNavigationScreen
 class AppstoreScreen(

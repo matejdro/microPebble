@@ -1,10 +1,12 @@
 package com.matejdro.micropebble.appstore.api.store.collection
 
+import androidx.compose.runtime.Immutable
 import com.matejdro.micropebble.appstore.api.PaginationLinks
 import com.matejdro.micropebble.appstore.api.store.application.Application
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Immutable
 @Serializable
 data class AppstoreCollectionPage(
    @SerialName("data")

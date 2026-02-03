@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.appstore.api.store.application
 
+import androidx.compose.runtime.Immutable
 import com.matejdro.micropebble.appstore.api.serializer.BlankStringSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -9,6 +10,7 @@ import kotlin.uuid.Uuid
 /**
  * Like [Application], but it's missing the fields that Algolia search doesn't return
  */
+@Immutable
 @Serializable
 data class AlgoliaApplication(
    val author: String,

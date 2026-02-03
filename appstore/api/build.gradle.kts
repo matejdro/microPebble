@@ -10,4 +10,6 @@ dependencies {
    api(libs.kotlin.serialization.core)
    api(libs.kotlin.serialization.json)
    api(libs.ktor.io)
+
+   compileOnly(libs.androidx.compose.runtime.annotation)
 }

@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -59,6 +60,7 @@ import si.inova.kotlinova.navigation.screens.Screen
 import kotlin.uuid.Uuid
 import com.matejdro.micropebble.sharedresources.R as sharedR
 
+@Stable
 @InjectNavigationScreen
 @ContributesScreenBinding
 class AppstoreSourcesScreen(

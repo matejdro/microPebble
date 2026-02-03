@@ -38,6 +38,7 @@ import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -91,6 +92,7 @@ import com.matejdro.micropebble.sharedresources.R as sharedR
 private fun Instant.formatDate(): String =
    this.toJavaInstant().atZone(ZoneId.systemDefault()).format(LocalDateFormatter.current.ofLocalizedDateTime(FormatStyle.SHORT))
 
+@Stable
 @Inject
 @InjectNavigationScreen
 class AppstoreDetailsScreen(
