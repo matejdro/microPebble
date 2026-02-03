@@ -16,9 +16,9 @@ dependencies {
    api(libs.kotlin.coroutines)
    api(libs.kotlin.serialization.json)
    api(libs.ktor.io)
+   api(libs.dispatch)
 
    implementation(projects.common)
-   implementation(libs.dispatch)
    implementation(libs.ktor.http)
    implementation(libs.ktor.serialization)
    implementation(libs.ktor.utils)
