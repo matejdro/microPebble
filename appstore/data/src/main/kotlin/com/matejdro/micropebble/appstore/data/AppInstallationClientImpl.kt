@@ -12,9 +12,13 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dispatch.core.withIO
-import io.ktor.utils.io.readTo
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.InternalAPI
+import io.ktor.utils.io.core.remaining
+import io.ktor.utils.io.rethrowCloseCauseIfNeeded
 import io.rebble.libpebblecommon.connection.LockerApi
 import kotlinx.coroutines.flow.first
+import kotlinx.io.RawSink
 import kotlinx.io.asSink
 import kotlinx.io.files.Path
 import si.inova.kotlinova.core.outcome.Outcome
@@ -92,4 +96,30 @@ class AppInstallationClientImpl(
       find { it.enabled && it.id == installSource.sourceId }
 
    override suspend fun getInstallationSource(appId: Uuid) = appInstallSourcesStore.data.first()[appId]
+}
+
+/**
+ * Stolen from https://github.com/ktorio/ktor/blob/b01069c877aba48406597737d2df1070afc9998c/ktor-io/common/src/io/ktor/utils/io/ByteReadChannelOperations.kt#L180
+ *
+ * On upgrading to Kotlin 2.3.0, upgrade Ktor and replace with the real readTo
+ */
+@OptIn(InternalAPI::class)
+private suspend fun ByteReadChannel.readTo(sink: RawSink, limit: Long = Long.MAX_VALUE): Long {
+   var remaining = limit
+   try {
+      while (!isClosedForRead && remaining > 0) {
+         if (readBuffer.exhausted()) awaitContent()
+         val byteCount = minOf(remaining, readBuffer.remaining)
+         readBuffer.readTo(sink, byteCount)
+         remaining -= byteCount
+         sink.flush()
+      }
+   } catch (cause: Throwable) {
+      cancel(cause)
+      sink.close()
+      throw cause
+   }
+
+   rethrowCloseCauseIfNeeded()
+   return limit - remaining
 }

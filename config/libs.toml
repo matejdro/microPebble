@@ -56,7 +56,7 @@ kotlin-io = "0.8.0"
 kotlin-immutableCollections = "0.4.0"
 kotlinova = "4.0.0-alpha08"
 ksp = "2.2.21-2.0.4"
-ktor = "3.4.0"
+ktor = "3.2.3"
 libpebble3 = "0.0.0"
 speex = "1946c84"
 metro = "0.9.2"
@@ -77,7 +77,7 @@ unmock-androidJar = "16-robolectric-13921718"
 unmock-plugin = "0.9.0"
 versionCatalogUpdate = "1.0.0"
 foundationLayout = "1.10.0"
-algolia = "3.37.3"
+algolia = "3.36.0"
 
 [libraries]
 accompanist-drawablepainter = { module = "com.google.accompanist:accompanist-drawablepainter", version.ref = "accompanist" }

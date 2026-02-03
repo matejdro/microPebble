@@ -5,8 +5,8 @@
     <string name="single_update_text_content">%1$s → %2$s</string>
     <plurals name="apps_have_updates">
         <item quantity="zero">No apps have updates</item>
-        <item quantity="one">%1$d app has updates</item>
-        <item quantity="many">%1$d apps have updates</item>
+        <item quantity="one">%d app has updates</item>
+        <item quantity="many">%d apps have updates</item>
     </plurals>
-    <plurals name="app_has_updates">%1$s has updates</plurals>
+    <string name="app_has_updates">%1$s has updates</string>
 </resources>
