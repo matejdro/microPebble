@@ -290,7 +290,7 @@ private fun WatchappListScreenContent(
                contentType = { "app" },
                modifier = { Modifier.animateItem() }
             ) { listApp ->
-               val (app, status) = listApp
+               val (app, _) = listApp
                ReorderableListItem(
                   key = app.properties.id.toString(),
                   data = listApp,

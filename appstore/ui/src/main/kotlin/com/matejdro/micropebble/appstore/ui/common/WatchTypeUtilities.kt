@@ -6,14 +6,18 @@ import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.sharedresources.R
 import io.rebble.libpebblecommon.metadata.WatchType
 
-fun WatchType.getIcon() = when (this) {
-   WatchType.APLITE -> R.drawable.ic_hardware_aplite
-   WatchType.BASALT -> R.drawable.ic_hardware_basalt
-   WatchType.CHALK -> R.drawable.ic_hardware_chalk
-   WatchType.DIORITE -> R.drawable.ic_hardware_diorite
-   WatchType.EMERY -> R.drawable.ic_hardware_emery
-   WatchType.FLINT -> R.drawable.ic_hardware_flint
+fun String.getIcon() = when (this) {
+   WatchType.APLITE.codename -> R.drawable.ic_hardware_aplite
+   WatchType.BASALT.codename -> R.drawable.ic_hardware_basalt
+   WatchType.CHALK.codename -> R.drawable.ic_hardware_chalk
+   WatchType.DIORITE.codename -> R.drawable.ic_hardware_diorite
+   WatchType.EMERY.codename -> R.drawable.ic_hardware_emery
+   WatchType.FLINT.codename -> R.drawable.ic_hardware_flint
+   "gabbro" -> R.drawable.ic_hardware_gabbro
+   else -> null
 }
+
+fun WatchType.getIcon() = codename.getIcon()!!
 
 @Composable
 fun getWatchesForCodename(codename: String): List<String> =

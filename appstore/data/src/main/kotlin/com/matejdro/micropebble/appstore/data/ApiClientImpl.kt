@@ -18,6 +18,7 @@ import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -41,9 +42,15 @@ class ApiClientImpl : ApiClient {
       }
    }.also { client = it }
 
-   override suspend fun fetchAppListing(updateSource: AppstoreSource, installSource: AppInstallSource) = runCatching {
+   override suspend fun fetchAppListing(updateSource: AppstoreSource, installSource: AppInstallSource) = try {
       getHttp().get(updateSource.url.joinUrls("/v1/apps/id/${installSource.storeId}")).body<ApplicationList>().data.first()
-   }.getOrNull()
+   } catch (e: Exception) {
+      if (e is CancellationException) {
+         throw e
+      } else {
+         null
+      }
+   }
 
    override suspend fun fetchAppListing(updateSource: AppstoreSource, appstoreId: String) =
       getHttp().get(updateSource.url.joinUrls("/v1/apps/id/$appstoreId")).body<AppstoreCollectionPage>().apps.first()
@@ -54,14 +61,14 @@ class ApiClientImpl : ApiClient {
       platformFilter: String?,
    ) = getHttp().get(source.url.joinUrls(type.apiEndpoint)) {
       url {
-         platformFilter?.let { parameters["hardware"] = it }
+         platformFilter?.let { hardware -> parameters["hardware"] = hardware }
       }
    }.body<AppstoreHomePage>()
 
    override suspend fun fetchCollection(platformFilter: String?, endpoint: String, offset: Int, limit: Int) =
       getHttp().get(endpoint) {
          url {
-            platformFilter?.let { parameters["hardware"] = it }
+            platformFilter?.let { hardware -> parameters["hardware"] = hardware }
             parameters["offset"] = offset.toString()
             parameters["limit"] = limit.toString()
          }

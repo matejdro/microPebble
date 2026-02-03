@@ -170,19 +170,20 @@ private fun AppstoreDetailsContent(
    appstoreSource: AppstoreSource? = null,
    navigator: Navigator? = null,
 ) {
+   val doNothing = {}
+
    var showVersionSheet by remember { mutableStateOf(false) }
    var showCompatibilitySheet by remember { mutableStateOf(false) }
 
    @Suppress("UnusedMaterial3ScaffoldPaddingParameter") // It doesn't seem to need it, other things consume the padding
    Scaffold(floatingActionButton = {
       ExtendedFloatingActionButton(
-         onClick = when (appInstallState) {
-            is Outcome.Success if appInstallState.data == AppInstallState.CAN_INSTALL -> installApp
-            is Outcome.Success if appInstallState.data == AppInstallState.INCOMPATIBLE -> installApp
-            is Outcome.Success if appInstallState.data == AppInstallState.INSTALLED -> uninstallApp
-            else -> {
-               {}
-            }
+         onClick = when {
+            appInstallState !is Outcome.Success -> doNothing
+            appInstallState.data == AppInstallState.CAN_INSTALL -> installApp
+            appInstallState.data == AppInstallState.INCOMPATIBLE -> installApp
+            appInstallState.data == AppInstallState.INSTALLED -> uninstallApp
+            else -> doNothing
          },
          modifier = Modifier
             .defaultMinSize(minHeight = 56.dp)
@@ -214,7 +215,7 @@ private fun AppstoreDetailsContent(
       val collectionTitle = stringResource(R.string.appstore_collection_title, app.author)
       val actions = remember {
          listOf(
-            AppButton(R.string.appVersionInfo) {
+            AppButton(R.string.app_version_info) {
                showVersionSheet = true
             }
          ) + getActionsFor(app, collectionTitle, navigator, platform, appstoreSource)
@@ -254,7 +255,7 @@ private fun AppstoreDetailsContent(
                ) {
                   for ((appPlatform, appCompatibility) in app.compatibility - "android" - "ios") {
                      if (appCompatibility.supported) {
-                        WatchType.fromCodename(appPlatform)?.getIcon()
+                        appPlatform.getIcon()
                            ?.let { Icon(painterResource(it), contentDescription = null, modifier = Modifier.size(36.dp)) }
                      }
                   }
@@ -455,11 +456,12 @@ private fun getActionsFor(
    platformFilter: WatchType? = null,
    appstoreSource: AppstoreSource? = null,
 ): List<AppAction> = buildList {
-   app.website?.let { add(AppLink(R.string.appWebsiteLink, it)) }
-   app.source?.let { add(AppLink(R.string.appSourceCode, it)) }
+   app.website?.let { add(AppLink(R.string.app_website_link, it)) }
+   app.source?.let { add(AppLink(R.string.app_source_code, it)) }
+   app.discourseUrl?.let { add(AppLink(R.string.app_discourse_link, it)) }
    if (navigator != null && appstoreSource != null) {
       add(
-         AppButton(R.string.appFromDeveloper) {
+         AppButton(R.string.apps_from_developer) {
             navigator.navigateTo(
                AppstoreCollectionScreenKey(
                   title = title,

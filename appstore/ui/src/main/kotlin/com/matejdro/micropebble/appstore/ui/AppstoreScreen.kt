@@ -454,7 +454,7 @@ private fun AppstoreHeader(navigateToCollection: (AppstoreCollection) -> Unit, c
             Row(
                horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically
             ) {
-               Text(stringResource(R.string.seeAll))
+               Text(stringResource(R.string.see_all))
                Icon(
                   painter = painterResource(R.drawable.ic_chevron_forward),
                   contentDescription = null,

@@ -85,13 +85,13 @@ class WatchappListViewModel(
             }
             emit(Outcome.Success(appsWithStatusUpdate))
          }
-      }.combine(_appUpdatingStatus) { state, allStatus ->
-         if (allStatus.isNotEmpty()) {
-            state.mapData { state ->
-               state.map { it.copy(appStatus = allStatus[it.app.properties.id] ?: it.appStatus) }
+      }.combine(_appUpdatingStatus) { stateOutcome, appStatuses ->
+         if (appStatuses.isNotEmpty()) {
+            stateOutcome.mapData { state ->
+               state.map { it.copy(appStatus = appStatuses[it.app.properties.id] ?: it.appStatus) }
             }
          } else {
-            state
+            stateOutcome
          }
       }
 

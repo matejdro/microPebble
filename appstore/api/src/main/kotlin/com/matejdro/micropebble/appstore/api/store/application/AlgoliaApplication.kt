@@ -46,7 +46,7 @@ data class AlgoliaApplication(
 ) {
    fun toApplication() = Application(
       author = author,
-      capabilities = capabilities ?: emptyList(),
+      capabilities = capabilities.orEmpty(),
       category = category,
       categoryColor = categoryColor,
       categoryId = categoryId,

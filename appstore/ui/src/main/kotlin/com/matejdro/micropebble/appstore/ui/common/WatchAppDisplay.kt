@@ -66,6 +66,7 @@ fun WatchAppDisplay(
          val cardShape = CardDefaults.shape as RoundedCornerShape
 
          // This should not be so hard
+         @Suppress("UnnecessaryLet") // The let is necessary to capture the `receiver` parameter, and can't be omitted.
          operator fun CornerSize.minus(b: CornerSize) = let { baseSize ->
             object : CornerSize {
                override fun toPx(shapeSize: Size, density: Density) =
