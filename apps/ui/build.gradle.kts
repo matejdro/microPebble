@@ -17,6 +17,7 @@ android {
 
 dependencies {
    api(projects.common)
+   api(projects.appstore.api)
    api(libs.kotlinova.navigation)
    api(libs.kotlin.coroutines)
 

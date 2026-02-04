@@ -5,8 +5,10 @@ import android.app.Application
 import android.os.Build
 import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import androidx.work.Configuration
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import com.matejdro.micropebble.di.ApplicationGraph
@@ -26,9 +28,10 @@ import si.inova.kotlinova.core.logging.AndroidLogcatLogger
 import si.inova.kotlinova.core.logging.LogPriority
 import si.inova.kotlinova.core.logging.LogcatLogger
 import java.io.File
+import androidx.work.Configuration as WorkConfiguration
 import co.touchlab.kermit.Logger as KermitLogger
 
-open class MicroPebbleApplication : Application() {
+open class MicroPebbleApplication : Application(), WorkConfiguration.Provider {
    open val applicationGraph: ApplicationGraph by lazy {
       createGraphFactory<MainApplicationGraph.Factory>().create(this)
    }
@@ -89,6 +92,8 @@ open class MicroPebbleApplication : Application() {
          }
       }
       applicationGraph.initNotificationChannels()
+
+      applicationGraph.getAppUpdateFinderWorkController().scheduleBackgroundTasks()
    }
 
    private fun setupLogging() {
@@ -212,6 +217,14 @@ open class MicroPebbleApplication : Application() {
          it.pid == myPid && packageName == it.processName
       } == true
    }
+
+   override val workManagerConfiguration: WorkConfiguration
+      get() = Configuration.Builder().run {
+         setWorkerFactory(applicationGraph.getWorkerFactory())
+         setMinimumLoggingLevel(Log.INFO)
+         setWorkerCoroutineContext(applicationGraph.getDefaultCoroutineScope().coroutineContext)
+         build()
+      }
 }
 
 private val STRICT_MODE_EXCLUSIONS = listOf(
@@ -225,4 +238,5 @@ private val STRICT_MODE_EXCLUSIONS = listOf(
    "miui", // MIUI sometimes makes disk access calls on the OS side. We cannot control those.
    "TurboSchedMonitorImpl", // Part of some OS distributions, such as MIUI. We cannot control those, so exclude them.
    "AutofillClientController", // Autofill is starting unsafe intents. Nothing we can do.
+   "mediatek.boostfwk",
 )

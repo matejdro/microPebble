@@ -125,8 +125,12 @@ custom {
 
 dependencies {
    implementation(projects.common)
+   implementation(libs.androidx.work.runtime)
    compileOnly(projects.commonAndroid)
    implementation(projects.apps.ui)
+   implementation(projects.appstore.api)
+   implementation(projects.appstore.data)
+   implementation(projects.appstore.ui)
    implementation(projects.bluetooth.api)
    implementation(projects.bluetooth.data)
    implementation(projects.bluetooth.ui)

@@ -4,4 +4,16 @@
     <string name="app_name">MPebble</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="manage_appstore_sources">Appstore sources</string>
+    
+    <string name="watch_classic">Pebble Classic</string>
+    <string name="watch_classic_steel">Pebble Steel</string>
+    <string name="watch_time">Pebble Time</string>
+    <string name="watch_time_steel">Pebble Time Steel</string>
+    <string name="watch_time_round">Pebble Time Round</string>
+    <string name="watch_pebble_2">Pebble 2</string>
+    <string name="watch_pebble_2_duo">Pebble 2 Duo</string>
+    <string name="watch_pebble_time_2">Pebble Time 2*</string>
+    <string name="watch_round_2">Pebble Round 2</string>
+    <string name="watch_unknown">Unknown</string>
 </resources>

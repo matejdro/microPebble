@@ -5,6 +5,7 @@
     <string name="watchfaces">Watchfaces</string>
     <string name="watchapps">Watchapps</string>
     <string name="install_from_pbw">Install from PBW</string>
+    <string name="install_from_store">Install from appstore</string>
     <string name="configure">Configure</string>
     <string name="active_watch">Active watch</string>
     <string name="no_connected_watch">No connected watch</string>
@@ -12,4 +13,10 @@
     <string name="ip">IP</string>
     <string name="install_confirmation">Do you want to install %1$s?</string>
     <string name="no_calendars_found">No calendars found on your device</string>
+    <string name="update">Update</string>
+    <string name="fix_missing_source">Fix missing source</string>
+    <string name="not_updatable">Not updatable</string>
+    <string name="not_updatable_tooltip">Failed to fetch version information</string>
+    <string name="not_updatable_app_not_found_tooltip">Failed to fetch version information - app not found</string>
+    <string name="change_source">Change app\'s installation source</string>
 </resources>

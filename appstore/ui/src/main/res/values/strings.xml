@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watchface">Watchfaces</string>
+    <string name="watchapp">Apps</string>
+    <string name="install">Install</string>
+    <string name="uninstall">Uninstall</string>
+    <string name="app_version_info">Version information</string>
+    <string name="app_website_link">Website link</string>
+    <string name="app_source_code">Source code</string>
+    <string name="apps_from_developer">More from this developer</string>
+    <string name="app_discourse_link">Discuss on Discourse</string>
+    <string name="see_all">See all</string>
+    <string name="search">Search</string>
+    <string name="name">Name</string>
+    <string name="url">URL</string>
+    <string name="app_id">App ID</string>
+    <string name="api_key">API key</string>
+    <string name="index_name">Index name</string>
+    <string name="confirm_restore">Restore all appstore sources to the default Rebble and Core Devices sources?</string>
+    <string name="appstore_sources">Appstore sources</string>
+    <string name="id_placeholder">"ID: %1$s"</string>
+    <string name="edit_source">Edit %1$s</string>
+    <string name="no_source_selected">None</string>
+    <string name="not_installable">Unsupported</string>
+    <string name="install_incompatible">This app is incompatible with currently connected watch, and it may fail to install.</string>
+    <string name="install_incompatible_title">Install incompatible app?</string>
+    <string name="compatibility_info">%1$s (%2$s)</string>
+    <string name="compatibility_info_header">Supported compatibility</string>
+    <string name="appstore_source">Store source</string>
+    <string name="all">All</string>
+    <string name="platform_filter">Platform filter</string>
+    <string name="appstore_collection_title">Apps from %1$s</string>
+</resources>
