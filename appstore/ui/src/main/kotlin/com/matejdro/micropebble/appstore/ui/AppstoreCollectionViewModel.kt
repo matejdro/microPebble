@@ -1,6 +1,7 @@
 package com.matejdro.micropebble.appstore.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
@@ -22,6 +23,7 @@ import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 
+@Stable
 @Inject
 @ContributesScopedService
 class AppstoreCollectionViewModel(
