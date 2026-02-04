@@ -7,7 +7,8 @@ features that I care about.
 Supported features:
 
 * Connecting to the watches
-* Installing / uninstalling watch apps via PBW
+* Appstore
+* Installing / uninstalling watch apps from Appstore or from PBW
 * PebbleKit JS (including configuration pages)
 * Basic notification config
 * Music control
