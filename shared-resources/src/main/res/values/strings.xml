@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="connecting">Connecting</string>
-    <string name="app_name">MPebble</string>
+    <string name="app_name">Micro Pebble</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="manage_appstore_sources">Appstore sources</string>
