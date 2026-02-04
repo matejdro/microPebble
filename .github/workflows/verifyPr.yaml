@@ -61,8 +61,8 @@ jobs:
         run: "./gradlew compileDebugUnitTestSources compileReleaseUnitTestSources"
       - name: Run Unit Tests
         run: "./gradlew test -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest"
-      - name: "Generate new Screenshot Tests"
-        run: "config/generate-screenshots.sh ${{ github.event.pull_request.head.ref }}"
+      #      - name: "Generate new Screenshot Tests"
+      #        run: "config/generate-screenshots.sh ${{ github.event.pull_request.head.ref }}"
       - name: "Run Screenshot Tests"
         run: "./gradlew --continue verifyPaparazziDebug"
       - name: "Remove unused Screenshot Tests"
