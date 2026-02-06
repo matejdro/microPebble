@@ -440,7 +440,7 @@ private fun LinksCard(actions: List<AppAction>, modifier: Modifier = Modifier) {
                Text(stringResource(action.label), Modifier.padding(8.dp))
                if (action is AppLink) {
                   Icon(
-                     painter = painterResource(R.drawable.ic_open),
+                     painter = painterResource(R.drawable.ic_open_externally),
                      contentDescription = null,
                      modifier = Modifier.padding(8.dp)
                   )
