@@ -5,7 +5,7 @@ plugins {
    navigation
    parcelize
    showkase
-   serialization version libs.versions.kotlin.serialization
+   alias(libs.plugins.serialization)
 }
 
 android {
