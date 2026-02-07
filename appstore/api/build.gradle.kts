@@ -1,6 +1,6 @@
 plugins {
    pureKotlinModule
-   serialization version libs.versions.kotlin.serialization
+   alias(libs.plugins.serialization)
 }
 
 dependencies {

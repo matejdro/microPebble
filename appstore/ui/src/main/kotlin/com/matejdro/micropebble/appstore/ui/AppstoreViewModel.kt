@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -39,6 +40,7 @@ import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 import kotlin.time.Duration.Companion.milliseconds
 
 @Stable
+@Serializable
 data class AppstoreScreenState(
    val appstoreSource: AppstoreSource? = null,
    val selectedTab: ApplicationType = ApplicationType.Watchface,

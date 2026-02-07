@@ -5,6 +5,7 @@ plugins {
    navigation
    parcelize
    showkase
+   alias(libs.plugins.serialization)
 }
 
 android {

@@ -30,6 +30,3 @@ inline val PluginDependenciesSpec.navigation: PluginDependencySpec
 
 inline val PluginDependenciesSpec.testHelpers: PluginDependencySpec
    get() = id("test-module")
-
-inline val PluginDependenciesSpec.serialization: PluginDependencySpec
-   get() = id("org.jetbrains.kotlin.plugin.serialization")

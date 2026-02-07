@@ -40,12 +40,6 @@ class AppstoreDetailsViewModel(
    private val _appDataState = MutableStateFlow<Outcome<Application>>(Outcome.Progress())
    val appDataState: StateFlow<Outcome<Application>> = _appDataState
 
-   val unofficialSupportedPlatforms by lazy {
-      WatchType.entries.filter {
-         it.getCompatibleAppVariants().any { variant -> key.app.isCompatibleWith(variant) }
-      }
-   }
-
    override fun onServiceRegistered() {
       actionLogger.logAction { "AppstoreDetailsViewModel.onServiceRegistered()" }
 

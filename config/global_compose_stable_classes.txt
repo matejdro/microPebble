@@ -11,6 +11,7 @@ com.zhuinden.simplestack.Backstack
 si.inova.kotlinova.core.time.AndroidDateTimeFormatter
 si.inova.kotlinova.core.time.FakeAndroidDateTimeFormatter
 si.inova.kotlinova.core.outcome.CauseException
+si.inova.kotlinova.core.time.TimeProvider
 
 // Suspend lamdas
 kotlin.coroutines.SuspendFunction2

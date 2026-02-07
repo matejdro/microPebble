@@ -37,6 +37,7 @@ import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -56,7 +57,16 @@ import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.appstore.api.AppInstallState
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.store.application.Application
+import com.matejdro.micropebble.appstore.api.store.application.ApplicationCompanions
+import com.matejdro.micropebble.appstore.api.store.application.ApplicationIcon
+import com.matejdro.micropebble.appstore.api.store.application.ApplicationImage
+import com.matejdro.micropebble.appstore.api.store.application.ApplicationLinks
+import com.matejdro.micropebble.appstore.api.store.application.ApplicationRelease
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationScreenshot
+import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
+import com.matejdro.micropebble.appstore.api.store.application.ApplicationUpdate
+import com.matejdro.micropebble.appstore.api.store.application.CompatibilityInfo
+import com.matejdro.micropebble.appstore.api.store.application.HeaderImage
 import com.matejdro.micropebble.appstore.api.store.application.getImage
 import com.matejdro.micropebble.appstore.ui.common.BANNER_RATIO
 import com.matejdro.micropebble.appstore.ui.common.getIcon
@@ -70,27 +80,30 @@ import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
 import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
+import si.inova.kotlinova.compose.time.ComposeAndroidDateTimeFormatter
 import si.inova.kotlinova.compose.time.LocalDateFormatter
 import si.inova.kotlinova.core.outcome.Outcome
+import si.inova.kotlinova.core.time.FakeAndroidDateTimeFormatter
+import si.inova.kotlinova.core.time.FakeAndroidTimeProvider
+import si.inova.kotlinova.core.time.TimeProvider
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
-import java.net.URI
 import java.time.ZoneId
 import java.time.format.FormatStyle
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
+import kotlin.uuid.Uuid
 import com.matejdro.micropebble.sharedresources.R as sharedR
 
 @Composable
-private fun Instant.formatDate(): String =
-   this.toJavaInstant().atZone(ZoneId.systemDefault()).format(LocalDateFormatter.current.ofLocalizedDateTime(FormatStyle.SHORT))
+private fun Instant.formatDate(zoneId: ZoneId): String {
+   return toJavaInstant().atZone(zoneId)
+      .format(LocalDateFormatter.current.ofLocalizedDateTime(FormatStyle.SHORT))
+}
 
 @Stable
 @Inject
@@ -98,6 +111,7 @@ private fun Instant.formatDate(): String =
 class AppstoreDetailsScreen(
    private val viewModel: AppstoreDetailsViewModel,
    private val navigator: Navigator,
+   private val timeProvider: TimeProvider,
 ) : Screen<AppstoreDetailsScreenKey>() {
    @OptIn(ExperimentalMaterial3Api::class)
    @Composable
@@ -113,13 +127,15 @@ class AppstoreDetailsScreen(
       }
 
       var isWarningPopupShown by remember { mutableStateOf(false) }
+
       ProgressErrorSuccessScaffold(dataState) { app ->
          AppstoreDetailsContent(
+            timeProvider = timeProvider,
             app = app,
             snackbarHostState,
             appInstallState = installState,
-            { viewModel.uninstall() },
-            {
+            uninstallApp = viewModel::uninstall,
+            installApp = {
                if (viewModel.appState.value.data == AppInstallState.INCOMPATIBLE) {
                   isWarningPopupShown = true
                } else {
@@ -163,6 +179,7 @@ class AppstoreDetailsScreen(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun AppstoreDetailsContent(
+   timeProvider: TimeProvider,
    app: Application,
    errorsSnackbarState: SnackbarHostState,
    appInstallState: Outcome<AppInstallState>,
@@ -272,7 +289,7 @@ private fun AppstoreDetailsContent(
          }
 
          item(contentType = "info") {
-            InfoCard(app, childModifier)
+            InfoCard(timeProvider, app, childModifier)
          }
 
          item(contentType = "links") {
@@ -285,7 +302,7 @@ private fun AppstoreDetailsContent(
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(8.dp)) {
                itemsWithDivider(app.changelog) {
                   Text(it.version, Modifier.padding(8.dp), style = MaterialTheme.typography.titleLarge)
-                  Text(it.publishedDate.formatDate(), Modifier.padding(8.dp))
+                  Text(it.publishedDate.formatDate(timeProvider.systemDefaultZoneId()), Modifier.padding(8.dp))
                   Text(it.releaseNotes, Modifier.padding(8.dp))
                }
             }
@@ -400,7 +417,7 @@ private fun AppScreenshotCarousel(app: Application, modifier: Modifier = Modifie
 }
 
 @Composable
-private fun InfoCard(app: Application, modifier: Modifier = Modifier) {
+private fun InfoCard(timeProvider: TimeProvider, app: Application, modifier: Modifier = Modifier) {
    Card(modifier = modifier.fillMaxWidth()) {
       Column(
          modifier = Modifier.fillMaxWidth()
@@ -408,11 +425,12 @@ private fun InfoCard(app: Application, modifier: Modifier = Modifier) {
          Text("Version ${app.latestRelease.version}", Modifier.padding(8.dp))
          HorizontalDivider()
          Text(
-            "Last updated ${app.latestRelease.publishedDate.formatDate()}", Modifier.padding(8.dp)
+            "Last updated ${app.latestRelease.publishedDate.formatDate(timeProvider.systemDefaultZoneId())}",
+            Modifier.padding(8.dp)
          )
          if (app.changelog.size > 1) {
             HorizontalDivider()
-            Text("Created ${app.createdAt.formatDate()}", Modifier.padding(8.dp))
+            Text("Created ${app.createdAt.formatDate(timeProvider.systemDefaultZoneId())}", Modifier.padding(8.dp))
          }
       }
    }
@@ -440,7 +458,7 @@ private fun LinksCard(actions: List<AppAction>, modifier: Modifier = Modifier) {
                Text(stringResource(action.label), Modifier.padding(8.dp))
                if (action is AppLink) {
                   Icon(
-                     painter = painterResource(R.drawable.ic_open),
+                     painter = painterResource(R.drawable.ic_open_externally),
                      contentDescription = null,
                      modifier = Modifier.padding(8.dp)
                   )
@@ -486,8 +504,68 @@ private class AppLink(label: Int, val linkTarget: String) : AppAction(label)
 @ShowkaseComposable(group = "Test")
 internal fun AppstoreDetailsContentPreview() {
    PreviewTheme {
-      val rawString = URI("https://appstore-api.rebble.io/api/v1/apps/id/67c751c6d2acb30009a3c812").toURL().readText()
-      val string = Json.encodeToString(Json.parseToJsonElement(rawString).jsonObject["data"]?.jsonArray[0])
-      AppstoreDetailsContent(Json.decodeFromString(string), SnackbarHostState(), Outcome.Progress(), {}, {}, platform = null)
+      val exampleApp = Application(
+         author = "Author",
+         capabilities = listOf("configurable"),
+         category = "Faces",
+         categoryColor = "ffffff",
+         categoryId = "528d3ef2dc7b5f580700000a",
+         changelog = listOf(
+            ApplicationUpdate(
+               Instant.parse("2026-02-06T22:24:09.064996519Z"),
+               releaseNotes = "Initial release",
+               version = "1.0.0",
+            )
+         ),
+         companions = ApplicationCompanions(),
+         compatibility = mapOf(
+            "android" to CompatibilityInfo(true),
+            "aplite" to CompatibilityInfo(true),
+            "basalt" to CompatibilityInfo(true),
+            "emery" to CompatibilityInfo(true)
+         ),
+         createdAt = Instant.parse("2026-02-06T22:24:09.064996519Z"),
+         description = "A really long description",
+         developerId = "",
+         discourseUrl = "discourse URL",
+         headerImages = listOf(HeaderImage("", "")),
+         hearts = 15,
+         iconImage = ApplicationIcon("", ""),
+         id = "id",
+         latestRelease = ApplicationRelease(
+            id = "",
+            jsVersion = -1,
+            pbwFile = "",
+            publishedDate = Instant.parse("2026-02-06T22:24:09.064996519Z"),
+            releaseNotes = "AAAAAAAA",
+            version = "1.0.0",
+         ),
+         links = ApplicationLinks(
+            add = "",
+            addFlag = "",
+            addHeart = "",
+            remove = "",
+            removeFlag = "",
+            removeHeart = "",
+            share = ""
+         ),
+         listImage = ApplicationImage("", ""),
+         publishedDate = Instant.parse("2026-02-06T22:24:09.064996519Z"),
+         screenshotHardware = "basalt",
+         screenshotImages = listOf(ApplicationScreenshot(""), ApplicationScreenshot(""), ApplicationScreenshot("")),
+         source = "source link",
+         title = "My Really Cool Watchface",
+         type = ApplicationType.Watchface,
+         uuid = Uuid.random(),
+         visible = true,
+         website = "https://github.com/MateJDroR/MateJDroR",
+      )
+
+      val dateTimeFormatter = FakeAndroidDateTimeFormatter()
+      val timeProvider = FakeAndroidTimeProvider()
+
+      CompositionLocalProvider(LocalDateFormatter provides ComposeAndroidDateTimeFormatter(dateTimeFormatter)) {
+         AppstoreDetailsContent(timeProvider, exampleApp, SnackbarHostState(), Outcome.Progress(), {}, {}, platform = null)
+      }
    }
 }
