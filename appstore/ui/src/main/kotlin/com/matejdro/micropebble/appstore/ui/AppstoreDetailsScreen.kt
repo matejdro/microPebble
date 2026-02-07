@@ -85,15 +85,13 @@ import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPre
 import si.inova.kotlinova.compose.time.ComposeAndroidDateTimeFormatter
 import si.inova.kotlinova.compose.time.LocalDateFormatter
 import si.inova.kotlinova.core.outcome.Outcome
-import si.inova.kotlinova.core.time.AndroidDateTimeFormatter
+import si.inova.kotlinova.core.time.FakeAndroidDateTimeFormatter
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import java.util.Locale
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
 import kotlin.uuid.Uuid
@@ -557,14 +555,7 @@ internal fun AppstoreDetailsContentPreview() {
          website = "https://github.com/MateJDroR/MateJDroR",
       )
 
-      val dateTimeFormatter = object : AndroidDateTimeFormatter {
-         override fun ofLocalizedTime() = TODO("Not yet implemented")
-         override fun ofLocalizedDate(dateStyle: FormatStyle) = TODO("Not yet implemented")
-         override fun ofSkeleton(skeleton: String) = TODO("Not yet implemented")
-         override fun ofSkeleton(skeleton: String, locale: Locale) = TODO("Not yet implemented")
-
-         override fun ofLocalizedDateTime(dateStyle: FormatStyle) = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
-      }
+      val dateTimeFormatter = FakeAndroidDateTimeFormatter()
 
       CompositionLocalProvider(LocalDateFormatter provides ComposeAndroidDateTimeFormatter(dateTimeFormatter)) {
          AppstoreDetailsContent(exampleApp, SnackbarHostState(), Outcome.Progress(), {}, {}, platform = null)
