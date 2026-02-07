@@ -37,6 +37,7 @@ import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -81,23 +82,26 @@ import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.coroutines.flow.filterIsInstance
 import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
+import si.inova.kotlinova.compose.time.ComposeAndroidDateTimeFormatter
 import si.inova.kotlinova.compose.time.LocalDateFormatter
 import si.inova.kotlinova.core.outcome.Outcome
+import si.inova.kotlinova.core.time.AndroidDateTimeFormatter
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.util.Locale
 import kotlin.time.Instant
+import kotlin.time.toJavaInstant
 import kotlin.uuid.Uuid
 import com.matejdro.micropebble.sharedresources.R as sharedR
-import java.time.Instant as JavaInstant
 
 @Composable
 private fun Instant.formatDate(): String {
-   // Instant.toJavaInstant doesn't work in the previews for some reason.
-   return JavaInstant.ofEpochSecond(epochSeconds, nanosecondsOfSecond.toLong()).atZone(ZoneId.systemDefault())
+   return toJavaInstant().atZone(ZoneId.systemDefault())
       .format(LocalDateFormatter.current.ofLocalizedDateTime(FormatStyle.SHORT))
 }
 
@@ -122,6 +126,7 @@ class AppstoreDetailsScreen(
       }
 
       var isWarningPopupShown by remember { mutableStateOf(false) }
+
       ProgressErrorSuccessScaffold(dataState) { app ->
          AppstoreDetailsContent(
             app = app,
@@ -551,6 +556,18 @@ internal fun AppstoreDetailsContentPreview() {
          visible = true,
          website = "https://github.com/MateJDroR/MateJDroR",
       )
-      AppstoreDetailsContent(exampleApp, SnackbarHostState(), Outcome.Progress(), {}, {}, platform = null)
+
+      val dateTimeFormatter = object : AndroidDateTimeFormatter {
+         override fun ofLocalizedTime() = TODO("Not yet implemented")
+         override fun ofLocalizedDate(dateStyle: FormatStyle) = TODO("Not yet implemented")
+         override fun ofSkeleton(skeleton: String) = TODO("Not yet implemented")
+         override fun ofSkeleton(skeleton: String, locale: Locale) = TODO("Not yet implemented")
+
+         override fun ofLocalizedDateTime(dateStyle: FormatStyle) = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+      }
+
+      CompositionLocalProvider(LocalDateFormatter provides ComposeAndroidDateTimeFormatter(dateTimeFormatter)) {
+         AppstoreDetailsContent(exampleApp, SnackbarHostState(), Outcome.Progress(), {}, {}, platform = null)
+      }
    }
 }
