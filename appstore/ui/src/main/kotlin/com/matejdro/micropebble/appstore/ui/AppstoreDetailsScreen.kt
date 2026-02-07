@@ -86,6 +86,8 @@ import si.inova.kotlinova.compose.time.ComposeAndroidDateTimeFormatter
 import si.inova.kotlinova.compose.time.LocalDateFormatter
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.core.time.FakeAndroidDateTimeFormatter
+import si.inova.kotlinova.core.time.FakeAndroidTimeProvider
+import si.inova.kotlinova.core.time.TimeProvider
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
@@ -98,8 +100,8 @@ import kotlin.uuid.Uuid
 import com.matejdro.micropebble.sharedresources.R as sharedR
 
 @Composable
-private fun Instant.formatDate(): String {
-   return toJavaInstant().atZone(ZoneId.systemDefault())
+private fun Instant.formatDate(zoneId: ZoneId): String {
+   return toJavaInstant().atZone(zoneId)
       .format(LocalDateFormatter.current.ofLocalizedDateTime(FormatStyle.SHORT))
 }
 
@@ -109,6 +111,7 @@ private fun Instant.formatDate(): String {
 class AppstoreDetailsScreen(
    private val viewModel: AppstoreDetailsViewModel,
    private val navigator: Navigator,
+   private val timeProvider: TimeProvider,
 ) : Screen<AppstoreDetailsScreenKey>() {
    @OptIn(ExperimentalMaterial3Api::class)
    @Composable
@@ -127,6 +130,7 @@ class AppstoreDetailsScreen(
 
       ProgressErrorSuccessScaffold(dataState) { app ->
          AppstoreDetailsContent(
+            timeProvider = timeProvider,
             app = app,
             snackbarHostState,
             appInstallState = installState,
@@ -175,6 +179,7 @@ class AppstoreDetailsScreen(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun AppstoreDetailsContent(
+   timeProvider: TimeProvider,
    app: Application,
    errorsSnackbarState: SnackbarHostState,
    appInstallState: Outcome<AppInstallState>,
@@ -284,7 +289,7 @@ private fun AppstoreDetailsContent(
          }
 
          item(contentType = "info") {
-            InfoCard(app, childModifier)
+            InfoCard(timeProvider, app, childModifier)
          }
 
          item(contentType = "links") {
@@ -297,7 +302,7 @@ private fun AppstoreDetailsContent(
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(8.dp)) {
                itemsWithDivider(app.changelog) {
                   Text(it.version, Modifier.padding(8.dp), style = MaterialTheme.typography.titleLarge)
-                  Text(it.publishedDate.formatDate(), Modifier.padding(8.dp))
+                  Text(it.publishedDate.formatDate(timeProvider.systemDefaultZoneId()), Modifier.padding(8.dp))
                   Text(it.releaseNotes, Modifier.padding(8.dp))
                }
             }
@@ -412,7 +417,7 @@ private fun AppScreenshotCarousel(app: Application, modifier: Modifier = Modifie
 }
 
 @Composable
-private fun InfoCard(app: Application, modifier: Modifier = Modifier) {
+private fun InfoCard(timeProvider: TimeProvider, app: Application, modifier: Modifier = Modifier) {
    Card(modifier = modifier.fillMaxWidth()) {
       Column(
          modifier = Modifier.fillMaxWidth()
@@ -420,11 +425,12 @@ private fun InfoCard(app: Application, modifier: Modifier = Modifier) {
          Text("Version ${app.latestRelease.version}", Modifier.padding(8.dp))
          HorizontalDivider()
          Text(
-            "Last updated ${app.latestRelease.publishedDate.formatDate()}", Modifier.padding(8.dp)
+            "Last updated ${app.latestRelease.publishedDate.formatDate(timeProvider.systemDefaultZoneId())}",
+            Modifier.padding(8.dp)
          )
          if (app.changelog.size > 1) {
             HorizontalDivider()
-            Text("Created ${app.createdAt.formatDate()}", Modifier.padding(8.dp))
+            Text("Created ${app.createdAt.formatDate(timeProvider.systemDefaultZoneId())}", Modifier.padding(8.dp))
          }
       }
    }
@@ -556,9 +562,10 @@ internal fun AppstoreDetailsContentPreview() {
       )
 
       val dateTimeFormatter = FakeAndroidDateTimeFormatter()
+      val timeProvider = FakeAndroidTimeProvider()
 
       CompositionLocalProvider(LocalDateFormatter provides ComposeAndroidDateTimeFormatter(dateTimeFormatter)) {
-         AppstoreDetailsContent(exampleApp, SnackbarHostState(), Outcome.Progress(), {}, {}, platform = null)
+         AppstoreDetailsContent(timeProvider, exampleApp, SnackbarHostState(), Outcome.Progress(), {}, {}, platform = null)
       }
    }
 }
