@@ -97,4 +97,4 @@ jobs:
         if: failure()
         with:
           name: failed-screenshot-tests
-          path: app-screenshot-tests/out
+          path: app-screenshot-tests/build/paparazzi/failures
