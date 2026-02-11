@@ -57,20 +57,12 @@ import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.appstore.api.AppInstallState
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.api.store.application.Application
-import com.matejdro.micropebble.appstore.api.store.application.ApplicationCompanions
-import com.matejdro.micropebble.appstore.api.store.application.ApplicationIcon
-import com.matejdro.micropebble.appstore.api.store.application.ApplicationImage
-import com.matejdro.micropebble.appstore.api.store.application.ApplicationLinks
-import com.matejdro.micropebble.appstore.api.store.application.ApplicationRelease
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationScreenshot
-import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
-import com.matejdro.micropebble.appstore.api.store.application.ApplicationUpdate
-import com.matejdro.micropebble.appstore.api.store.application.CompatibilityInfo
-import com.matejdro.micropebble.appstore.api.store.application.HeaderImage
 import com.matejdro.micropebble.appstore.api.store.application.getImage
 import com.matejdro.micropebble.appstore.ui.common.BANNER_RATIO
 import com.matejdro.micropebble.appstore.ui.common.getIcon
 import com.matejdro.micropebble.appstore.ui.common.getWatchesForCodename
+import com.matejdro.micropebble.appstore.ui.common.makeFakeApp
 import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
 import com.matejdro.micropebble.appstore.ui.keys.AppstoreDetailsScreenKey
 import com.matejdro.micropebble.common.util.joinUrls
@@ -96,7 +88,6 @@ import java.time.ZoneId
 import java.time.format.FormatStyle
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
-import kotlin.uuid.Uuid
 import com.matejdro.micropebble.sharedresources.R as sharedR
 
 @Composable
@@ -504,62 +495,7 @@ private class AppLink(label: Int, val linkTarget: String) : AppAction(label)
 @ShowkaseComposable(group = "Test")
 internal fun AppstoreDetailsContentPreview() {
    PreviewTheme {
-      val exampleApp = Application(
-         author = "Author",
-         capabilities = listOf("configurable"),
-         category = "Faces",
-         categoryColor = "ffffff",
-         categoryId = "528d3ef2dc7b5f580700000a",
-         changelog = listOf(
-            ApplicationUpdate(
-               Instant.parse("2026-02-06T22:24:09.064996519Z"),
-               releaseNotes = "Initial release",
-               version = "1.0.0",
-            )
-         ),
-         companions = ApplicationCompanions(),
-         compatibility = mapOf(
-            "android" to CompatibilityInfo(true),
-            "aplite" to CompatibilityInfo(true),
-            "basalt" to CompatibilityInfo(true),
-            "emery" to CompatibilityInfo(true)
-         ),
-         createdAt = Instant.parse("2026-02-06T22:24:09.064996519Z"),
-         description = "A really long description",
-         developerId = "",
-         discourseUrl = "discourse URL",
-         headerImages = listOf(HeaderImage("", "")),
-         hearts = 15,
-         iconImage = ApplicationIcon("", ""),
-         id = "id",
-         latestRelease = ApplicationRelease(
-            id = "",
-            jsVersion = -1,
-            pbwFile = "",
-            publishedDate = Instant.parse("2026-02-06T22:24:09.064996519Z"),
-            releaseNotes = "AAAAAAAA",
-            version = "1.0.0",
-         ),
-         links = ApplicationLinks(
-            add = "",
-            addFlag = "",
-            addHeart = "",
-            remove = "",
-            removeFlag = "",
-            removeHeart = "",
-            share = ""
-         ),
-         listImage = ApplicationImage("", ""),
-         publishedDate = Instant.parse("2026-02-06T22:24:09.064996519Z"),
-         screenshotHardware = "basalt",
-         screenshotImages = listOf(ApplicationScreenshot(""), ApplicationScreenshot(""), ApplicationScreenshot("")),
-         source = "source link",
-         title = "My Really Cool Watchface",
-         type = ApplicationType.Watchface,
-         uuid = Uuid.random(),
-         visible = true,
-         website = "https://github.com/MateJDroR/MateJDroR",
-      )
+      val exampleApp = makeFakeApp(likes = 15)
 
       val dateTimeFormatter = FakeAndroidDateTimeFormatter()
       val timeProvider = FakeAndroidTimeProvider()
