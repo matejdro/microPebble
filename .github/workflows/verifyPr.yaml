@@ -61,12 +61,8 @@ jobs:
         run: "./gradlew compileDebugUnitTestSources compileReleaseUnitTestSources"
       - name: Run Unit Tests
         run: "./gradlew test -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest"
-      #      - name: "Generate new Screenshot Tests"
-      #        run: "config/generate-screenshots.sh ${{ github.event.pull_request.head.ref }}"
       - name: "Run Screenshot Tests"
         run: "./gradlew --continue verifyPaparazziDebug"
-      - name: "Remove unused Screenshot Tests"
-        run: "config/remove-unused-screenshots.sh ${{ github.event.pull_request.head.ref }}"
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action/linux@v2
         if: always()

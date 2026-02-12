@@ -64,10 +64,12 @@ import com.matejdro.micropebble.appstore.api.store.application.AlgoliaApplicatio
 import com.matejdro.micropebble.appstore.api.store.application.ApplicationType
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreCollection
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
+import com.matejdro.micropebble.appstore.api.store.home.AppstoreLinks
 import com.matejdro.micropebble.appstore.ui.common.NoSourcesDisplay
 import com.matejdro.micropebble.appstore.ui.common.WatchAppDisplay
 import com.matejdro.micropebble.appstore.ui.common.appGridCells
 import com.matejdro.micropebble.appstore.ui.common.getIcon
+import com.matejdro.micropebble.appstore.ui.common.makeFakeApp
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
 import com.matejdro.micropebble.ui.components.BasicExposedDropdownMenuBox
@@ -76,14 +78,12 @@ import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.metadata.WatchType
-import kotlinx.serialization.json.Json
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
-import java.net.URI
 import com.matejdro.micropebble.sharedresources.R as sharedR
 
 private const val categoryHeaderContentType = "categoryHeaderContentType"
@@ -180,7 +180,7 @@ private fun AppstoreScreenScaffold(
          var lastLayoutCoordinates: LayoutCoordinates? by remember { mutableStateOf(null) }
          val gridState = rememberLazyStaggeredGridState()
          var searchActive by rememberSaveable { mutableStateOf(false) }
-         AppstoreHomepage(
+         AppstoreHomepageContent(
             navigator = navigator,
             state = homePageState,
             onRefresh = onRefresh,
@@ -191,43 +191,42 @@ private fun AppstoreScreenScaffold(
                lastLayoutCoordinates = it
             },
             gridState = gridState,
-            {
-               if (selectedSource?.algoliaData != null) {
-                  item(span = StaggeredGridItemSpan.FullLine) {
-                     Box(
-                        Modifier
-                           .align(Alignment.CenterHorizontally)
-                           // Because the search box is in a lazy grid, its height must be constrained otherwise it tries to
-                           // expand too large.
-                           // The height is smaller than the screen height, so if no maximum is available, screen height is
-                           // pretty reasonable.
-                           .requiredHeightIn(
-                              max = with(LocalDensity.current) { lastLayoutCoordinates?.size?.height?.toDp() }
-                                 ?: LocalConfiguration.current.screenHeightDp.dp,
-                           )
-                     ) {
-                        AppsSearchBox(
-                           searchQuery = searchQuery,
-                           setSearchQuery = setSearchQuery,
-                           searchResults = searchResults,
-                           navigator = navigator,
-                           source = selectedSource,
-                           platformFilter,
-                           searchExpanded = searchActive,
-                           onSearchExpandedChange = {
-                              searchActive = it
-                              if (it) {
-                                 gridState.requestScrollToItem(0)
-                              }
-                           },
-                           modifier = Modifier.align(Alignment.Center),
+            scrollEnabled = !searchActive,
+         ) {
+            if (selectedSource?.algoliaData != null) {
+               item(span = StaggeredGridItemSpan.FullLine) {
+                  Box(
+                     Modifier
+                        .align(Alignment.CenterHorizontally)
+                        // Because the search box is in a lazy grid, its height must be constrained otherwise it tries to
+                        // expand too large.
+                        // The height is smaller than the screen height, so if no maximum is available, screen height is
+                        // pretty reasonable.
+                        .requiredHeightIn(
+                           max = with(LocalDensity.current) { lastLayoutCoordinates?.size?.height?.toDp() }
+                              ?: LocalConfiguration.current.screenHeightDp.dp,
                         )
-                     }
+                  ) {
+                     AppsSearchBox(
+                        searchQuery = searchQuery,
+                        setSearchQuery = setSearchQuery,
+                        searchResults = searchResults,
+                        navigator = navigator,
+                        source = selectedSource,
+                        platformFilter,
+                        searchExpanded = searchActive,
+                        onSearchExpandedChange = {
+                           searchActive = it
+                           if (it) {
+                              gridState.requestScrollToItem(0)
+                           }
+                        },
+                        modifier = Modifier.align(Alignment.Center),
+                     )
                   }
                }
-            },
-            scrollEnabled = !searchActive,
-         )
+            }
+         }
       }
 
       if (bottomPanelExpanded) {
@@ -382,7 +381,7 @@ private fun TypeSelector(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun AppstoreHomepage(
+private fun AppstoreHomepageContent(
    navigator: Navigator?,
    state: Outcome<AppstoreHomePage>?,
    onRefresh: () -> Unit,
@@ -391,8 +390,8 @@ private fun AppstoreHomepage(
    appstoreSource: AppstoreSource?,
    onGloballyPositioned: (LayoutCoordinates) -> Unit,
    gridState: LazyStaggeredGridState,
-   topItem: LazyStaggeredGridScope.() -> Unit,
    scrollEnabled: Boolean,
+   topItem: LazyStaggeredGridScope.() -> Unit,
 ) {
    PullToRefreshBox(
       isRefreshing = state is Outcome.Progress,
@@ -473,7 +472,20 @@ private fun AppstoreHeader(navigateToCollection: (AppstoreCollection) -> Unit, c
 @ShowkaseComposable(group = "Test")
 internal fun AppstoreHomepagePreview() {
    PreviewTheme {
-      val string = URI("https://appstore-api.rebble.io/api/v1/home/apps?platform=all").toURL().readText()
+      val allApps = (0..<20).map { makeFakeApp(name = "App $it") }
+      val homepage = AppstoreHomePage(
+         applications = allApps,
+         banners = emptyList(),
+         categories = emptyList(),
+         collections = allApps.chunked(5).withIndex().map { (index, apps) ->
+            AppstoreCollection(
+               appIds = apps.map { it.id },
+               links = AppstoreLinks(""),
+               name = "Collection $index",
+               slug = "$index",
+            )
+         }
+      )
       AppstoreScreenScaffold(
          selectedTab = ApplicationType.Watchface,
          setSelectedTab = { },
@@ -486,7 +498,7 @@ internal fun AppstoreHomepagePreview() {
          setSearchQuery = { },
          searchResults = Outcome.Progress(),
          navigator = null,
-         homePageState = Outcome.Success(Json.decodeFromString(string)),
+         homePageState = Outcome.Success(homepage),
          onRefresh = {}
       ) { }
    }
