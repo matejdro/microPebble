@@ -1,9 +1,11 @@
 import com.android.build.api.dsl.LibraryBuildFeatures
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.android.build.gradle.tasks.asJavaVersion
 import jacoco.setupJacocoMergingAndroid
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import util.commonAndroid
+import util.commonAndroidComponents
 
 val libs = the<LibrariesForLibs>()
 
@@ -95,6 +97,26 @@ dependencies {
 
 detekt {
    config.from("$rootDir/config/detekt-android.yml")
+}
+
+val runDebugTestsTask = tasks.register("runDebugTests")
+val runDebugDetektTask = tasks.register("runDebugDetekt")
+
+commonAndroidComponents {
+   onVariants { variant ->
+      // For variants, you can add extra filters, such as
+      // && (variant.productFlavors.isEmpty() || variant.productFlavors.contains("version" to "develop"))
+      if (variant.buildType == "debug") {
+
+         if (!pluginManager.hasPlugin("com.android.test")) {
+            runDebugTestsTask.dependsOn(variant.computeTaskName("test", "UnitTest"))
+
+            runDebugDetektTask.dependsOn(variant.computeTaskName("detekt", "UnitTest"))
+            runDebugDetektTask.dependsOn(variant.computeTaskName("detekt", "AndroidTest"))
+         }
+         runDebugDetektTask.dependsOn("detekt${variant.name.replaceFirstChar { it.uppercaseChar() }}")
+      }
+   }
 }
 
 // Even empty android test tasks take a while to execute. Disable all of them by default.
