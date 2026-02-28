@@ -1,35 +1,11 @@
-build:
-  maxIssues: 0
-  excludeCorrectable: false
-  weights:
-  # complexity: 2
-  # LongParameterList: 1
-  # style: 1
-  # comments: 1
-
 config:
   validation: true
   warningsAsErrors: true
   checkExhaustiveness: true
-  # when writing own rules with new properties, exclude the property path e.g.: 'my_rule_set,.*>.*>[my_property]'
-  excludes: ''
-
 processors:
   active: true
   exclude:
     - 'DetektProgressListener'
-  # - 'KtFileCountProcessor'
-  # - 'PackageCountProcessor'
-  # - 'ClassCountProcessor'
-  # - 'FunctionCountProcessor'
-  # - 'PropertyCountProcessor'
-  # - 'ProjectComplexityProcessor'
-  # - 'ProjectCognitiveComplexityProcessor'
-  # - 'ProjectLLOCProcessor'
-  # - 'ProjectCLOCProcessor'
-  # - 'ProjectLOCProcessor'
-  # - 'ProjectSLOCProcessor'
-  # - 'LicenseHeaderLoaderExtension'
 
 console-reports:
   active: true
@@ -41,22 +17,18 @@ console-reports:
     - 'FileBasedFindingsReport'
     - 'LiteFindingsReport'
 
-output-reports:
-  active: true
-  exclude: [ ]
-
 comments:
   active: true
   AbsentOrWrongFileLicense:
     active: false
-    licenseTemplateFile: 'license.template'
+    licenseTemplate: 'license.template'
     licenseTemplateIsRegex: false
-  CommentOverPrivateFunction:
+  DocumentationOverPrivateFunction:
     active: false
-  CommentOverPrivateProperty:
+  DocumentationOverPrivateProperty:
     active: false
   DeprecatedBlockTag:
-    active: false
+    active: true
   EndOfSentenceFormat:
     active: false
     endOfSentenceFormat: '([.?!][ \t\n\r\f<])|([.?!:]$)'
@@ -94,20 +66,20 @@ complexity:
   active: true
   CognitiveComplexMethod:
     active: true
-    threshold: 15
+    allowedComplexity: 15
     ignoreAnnotated: [ 'Composable' ] # Many false positives on Compose, since it detects nested composables (which are common) as Complex
   ComplexCondition:
     active: true
-    threshold: 4
+    allowedConditions: 4
   ComplexInterface:
     active: true
-    threshold: 10
+    allowedDefinitions: 10
     includeStaticDeclarations: false
     includePrivateDeclarations: false
     ignoreOverloaded: true
   CyclomaticComplexMethod:
     active: true
-    threshold: 15
+    allowedComplexity: 15
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: true
     ignoreNestingFunctions: false
@@ -126,37 +98,37 @@ complexity:
     ignoredLabels: [ ]
   LargeClass:
     active: true
-    threshold: 600
+    allowedLines: 600
     # Tests often intentionally include large classes with many test methods. We can disable this check for tests
     excludes: *testFolders
   LongMethod:
     active: true
-    threshold: 60
+    allowedLines: 60
     ignoreAnnotated:
       # Sometimes we are forced to have long compose methods, when listing long screens etc. Complexity checks should catch
       # Most eggregious
       - Composable
   LongParameterList:
     active: true
-    functionThreshold: 6
-    constructorThreshold: 7
+    allowedFunctionParameters: 6
+    allowedConstructorParameters: 7
     ignoreDefaultParameters: true
     ignoreDataClasses: true
     ignoreAnnotated: [ 'Inject', 'Provides', 'AssistedInject', 'Delete', 'Insert', 'Query', 'RawQuery', 'Update', 'Transaction', 'Composable' ]
   MethodOverloading:
-    active: false
-    threshold: 6
+    active: true
+    allowedOverloads: 6
   NamedArguments:
     active: false
-    threshold: 3
-    ignoreArgumentsMatchingNames: false
+    allowedArguments: 3
+    ignoreArgumentsMatchingNames: true
   NestedBlockDepth:
-    active: false
-    threshold: 4
+    active: true
+    allowedDepth: 4
     ignoreAnnotated: [ 'Composable' ]
   NestedScopeFunctions:
     active: true
-    threshold: 2
+    allowedDepth: 2
     functions:
       - 'kotlin.apply'
       - 'kotlin.run'
@@ -168,18 +140,18 @@ complexity:
   StringLiteralDuplication:
     active: false
     excludes: *testFolders
-    threshold: 3
+    allowedDuplications: 3
     ignoreAnnotation: true
-    excludeStringsWithLessThan5Characters: true
+    allowedWithLengthLessThan: 4
     ignoreStringsRegex: '$^'
   TooManyFunctions:
     active: true
     excludes: *testFolders
-    thresholdInFiles: 15
-    thresholdInClasses: 15
-    thresholdInInterfaces: 15
-    thresholdInObjects: 15
-    thresholdInEnums: 15
+    allowedFunctionsPerFile: 15
+    allowedFunctionsPerClass: 15
+    allowedFunctionsPerInterface: 15
+    allowedFunctionsPerObject: 15
+    allowedFunctionsPerEnum: 15
     ignoreDeprecated: true # We cannot remove those for backwards compatibility, so they must stay and be ignored
     ignorePrivate: false
     ignoreOverridden: true # We are forced to override those
@@ -187,7 +159,7 @@ complexity:
 coroutines:
   active: true
   GlobalCoroutineUsage:
-    active: false
+    active: true
   InjectDispatcher:
     active: true
     excludes: *testFolders
@@ -195,6 +167,10 @@ coroutines:
       - 'IO'
       - 'Default'
       - 'Unconfined'
+    ignoreAnnotated:
+      # withContext(Dispatchers.Default) is fine in Compose, as generally we don't fake it in tests
+      # (UI tests alwyays wait for things to actually show up)
+      - Composable
   RedundantSuspendModifier:
     active: true
   SleepInsteadOfDelay:
@@ -204,6 +180,10 @@ coroutines:
   SuspendFunWithCoroutineScopeReceiver:
     active: true
   SuspendFunWithFlowReturnType:
+    active: true
+  SuspendFunInFinallySection:
+    active: true
+  CoroutineLaunchedInTestWithoutRunTest:
     active: true
 
 empty-blocks:
@@ -230,7 +210,7 @@ empty-blocks:
     active: true
   EmptyInitBlock:
     active: true
-  EmptyKtFile:
+  EmptyKotlinFile:
     active: true
   EmptySecondaryConstructor:
     active: true
@@ -243,6 +223,8 @@ empty-blocks:
 
 exceptions:
   active: true
+  ErrorUsageWithThrowable:
+    active: true
   ExceptionRaisedInUnexpectedLocation:
     active: true
     methodNames:
@@ -251,12 +233,12 @@ exceptions:
       - 'hashCode'
       - 'toString'
   InstanceOfCheckForException:
-    active: false
+    active: true
     excludes: *testFolders
   NotImplementedDeclaration:
     active: true
   ObjectExtendsThrowable:
-    active: false
+    active: true
   PrintStackTrace:
     active: true
   RethrowCaughtException:
@@ -313,7 +295,7 @@ exceptions:
       - 'RuntimeException'
       - 'Throwable'
 
-formatting:
+ktlint:
   active: true
   android: true
   autoCorrect: false
@@ -461,7 +443,7 @@ formatting:
   NoSemicolons:
     active: true
     autoCorrect: false
-  NoSingleLineBlockComment:
+  NoceBlockComment:
     active: false
     autoCorrect: false
     indentSize: 3
@@ -548,7 +530,7 @@ formatting:
     active: true
     autoCorrect: false
   StringTemplateIndent:
-    active: true
+    active: false
     autoCorrect: false
     indentSize: 3
   TrailingCommaOnCallSite:
@@ -601,11 +583,11 @@ naming:
     active: false
     excludes: *testFolders
     forbiddenName: [ ]
-  FunctionMaxLength:
+  FunctionNameMaxLength:
     active: false
     excludes: *testFolders
     maximumFunctionNameLength: 30
-  FunctionMinLength:
+  FunctionNameMinLength:
     active: false
     excludes: *testFolders
     minimumFunctionNameLength: 3
@@ -628,7 +610,7 @@ naming:
     active: false
     parameterPattern: '[a-z][A-Za-z0-9]*|_'
   MatchingDeclarationName:
-    active: false
+    active: true
     mustBeFirst: true
   MemberNameEqualsClassName:
     active: true
@@ -636,7 +618,7 @@ naming:
   NoNameShadowing:
     active: true
   NonBooleanPropertyPrefixedWithIs:
-    active: false
+    active: true
     excludes: *testFolders
   ObjectPropertyNaming:
     active: true
@@ -671,7 +653,6 @@ performance:
     active: true
   CouldBeSequence:
     active: true
-    threshold: 3
   ForEachOnRange:
     active: true
     excludes: *testFolders
@@ -681,6 +662,10 @@ performance:
   UnnecessaryPartOfBinaryExpression:
     active: true
   UnnecessaryTemporaryInstantiation:
+    active: true
+  UnnecessaryTypeCasting:
+    active: true
+  UnnecessaryInitOnArray:
     active: true
 
 potential-bugs:
@@ -694,7 +679,8 @@ potential-bugs:
   CastToNullableType:
     active: false
   Deprecation:
-    active: false
+    active: true
+    excludeImportStatements: true
   DontDowncastCollectionTypes:
     active: true
   DoubleMutabilityForCollection:
@@ -716,7 +702,7 @@ potential-bugs:
   EqualsWithHashCodeExist:
     active: true
   ExitOutsideMain:
-    active: false
+    active: true
   ExplicitGarbageCollectionCall:
     active: true
   HasPlatformType:
@@ -755,18 +741,18 @@ potential-bugs:
     excludes: *testFolders
     ignoreOnClassesPattern: ''
   MapGetWithNotNullAssertionOperator:
-    active: false
+    active: true
   MissingPackageDeclaration:
     active: true
     excludes: [ '**/*.kts' ]
   NullCheckOnMutableProperty:
-    active: false
+    active: true
   NullableToStringCall:
     active: true
   PropertyUsedBeforeDeclaration:
     active: false
   UnconditionalJumpStatementInLoop:
-    active: false
+    active: true
   UnnecessaryNotNullCheck:
     active: true
   UnnecessaryNotNullOperator:
@@ -788,6 +774,37 @@ potential-bugs:
     active: true
   WrongEqualsTypeParameter:
     active: true
+  CharArrayToStringCall:
+    active: false
+  MissingSuperCall:
+    active: true
+    mustInvokeSuperAnnotations:
+      - 'androidx.annotation.CallSuper'
+      - 'javax.annotation.OverridingMethodsMustInvokeSuper'
+  MissingUseCall:
+    active: true
+    excludes: *testFolders
+  UnnamedParameterUse:
+    active: true
+    ignoreFunctionCall:
+      - kotlin.comparisons.maxOf
+      - kotlin.comparisons.minOf
+      - kotlin.collections.maxOf
+      - kotlin.collections.minOf
+      - kotlin.math.max
+      - kotlin.math.min
+      - kotlin.collections.List.subList
+      - kotlin.ranges.coerceIn
+      - kotlin.text.substring
+      - kotlin.text.replace
+      - kotlin.text.Regex.replace
+      # Order of the Width/height are generally well known, it's more noise to make it explicit
+      - androidx.compose.ui.layout.MeasureScope.layout
+      - androidx.compose.ui.unit.Constraints.Companion.fixed
+    excludes: *testFolders
+    ignoreAnnotated:
+      - "Preview"
+      - "FullScreenPreviews"
 
 style:
   active: true
@@ -804,7 +821,7 @@ style:
   CanBeNonNullable:
     active: true
   CascadingCallWrapping:
-    active: false
+    active: true
     includeElvis: true
   ClassOrdering:
     active: false
@@ -820,6 +837,8 @@ style:
   DestructuringDeclarationWithTooManyEntries:
     active: true
     maxDestructuringEntries: 3
+  DoubleNegativeExpression:
+    active: true
   DoubleNegativeLambda:
     active: true
     negativeFunctions:
@@ -833,10 +852,12 @@ style:
   EqualsNullCall:
     active: true
   EqualsOnSignatureLine:
-    active: false
+    active: true
   ExplicitCollectionElementAccessMethod:
     active: false
   ExplicitItLambdaParameter:
+    active: true
+  ExplicitItLambdaMultipleParameters:
     active: true
   ExpressionBodySyntax:
     active: false
@@ -870,8 +891,6 @@ style:
     allowedPatterns: ''
   ForbiddenImport:
     active: false
-    imports: [ ]
-    forbiddenPatterns: ''
   ForbiddenMethodCall:
     active: true
     methods:
@@ -881,6 +900,12 @@ style:
         reason: "Use logcat for logging"
       - value: 'kotlinx.coroutines.flow.emptyFlow'
         reason: "Not emitting anything from a flow usually results in an UI getting stuck"
+  ForbiddenNamedParam:
+    active: false
+    methods: [ ]
+  ForbiddenOptIn:
+    active: false
+    markerClasses: [ ]
   ForbiddenSuppress:
     active: false
     rules: [ ]
@@ -939,12 +964,12 @@ style:
     excludeImportStatements: true
     excludeCommentStatements: false
     excludeRawStrings: true
-  MayBeConst:
+  MayBeConstant:
     active: true
   ModifierOrder:
     active: true
   MultilineLambdaItParameter:
-    active: false
+    active: true
   MultilineRawStringIndentation:
     active: true
     indentSize: 3
@@ -964,17 +989,17 @@ style:
   OptionalAbstractKeyword:
     active: true
   OptionalUnit:
-    active: false
-  PreferToOverPairSyntax:
-    active: false
+    active: true
   ProtectedMemberInFinalClass:
+    active: true
+  RedundantConstructorKeyword:
     active: true
   RedundantExplicitType:
     active: false
   RedundantHigherOrderMapUsage:
     active: true
-  RedundantVisibilityModifierRule:
-    active: false
+  RedundantVisibilityModifier:
+    active: true
   ReturnCount:
     active: false # This rule prevents us from using guard clauses after mapping data in the method
     max: 3
@@ -986,7 +1011,7 @@ style:
     active: true
   SerialVersionUIDInSerializableClass:
     active: true
-  SpacingBetweenPackageAndImports:
+  SpacingAfterPackageDeclaration:
     active: false
   StringShouldBeRawString:
     active: true
@@ -1007,11 +1032,15 @@ style:
     active: true
     acceptableLength: 5
     allowNonStandardGrouping: false
-  UnnecessaryAbstractClass:
-    active: false # Disabled until https://github.com/detekt/detekt/issues/5778 is resolved
+  AbstractClassCanBeConcreteClass:
+    active: true
     ignoreAnnotated: [ 'Module', 'Component' ]
-  UnnecessaryAnnotationUseSiteTarget:
-    active: false
+    # Sometimes, classes must be abstract in tests to avoid executing them via JUnit
+    excludes: *testFolders
+  AbstractClassCanBeInterface:
+    active: true
+  UnnecessaryAny:
+    active: true
   UnnecessaryApply:
     active: true
   UnnecessaryBackticks:
@@ -1029,26 +1058,32 @@ style:
   UnnecessaryParentheses:
     active: false # This rule can make precedence of operators confusing since we are prevented from inserting clarifying parentheses
     allowForUnclearPrecedence: false
-  UntilInsteadOfRangeTo:
+  RangeUntilInsteadOfRangeTo:
     active: false
-  UnusedImports:
+  UnusedImport:
     active: true
   UnusedParameter:
     active: true
     allowedNames: 'ignored|expected'
   UnusedPrivateClass:
     active: true
-  UnusedPrivateMember:
+  UnusedPrivateFunction:
     active: true
     allowedNames: '(_|ignored|expected|serialVersionUID)'
     ignoreAnnotated: [ 'Preview', 'FullScreenPreviews' ]
   UnusedPrivateProperty:
     active: true
     allowedNames: '_|ignored|expected|serialVersionUID'
+  UnusedVariable:
+    active: true
+    aliases: [ 'UNUSED_VARIABLE', 'unused' ]
+    allowedNames: 'ignored|_'
+  UnnecessaryReversed:
+    active: true
   UseAnyOrNoneInsteadOfFind:
     active: true
   UseArrayLiteralsInAnnotations:
-    active: false
+    active: true
   UseCheckNotNull:
     active: true
   UseCheckOrError:
@@ -1084,6 +1119,9 @@ style:
     ignoreLateinitVar: false
   WildcardImport:
     active: true
+  UnnecessaryFullyQualifiedName:
+    # Disable until https://github.com/detekt/detekt/issues/9018 is fixed
+    active: false
 
 Compose:
   ComposableAnnotationNaming:
@@ -1135,24 +1173,14 @@ Compose:
   RememberContentMissing:
     active: true
   UnstableCollections:
-    active: false # Regular collections are added to the stability file
+    active: false # Collections are now stable thanks to forced stable classes config
   ViewModelForwarding:
     active: true
   ViewModelInjection:
     active: true
 
-compiler:
-  CompilerInfo:
-    active: false
-    ignoreDiagnostic: [ ]
-  CompilerWarning:
-    active: true
-    ignoreDiagnostic:
-      # Ignore opt-in warnings (https://github.com/BraisGabin/detekt-compiler-rules/issues/47)
-      - OPT_IN_USAGE
-      - OPT_IN_OVERRIDE
-      - OPT_IN_USAGE_FUTURE_ERROR
-
 kotlinovanavigation:
   NavigationKeyNoEnums:
     active: true
+  NavigationSerializable:
+    active: false # Disable until the update to the new navigation

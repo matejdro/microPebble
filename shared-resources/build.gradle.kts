@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.lint.AndroidLintTask
+
 plugins {
    id("com.android.library")
    id("kotlinova")
@@ -36,6 +38,26 @@ tasks.configureEach {
       !name.contains("Lint", ignoreCase = true) // Android lint does not like disabling their tasks
    )
       enabled = false
+}
+
+tasks.withType(AndroidLintTask::class.java).configureEach {
+   if (this.name.contains("Baseline") || this.name.startsWith("lintVital")) {
+      // Baseline tasks and vital lint tasks do not expose sarif files
+      return@configureEach
+   }
+
+   // Workaround for the https://github.com/detekt/sarif4k/issues/220
+   doLast {
+      val sarifFile = sarifReportOutputFile.get().asFile
+      val sarifFileText = sarifFile.readText()
+
+      val fixedSarifText = sarifFileText.replace(
+         "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+         "https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/schemas/sarif-schema-2.1.0.json"
+      )
+
+      sarifFile.writeText(fixedSarifText)
+   }
 }
 
 kotlinova {

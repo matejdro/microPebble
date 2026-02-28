@@ -23,10 +23,9 @@ composeDnd = "0.4.0"
 composeGuard = "2.4.0"
 composePreference = "2.1.0"
 composeWebview = "0.33.6"
-dependencyAnalysis = "3.0.1"
+dependencyAnalysis = "3.5.0"
 desugarJdkLibs = "2.1.5"
-detekt = "1.23.8"
-detekt-compilerWarnings = "0.0.4"
+detekt = "2.0.0-alpha.2"
 detekt-compose = "0.5.6"
 dispatch = "1.0.0-beta10"
 foundationLayout = "1.10.4"
@@ -45,7 +44,8 @@ kotlin = "2.2.21"
 kotlin-coroutines = "1.10.2"
 kotlin-io = "0.8.0"
 kotlin-serialization = "1.9.0"
-kotlinova = "4.0.0-alpha08"
+kotlinova = "4.0.0-alpha16"
+kotlinova-navigation = "4.0.0-alpha08" # Temporary separate version for navigation
 ksp = "2.3.6"
 ktor = "3.2.3"
 libpebble3 = "0.0.0"
@@ -107,11 +107,10 @@ composePreference = { module = "me.zhanghai.compose.preference:preference", vers
 composeWebview = { module = "io.github.kevinnzou:compose-webview", version.ref = "composeWebview" }
 dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
 desugarJdkLibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
-detekt-api = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
-detekt-compilerWarnings = { module = "com.braisgabin.detekt:kotlin-compiler-wrapper", version.ref = "detekt-compilerWarnings" }
+detekt-api = { module = "dev.detekt:detekt-api", version.ref = "detekt" }
 detekt-compose = { module = "io.nlopez.compose.rules:detekt", version.ref = "detekt-compose" }
-detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
-detekt-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+detekt-ktlint = { module = "dev.detekt:detekt-rules-ktlint-wrapper", version.ref = "detekt" }
+detekt-plugin = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 dispatch = { module = "com.rickbusarow.dispatch:dispatch-core", version.ref = "dispatch" }
 dispatch-test = { module = "com.rickbusarow.dispatch:dispatch-test", version.ref = "dispatch" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
@@ -135,10 +134,10 @@ kotlinova-compose = { module = "si.inova.kotlinova:compose", version.ref = "kotl
 kotlinova-core = { module = "si.inova.kotlinova:core", version.ref = "kotlinova" }
 kotlinova-core-test = { module = "si.inova.kotlinova:core-test", version.ref = "kotlinova" }
 kotlinova-gradle = { module = "si.inova.kotlinova:gradle", version.ref = "kotlinova" }
-kotlinova-navigation = { module = "si.inova.kotlinova:navigation", version.ref = "kotlinova" }
-kotlinova-navigation-compiler = { module = "si.inova.kotlinova:navigation-compiler", version.ref = "kotlinova" }
+kotlinova-navigation = { module = "si.inova.kotlinova:navigation", version.ref = "kotlinova-navigation" }
+kotlinova-navigation-compiler = { module = "si.inova.kotlinova:navigation-compiler", version.ref = "kotlinova-navigation" }
 kotlinova-navigation-detekt = { module = "si.inova.kotlinova:navigation-detekt", version.ref = "kotlinova" }
-kotlinova-navigation-test = { module = "si.inova.kotlinova:navigation-test", version.ref = "kotlinova" }
+kotlinova-navigation-test = { module = "si.inova.kotlinova:navigation-test", version.ref = "kotlinova-navigation" }
 ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
@@ -167,7 +166,7 @@ unmock-androidJar = { module = "org.robolectric:android-all", version.ref = "unm
 unmock-plugin = { module = "com.github.bjoernq:unmockplugin", version.ref = "unmock-plugin" }
 
 [plugins]
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 paparazzi = { id = "app.cash.paparazzi", version.ref = "paparazzi" }
 serialization = "org.jetbrains.kotlin.plugin.serialization:2.3.10"

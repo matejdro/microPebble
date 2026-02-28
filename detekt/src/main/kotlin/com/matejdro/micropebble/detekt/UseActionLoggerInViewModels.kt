@@ -1,25 +1,16 @@
 package com.matejdro.micropebble.detekt
 
-import io.gitlab.arturbosch.detekt.api.CodeSmell
-import io.gitlab.arturbosch.detekt.api.Config
-import io.gitlab.arturbosch.detekt.api.Debt
-import io.gitlab.arturbosch.detekt.api.Entity
-import io.gitlab.arturbosch.detekt.api.Issue
-import io.gitlab.arturbosch.detekt.api.Rule
-import io.gitlab.arturbosch.detekt.api.Severity
+import dev.detekt.api.Config
+import dev.detekt.api.Entity
+import dev.detekt.api.Finding
+import dev.detekt.api.Rule
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClass
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.isPublic
 
-class UseActionLoggerInViewModels(ruleSetConfig: Config) : Rule(ruleSetConfig) {
-   override val issue: Issue = Issue(
-      javaClass.simpleName,
-      Severity.Defect,
-      "Every public method in the ViewModel should start with the action logger call",
-      Debt.FIVE_MINS
-   )
-
+class UseActionLoggerInViewModels(ruleSetConfig: Config) :
+   Rule(ruleSetConfig, "Every public method in the ViewModel should start with the action logger call") {
    private var inViewModel: Boolean = false
    private var checkForNextCallFunction: KtNamedFunction? = null
 
@@ -58,12 +49,9 @@ class UseActionLoggerInViewModels(ruleSetConfig: Config) : Rule(ruleSetConfig) {
             this.checkForNextCallFunction = null
 
             report(
-               listOf(
-                  CodeSmell(
-                     issue,
-                     Entity.atName(checkForNextCallFunction),
-                     "Public ViewModel function ${checkForNextCallFunction.name}() does not start with a logAction() call"
-                  )
+               Finding(
+                  Entity.atName(checkForNextCallFunction),
+                  "Public ViewModel function ${checkForNextCallFunction.name}() does not start with a logAction() call"
                )
             )
          }
@@ -72,12 +60,9 @@ class UseActionLoggerInViewModels(ruleSetConfig: Config) : Rule(ruleSetConfig) {
 
    private fun report(function: KtNamedFunction) {
       report(
-         listOf(
-            CodeSmell(
-               issue,
-               Entity.atName(function),
-               "Function ${function.name} does not start with a logAction() call"
-            )
+         Finding(
+            Entity.atName(function),
+            "Function ${function.name} does not start with a logAction() call"
          )
       )
    }

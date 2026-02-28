@@ -1,18 +1,17 @@
 package com.matejdro.micropebble.detekt
 
-import io.gitlab.arturbosch.detekt.api.Config
-import io.gitlab.arturbosch.detekt.api.RuleSet
-import io.gitlab.arturbosch.detekt.api.RuleSetProvider
+import dev.detekt.api.RuleSet
+import dev.detekt.api.RuleSetId
+import dev.detekt.api.RuleSetProvider
 
 class CustomRuleProvider : RuleSetProvider {
-   override val ruleSetId: String
-      get() = "custom"
+   override val ruleSetId = RuleSetId("custom")
 
-   override fun instance(config: Config): RuleSet {
+   override fun instance(): RuleSet {
       return RuleSet(
          ruleSetId,
          listOf(
-            UseActionLoggerInViewModels(config)
+            ::UseActionLoggerInViewModels
          )
       )
    }
