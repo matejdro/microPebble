@@ -22,7 +22,11 @@ jobs:
       - name: Globally enable build cache and parallel execution
         run: |
           mkdir -p ~/.gradle
-          echo -e 'org.gradle.caching=true\norg.gradle.parallel=true' > ~/.gradle/gradle.properties
+          
+          cat >> ~/.gradle/gradle.properties<< EOF
+          org.gradle.caching=true
+          org.gradle.parallel=true
+          EOF
       - name: Force all tasks to be rerun when debug mode is on
         # This allows us to force rerun the build if cache has gotten corrupted
         run: 'if [[ "${{ runner.debug }}" == "1" ]]; then
@@ -37,11 +41,15 @@ jobs:
           submodules: recursive
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 #v5
         with:
           java-version: '21'
           distribution: temurin
-          cache: gradle
+      - uses: burrunan/gradle-cache-action@663fbad34e03c8f12b27f4999ac46e3d90f87eca
+        with:
+          debug: false
+          concurrent: true
+          read-only: true
       - uses: android-actions/setup-android@7c5672355aaa8fde5f97a91aa9a99616d1ace6bc
       - run: sdkmanager "platforms;android-33" "platforms;android-34"
 
@@ -63,33 +71,24 @@ jobs:
         run: "./gradlew runDebugTests -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest --continue"
       - name: "Run Screenshot Tests"
         run: "./gradlew --continue verifyPaparazziDebug"
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action/linux@v2
-        if: always()
+
+      # Handoff results to the pull-request-post workflow
+
+      - run: echo ${{ github.event.number }} > pr_number.txt
+        if: (!cancelled())
+      - name: Upload Results
+        if: (!cancelled())
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6
         with:
-          comment_mode: failures
-          junit_files: |
+          name: results
+          path: |
             **/build/outputs/*-results/**/*.xml
             **/build/*-results/**/*.xml
-      #     GitHub Actions does not allow PR actions triggered from external contributors
-      #     to post comments. As a workaround, we upload metadata artifacts
-      #     and then sarif-comment.yaml workflow will run, which will post the comment
-      - run: echo ${{ github.event.number }} > pr_number.txt
-        if: failure()
-      - name: "Upload PR number"
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: pr-number
-          path: pr_number.txt
-      - name: "Upload sarif file"
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: pr-sarif
-          path: merge.sarif
+            pr_number.txt
+            ${{ github.event_path }}
+            merge.sarif
       - name: "Upload Screenshot test failures"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6
         if: failure()
         with:
           name: failed-screenshot-tests

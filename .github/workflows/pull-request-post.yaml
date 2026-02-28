@@ -1,0 +1,71 @@
+# For safety reasons, pull request jobs have no permissions for the project, so they cannot post comments etc.
+# Thus, pull requests jobs just upload their data and afterwards, this job runs to post comments etc. to the PR
+
+name: "pull-request-post"
+on:
+  workflow_run:
+    workflows: [ "pull-request-build" ]
+    types: [ completed ]
+
+permissions:
+  pull-requests: write
+  checks: write
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download and Extract Artifacts
+        uses: dawidd6/action-download-artifact@3fe16e87952bd761ad5fb4274bceb971b63f772f
+        continue-on-error: true
+        id: download
+        with:
+          run_id: ${{ github.event.workflow_run.id }}
+          path: artifacts
+          allow_forks: true
+      - name: Set the PR_NUM
+        if: steps.download.outcome == 'success'
+        id: pr-meta
+        run: |
+          pr=$(cat artifacts/results/microPebble/microPebble/pr_number.txt)
+          echo "pr_num=$pr" > $GITHUB_OUTPUT
+          echo "pr_ref=refs/pull/$pr/merge" >> $GITHUB_OUTPUT
+          mkdir -p repo
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6
+        if: steps.download.outcome == 'success'
+        with:
+          lfs: true
+          submodules: recursive
+          ref: ${{ steps.pr-meta.outputs.pr_ref }}
+          fetch-depth: 0
+          path: repo
+          persist-credentials: false
+      - name: Set git ref
+        if: steps.download.outcome == 'success'
+        id: git-hash
+        run:
+          ref=$(git rev-parse HEAD);echo "git_hash=$ref" > $GITHUB_OUTPUT
+        working-directory: repo
+      - name: Post SARIF findings as comments in the pull request
+        if: always() && steps.download.outcome == 'success' && hashFiles('artifacts/results/microPebble/microPebble/merge.sarif') != ''
+        uses: sett-and-hive/sarif-to-comment-action/composite@7e69cd5f511daf8e8804487150df819f8380018e
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          branch: "${{ steps.git-hash.outputs.git_hash }}"
+          pr-number: "${{ steps.pr-meta.outputs.pr_num }}"
+          title: Lint report
+          show-rule-details: false
+          sarif-file: 'artifacts/results/microPebble/microPebble/merge.sarif'
+          simple: true
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action/linux@c950f6fb443cb5af20a377fd0dfaa78838901040
+        if: always() && steps.download.outcome == 'success'
+        with:
+          comment_mode: failures
+          files: |
+            artifacts/**/TEST-*.xml
+          commit: ${{ github.event.workflow_run.head_sha }}
+          event_file: artifacts/results/_temp/_github_workflow/event.json
+          event_name: ${{ github.event.workflow_run.event }}
+          check_run: 'true'
