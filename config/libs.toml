@@ -1,27 +1,27 @@
 [versions]
 accompanist = "0.37.3"
-algolia = "3.36.0"
+algolia = "3.39.0"
+android-securityLints = "1.0.4"
 # See https://developer.android.com/jetpack/androidx/releases/compose-kotlin
 androidGradleCacheFix = "3.0.1"
 # @pin needs to match libpebble3's plugin
 androidGradlePlugin = "8.13.2"
-android-securityLints = "1.0.3"
 androidx-activity-compose = "1.12.4"
 androidx-annotation = "1.9.1"
-androidx-compose-material3 = "1.5.0-alpha12"
+androidx-compose-material3 = "1.5.0-alpha15"
 androidx-compose-runtime = "1.10.4"
 androidx-core = "1.17.0"
 androidx-core-splashscreen = "1.2.0"
 androidx-datastore = "1.2.0"
 androidx-lifecycle = "2.10.0"
-androidx-navigation3 = "1.0.0"
+androidx-navigation3 = "1.0.1"
 androidx-paging = "3.4.1"
 androidx-startup = "1.2.0"
 androidx-test-runner = "1.7.0"
 androidx-work = "2.11.1"
-coil = "3.3.0"
+coil = "3.4.0"
 composeDnd = "0.4.0"
-composePreference = "2.1.0"
+composePreference = "2.1.1"
 composeWebview = "0.33.6"
 dependencyAnalysis = "3.5.0"
 desugarJdkLibs = "2.1.5"
@@ -32,30 +32,31 @@ foundationLayout = "1.10.4"
 # @keep used in kts scripts directly
 jacoco = "0.8.14"
 jspecify = "1.0.0"
+junit = "6.0.3"
 junit4 = "4.13.2"
 junit4-parameterinjector = "1.21"
-junit = "6.0.3"
 kable = "0.42.0"
 kermit = "2.0.8"
 koin = "4.1.1"
 kotest = "6.1.4"
-kotlin = "2.2.21"
+kotlin = "2.3.10"
 kotlin-coroutines = "1.10.2"
-kotlin-io = "0.8.0"
-kotlin-serialization = "1.9.0"
+kotlin-io = "0.9.0"
+kotlin-serialization = "1.10.0"
 kotlinova = "4.0.0-alpha16"
 ksp = "2.3.6"
-ktor = "3.2.3"
+ktor = "3.4.0"
 libpebble3 = "0.0.0"
 logcat = "0.4"
-speex = "1946c84"
 metro = "0.10.2"
 moduleGraphAssert = "2.9.0"
 okio = "3.16.4"
 orgJson = "20251224"
-paparazzi = "2.0.0-alpha02"
+paparazzi = "2.0.0-alpha04"
 rebugger = "1.0.1"
 showkase = "1.0.5"
+# @pin It seems this is the latest stable version, we do not want `-dirty` version
+speex = "1946c84"
 tinylog = "2.7.0"
 turbine = "1.2.1"
 unmock-androidJar = "16-robolectric-13921718"
@@ -111,11 +112,11 @@ detekt-plugin = { module = "dev.detekt:detekt-gradle-plugin", version.ref = "det
 dispatch = { module = "com.rickbusarow.dispatch:dispatch-core", version.ref = "dispatch" }
 dispatch-test = { module = "com.rickbusarow.dispatch:dispatch-test", version.ref = "dispatch" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
-junit4 = { module = "junit:junit", version.ref = "junit4" }
-junit4-parameterinjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "junit4-parameterinjector" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
+junit4 = { module = "junit:junit", version.ref = "junit4" }
+junit4-parameterinjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "junit4-parameterinjector" }
 kable = { module = "com.juul.kable:kable-core", version.ref = "kable" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
@@ -134,8 +135,8 @@ kotlinova-core-test = { module = "si.inova.kotlinova:core-test", version.ref = "
 kotlinova-gradle = { module = "si.inova.kotlinova:gradle", version.ref = "kotlinova" }
 kotlinova-navigation = { module = "si.inova.kotlinova:navigation", version.ref = "kotlinova" }
 kotlinova-navigation-compiler = { module = "si.inova.kotlinova:navigation-compiler", version.ref = "kotlinova" }
-kotlinova-navigation-navigation3 = { module = "si.inova.kotlinova:navigation-navigation3", version.ref = "kotlinova" }
 kotlinova-navigation-detekt = { module = "si.inova.kotlinova:navigation-detekt", version.ref = "kotlinova" }
+kotlinova-navigation-navigation3 = { module = "si.inova.kotlinova:navigation-navigation3", version.ref = "kotlinova" }
 kotlinova-navigation-test = { module = "si.inova.kotlinova:navigation-test", version.ref = "kotlinova" }
 ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -146,9 +147,9 @@ ktor-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-serialization = { module = "io.ktor:ktor-serialization", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-utils = { module = "io.ktor:ktor-utils", version.ref = "ktor" }
-logcat = { module = "com.squareup.logcat:logcat", version.ref = "logcat" }
 # Synthetic library declaration that then gets replaced with the included libpebble3
 libpebble3 = { module = "com.coredevices:libpebble3", version.ref = "libpebble3" }
+logcat = { module = "com.squareup.logcat:logcat", version.ref = "logcat" }
 metro-plugin = { module = "dev.zacsweers.metro:gradle-plugin", version.ref = "metro" }
 moduleGraphAssert = { module = "com.jraska.module.graph.assertion:plugin", version.ref = "moduleGraphAssert" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
