@@ -52,11 +52,11 @@ dependencies {
    detektPlugins(libs.detekt.compose)
 }
 
-tasks.register("commit-hooks", Copy::class) {
+val hooksTask = tasks.register("git-hooks", Copy::class) {
    from("$rootDir/../config/hooks/")
    into("$rootDir/../.git/hooks")
 }
 
 afterEvaluate {
-   tasks.getByName("jar").dependsOn("commit-hooks")
+   tasks.getByName("jar").dependsOn(hooksTask)
 }
