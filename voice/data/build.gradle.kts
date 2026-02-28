@@ -5,9 +5,7 @@ plugins {
 
 android {
    namespace = "com.matejdro.micropebble.voice.data"
-   buildFeatures {
-      androidResources = true
-   }
+   androidResources.enable = true
 }
 
 dependencies {

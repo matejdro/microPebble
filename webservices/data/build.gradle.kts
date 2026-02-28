@@ -7,9 +7,7 @@ plugins {
 android {
 
    namespace = "com.matejdro.micropebble.appstore.data"
-   buildFeatures {
-      androidResources = true
-   }
+   androidResources.enable = true
 }
 
 dependencies {

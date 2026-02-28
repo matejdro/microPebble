@@ -10,9 +10,7 @@ plugins {
 android {
    namespace = "com.matejdro.micropebble.webservices.ui"
 
-   buildFeatures {
-      androidResources = true
-   }
+   androidResources.enable = true
 }
 
 dependencies {

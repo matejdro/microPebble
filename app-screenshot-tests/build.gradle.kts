@@ -7,9 +7,7 @@ plugins {
 android {
    namespace = "com.matejdro.micropebble.screenshottests"
 
-   buildFeatures {
-      androidResources = true
-   }
+   androidResources.enable = true
 
    testOptions {
       unitTests.all {

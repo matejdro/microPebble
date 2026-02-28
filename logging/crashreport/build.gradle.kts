@@ -6,9 +6,7 @@ plugins {
 android {
 
    namespace = "com.matejdro.micropebble.crashreport"
-   buildFeatures {
-      androidResources = true
-   }
+   androidResources.enable = true
 }
 
 dependencies {
