@@ -55,7 +55,7 @@ configure<DetektExtension> {
    config.setFrom("$rootDir/config/detekt.yml")
 }
 
-tasks.withType<Detekt>() {
+tasks.withType<Detekt>().configureEach {
    val buildDir = project.layout.buildDirectory.asFile.get().absolutePath
    // Exclude all generated files
    exclude {
