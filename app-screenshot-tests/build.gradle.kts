@@ -13,7 +13,8 @@ android {
       unitTests.all {
          it.useJUnit()
 
-         it.maxParallelForks = 1 // minOf(Runtime.getRuntime().availableProcessors(), 2)
+         it.maxParallelForks = 3
+         it.systemProperty("maxParallelForks", it.maxParallelForks)
       }
    }
 }
