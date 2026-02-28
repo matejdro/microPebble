@@ -45,8 +45,8 @@ jacoco = "0.8.13"
 jspecify = "1.0.0"
 junit4 = "4.13.2"
 junit4-parameterinjector = "1.21"
-junit5 = "6.0.3"
-junit5-launcher = "6.0.3"
+junit = "6.0.3"
+junit-launcher = "6.0.3"
 kable = "0.42.0"
 keeperPlugin = "0.16.1"
 kermit = "2.0.8"
@@ -146,9 +146,9 @@ dispatch-test = { module = "com.rickbusarow.dispatch:dispatch-test", version.ref
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 junit4-parameterinjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "junit4-parameterinjector" }
-junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
-junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
-junit5-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit5-launcher" }
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-launcher" }
 kable = { module = "com.juul.kable:kable-core", version.ref = "kable" }
 keeperPlugin = { module = "com.slack.keeper:keeper", version.ref = "keeperPlugin" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
