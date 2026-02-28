@@ -28,7 +28,6 @@ androidx-test-runner = "1.7.0"
 androidx-test-services = "1.6.0"
 androidx-test-uiautomator = "2.3.0"
 androidx-work = "2.11.1"
-certificateTransparency = "2.8.20"
 coil = "3.3.0"
 composeDnd = "0.4.0"
 composeGuard = "2.4.0"
@@ -128,8 +127,6 @@ androidx-test-runner = { module = "androidx.test:runner", version.ref = "android
 androidx-test-services = { module = "androidx.test.services:test-services", version.ref = "androidx-test-services" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidx-test-uiautomator" }
 androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
-certificateTransparency = { module = "com.appmattus.certificatetransparency:certificatetransparency", version.ref = "certificateTransparency" }
-certificateTransparency-android = { module = "com.appmattus.certificatetransparency:certificatetransparency-android", version.ref = "certificateTransparency" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 composeDnd = { module = "com.mohamedrejeb.dnd:compose-dnd", version.ref = "composeDnd" }
