@@ -39,4 +39,7 @@ Ignore unknown issue id to allow us to configure issues in this file  that
         <ignore path="**/libpebble3/**" />
         <ignore path="**/kotlin-speex/**" />
     </issue>
+
+    <!-- Temporarily ignore until https://github.com/google/android-security-lints/pull/14 is released -->
+    <issue id="MissingAutoVerifyAttribute" severity="ignore" />
 </lint>

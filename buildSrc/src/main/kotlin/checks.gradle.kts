@@ -21,6 +21,10 @@ if (isAndroidProject()) {
          sarifReport = true
       }
    }
+
+   dependencies {
+      add("lintChecks", (libs.android.securityLints))
+   }
 }
 
 detekt {

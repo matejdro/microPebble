@@ -5,6 +5,7 @@ algolia = "3.36.0"
 androidGradleCacheFix = "3.0.1"
 # @pin needs to match libpebble3's plugin
 androidGradlePlugin = "8.13.1"
+android-securityLints = "1.0.3"
 androidx-activity-compose = "1.12.4"
 androidx-annotation = "1.9.1"
 androidx-benchmark = "1.4.1"
@@ -83,6 +84,7 @@ accompanist-permissions = { module = "com.google.accompanist:accompanist-permiss
 algolia = { module = "com.algolia:algoliasearch-client-kotlin", version.ref = "algolia" }
 # Dummy entry, we don't need to actually use the stdlib explicitly, but it is used for the version checker to auto update kotlin
 android-agp = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
+android-securityLints = { module = "com.android.security.lint:lint", version.ref = "android-securityLints" }
 androidGradleCacheFix = { module = "org.gradle.android.cache-fix:org.gradle.android.cache-fix.gradle.plugin", version.ref = "androidGradleCacheFix" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
