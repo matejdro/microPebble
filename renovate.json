@@ -1,0 +1,21 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommitTypeAll(chore)",
+    ":semanticCommitScopeDisabled",
+    "helpers:pinGitHubActionDigestsToSemver"
+  ],
+  "minimumReleaseAge": "7 days",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
+  "gradle": {
+    "managerFilePatterns": [
+      "config/libs.toml"
+    ]
+  },
+  "schedule": [
+    "* 20-23 * * 2"
+  ],
+  "updateNotScheduled": true,
+  "timezone": "Europe/Ljubljana"
+}
