@@ -65,7 +65,7 @@ jobs:
       - name: Lint
         run: "./gradlew lintRelease detektMain detektTest -x detektDebug -x detektDebugUnitTest assertModuleGraph buildHealth detectTooManyFiles debugComposeCompilerCheck reportMerge --continue"
       - name: Run Unit Tests
-        run: "./gradlew test -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest"
+        run: "./gradlew test -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest --continue"
       - name: "Generate new Screenshot Tests"
         run: "config/generate-screenshots.sh master"
       - name: "Run Screenshot Tests"
