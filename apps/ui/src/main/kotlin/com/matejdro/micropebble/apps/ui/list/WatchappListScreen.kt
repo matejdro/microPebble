@@ -111,7 +111,7 @@ class WatchappListScreen(
    @Composable
    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
    override fun Content(key: WatchappListKey) {
-      val state = viewModel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      val state = viewModel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention()
       val appInstallSources = viewModel.installationSources.collectAsState(emptyMap()).value
       val selectPbwResult = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { pbwUri ->
          if (pbwUri != null) {
@@ -122,7 +122,7 @@ class WatchappListScreen(
       var fixMissingSourceAppId: Uuid? by remember { mutableStateOf(null) }
 
       ProgressErrorSuccessScaffold(
-         state,
+         state::value,
          Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)

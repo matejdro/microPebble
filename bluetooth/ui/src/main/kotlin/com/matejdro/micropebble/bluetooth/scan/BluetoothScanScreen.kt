@@ -76,7 +76,7 @@ class BluetoothScanScreen(
    override fun Content(key: BluetoothScanScreenKey) {
       val state = viewmodel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention()
       Surface() {
-         ProgressErrorSuccessScaffold(state.value) { scanState ->
+         ProgressErrorSuccessScaffold(state::value) { scanState ->
             val bluetoothScanState = getBluetoothScanState(scanState)
             val context = LocalContext.current
             val companionManager = context.getSystemService<CompanionDeviceManager>()!!

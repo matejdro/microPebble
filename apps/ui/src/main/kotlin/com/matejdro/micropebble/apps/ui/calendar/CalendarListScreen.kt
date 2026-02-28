@@ -45,10 +45,10 @@ class CalendarListScreen(
 ) : Screen<CalendarListScreenKey>() {
    @Composable
    override fun Content(key: CalendarListScreenKey) {
-      val stateOutcome = viewModel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      val stateOutcome = viewModel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention()
 
       ProgressErrorSuccessScaffold(
-         stateOutcome,
+         stateOutcome::value,
          Modifier
             .fillMaxSize()
             .safeDrawingPadding()

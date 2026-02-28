@@ -63,10 +63,10 @@ class OnboardingScreen(
 ) : Screen<OnboardingKey>() {
    @Composable
    override fun Content(key: OnboardingKey) {
-      val state by viewModel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention()
+      val state = viewModel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention()
 
       ProgressErrorSuccessScaffold(
-         state,
+         state::value,
          Modifier
             .fillMaxSize()
             .safeDrawingPadding()

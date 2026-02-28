@@ -39,9 +39,9 @@ class DeveloperConnectionScreen(
 ) : Screen<DeveloperConnectionScreenKey>() {
    @Composable
    override fun Content(key: DeveloperConnectionScreenKey) {
-      val state = viewModel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      val state = viewModel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention()
       ProgressErrorSuccessScaffold(
-         state,
+         state::value,
          Modifier
             .fillMaxSize()
             .safeDrawingPadding()

@@ -112,7 +112,7 @@ private fun WebservicesAuthScreenContent(
 ) {
    var setupDialogData by remember { mutableStateOf(if (initialToken is Outcome.Success) initialToken.data else null) }
    var setupDialogShown by remember { mutableStateOf(if (initialToken is Outcome.Success) initialToken.data != null else false) }
-   ProgressErrorSuccessScaffold(initialToken) { initialTokenData ->
+   ProgressErrorSuccessScaffold({ initialToken }) { initialTokenData ->
       LaunchedEffect(initialTokenData) {
          if (initialTokenData != null) {
             setupDialogShown = true

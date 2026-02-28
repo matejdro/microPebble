@@ -54,7 +54,7 @@ class UpdateFirmwareScreen(
 ) : Screen<FirmwareUpdateScreenKey>() {
    @Composable
    override fun Content(key: FirmwareUpdateScreenKey) {
-      val state = viewModel.watchInfo.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      val state = viewModel.watchInfo.collectAsStateWithLifecycleAndBlinkingPrevention()
       val updateState = viewModel.updateStatus.collectAsStateWithLifecycle()
 
       val context = LocalContext.current
@@ -66,7 +66,7 @@ class UpdateFirmwareScreen(
       }
 
       ProgressErrorSuccessScaffold(
-         state,
+         state::value,
          Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)

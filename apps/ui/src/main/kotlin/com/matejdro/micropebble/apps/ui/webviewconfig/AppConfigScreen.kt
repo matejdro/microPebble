@@ -28,10 +28,10 @@ class AppConfigScreen(
 ) : Screen<AppConfigScreenKey>() {
    @Composable
    override fun Content(key: AppConfigScreenKey) {
-      val url = viewModel.configUrl.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      val url = viewModel.configUrl.collectAsStateWithLifecycleAndBlinkingPrevention()
 
       ProgressErrorSuccessScaffold(
-         url,
+         url::value,
          Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)

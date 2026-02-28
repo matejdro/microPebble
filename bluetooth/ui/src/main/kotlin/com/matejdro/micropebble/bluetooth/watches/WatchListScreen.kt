@@ -76,10 +76,10 @@ class WatchListScreen(
 ) : Screen<WatchListKey>() {
    @Composable
    override fun Content(key: WatchListKey) {
-      val state = viewModel.state.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      val state = viewModel.state.collectAsStateWithLifecycleAndBlinkingPrevention()
 
       Surface {
-         ProgressErrorSuccessScaffold(state, Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) { state ->
+         ProgressErrorSuccessScaffold(state::value, Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) { state ->
             WatchListScreenContent(
                state = state,
                startPairing = { navigator.navigateTo(BluetoothScanScreenKey) },

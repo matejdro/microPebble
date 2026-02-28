@@ -61,10 +61,10 @@ class NotificationAppListScreen(
 ) : Screen<NotificationAppListKey>() {
    @Composable
    override fun Content(key: NotificationAppListKey) {
-      val state = viewModel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      val state = viewModel.uiState.collectAsStateWithLifecycleAndBlinkingPrevention()
 
       ProgressErrorSuccessScaffold(
-         state,
+         state::value,
          Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)

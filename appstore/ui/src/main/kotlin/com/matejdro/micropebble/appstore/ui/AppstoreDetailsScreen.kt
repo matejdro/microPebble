@@ -108,7 +108,7 @@ class AppstoreDetailsScreen(
    @Composable
    override fun Content(key: AppstoreDetailsScreenKey) {
       val installState = viewModel.appState.collectAsStateWithLifecycleAndBlinkingPrevention().value ?: Outcome.Progress()
-      val dataState = viewModel.appDataState.collectAsStateWithLifecycleAndBlinkingPrevention().value
+      val dataState = viewModel.appDataState.collectAsStateWithLifecycleAndBlinkingPrevention()
       val snackbarHostState = remember { SnackbarHostState() }
 
       LaunchedEffect(Unit) {
@@ -119,7 +119,7 @@ class AppstoreDetailsScreen(
 
       var isWarningPopupShown by remember { mutableStateOf(false) }
 
-      ProgressErrorSuccessScaffold(dataState) { app ->
+      ProgressErrorSuccessScaffold(dataState::value) { app ->
          AppstoreDetailsContent(
             timeProvider = timeProvider,
             app = app,

@@ -314,7 +314,7 @@ private fun AppsSearchBox(
          is Outcome.Progress if searchResults.data != null -> Outcome.Success(searchResults.data!!)
          else -> searchResults
       }
-      ProgressErrorSuccessScaffold(outcome) { results ->
+      ProgressErrorSuccessScaffold({ outcome }) { results ->
          LazyVerticalStaggeredGrid(
             columns = appGridCells,
             modifier = Modifier
