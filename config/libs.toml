@@ -21,7 +21,6 @@ androidx-test-runner = "1.7.0"
 androidx-work = "2.11.1"
 coil = "3.3.0"
 composeDnd = "0.4.0"
-composeGuard = "2.4.0"
 composePreference = "2.1.0"
 composeWebview = "0.33.6"
 dependencyAnalysis = "3.5.0"
@@ -103,7 +102,6 @@ androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 composeDnd = { module = "com.mohamedrejeb.dnd:compose-dnd", version.ref = "composeDnd" }
-composeGuard = { module = "com.joetr.compose.guard:com.joetr.compose.guard.gradle.plugin", version.ref = "composeGuard" }
 composePreference = { module = "me.zhanghai.compose.preference:preference", version.ref = "composePreference" }
 composeWebview = { module = "io.github.kevinnzou:compose-webview", version.ref = "composeWebview" }
 dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }

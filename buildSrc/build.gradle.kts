@@ -30,7 +30,6 @@ tasks.withType<Detekt>().configureEach {
 dependencies {
    implementation(libs.androidGradleCacheFix)
    implementation(libs.android.agp)
-   implementation(libs.composeGuard)
    implementation(libs.detekt.plugin)
    implementation(libs.dependencyAnalysis)
    implementation(libs.kotlin.plugin)

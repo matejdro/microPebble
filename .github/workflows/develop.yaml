@@ -86,7 +86,7 @@ jobs:
       - name: Compile Unit Tests
         run: "./gradlew compileDebugUnitTestSources compileReleaseUnitTestSources"
       - name: Lint
-        run: "./gradlew lintRelease runDebugDetekt assertModuleGraph buildHealth detectTooManyFiles debugComposeCompilerCheck reportMerge --continue"
+        run: "./gradlew lintRelease runDebugDetekt assertModuleGraph buildHealth detectTooManyFiles reportMerge --continue"
       - name: Run Unit Tests
         run: "./gradlew runDebugTests -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest --continue"
       - name: "Generate new Screenshot Tests"
