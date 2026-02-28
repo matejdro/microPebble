@@ -75,8 +75,8 @@ fun WatchAppDisplay(
          }
 
          val padCornerSize = CornerSize(8.dp)
-         app.screenshotImages.firstOrNull()?.let {
-            val (imageUrl, hardware) = it.getImage(platform?.isCircular() == true)
+         app.screenshotImages.firstOrNull()?.let { screenshot ->
+            val (imageUrl, hardware) = screenshot.getImage(platform?.isCircular() == true)
             val ratio = ApplicationScreenshot.Hardware.fromHardwarePlatform(app.screenshotHardware)?.aspectRatio
                ?: hardware.aspectRatio
             AsyncImage(
@@ -92,10 +92,10 @@ fun WatchAppDisplay(
                      } else {
                         clip(
                            RoundedCornerShape(
-                              cardShape.topStart - padCornerSize,
-                              cardShape.topEnd - padCornerSize,
-                              cardShape.bottomEnd - padCornerSize,
-                              cardShape.bottomStart - padCornerSize
+                              topStart = cardShape.topStart - padCornerSize,
+                              topEnd = cardShape.topEnd - padCornerSize,
+                              bottomEnd = cardShape.bottomEnd - padCornerSize,
+                              bottomStart = cardShape.bottomStart - padCornerSize
                            )
                         )
                      }

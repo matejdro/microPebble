@@ -36,7 +36,8 @@ class RecognitionListenerImpl(
             SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS ->
                TranscriptionResult.Success(
                   context.getString(R.string.error_voice_not_enabled_short)
-                     .split(" ").map { TranscriptionWord(it, 1f) }
+                     .split(" ")
+                     .map { TranscriptionWord(it, 1f) }
                )
 
             else -> TranscriptionResult.Error("Unknown error: $error")

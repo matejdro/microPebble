@@ -798,6 +798,8 @@ potential-bugs:
       - kotlin.text.substring
       - kotlin.text.replace
       - kotlin.text.Regex.replace
+      - kotlinx.coroutines.flow.combine
+      - androidx.compose.runtime.LaunchedEffect
       # Order of the Width/height are generally well known, it's more noise to make it explicit
       - androidx.compose.ui.layout.MeasureScope.layout
       - androidx.compose.ui.unit.Constraints.Companion.fixed

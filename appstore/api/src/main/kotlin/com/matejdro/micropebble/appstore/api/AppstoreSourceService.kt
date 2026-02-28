@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlin.uuid.Uuid
 
 interface AppstoreSourceService {
-   val isDefault: Flow<Boolean>
+   val sourcesAreDefault: Flow<Boolean>
    val sources: Flow<List<AppstoreSource>>
    val enabledSources: Flow<List<AppstoreSource>>
    suspend fun reorderSource(source: AppstoreSource, newIndex: Int)

@@ -68,16 +68,16 @@ class NotificationAppListScreen(
          Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-      ) {
+      ) { screenState ->
          NotificationAppListScreenContent(
-            it,
-            viewModel::setAppEnabled,
-            viewModel::setNotificationsPhoneMute,
-            viewModel::setCallsPhoneMute,
-            viewModel::setRespectDoNotDisturb,
-            viewModel::setSendNotifications,
-            viewModel::setUseAndroidVibrationPatterns,
-            viewModel::setSendCalendarReminders,
+            state = screenState,
+            setAppEnabled = viewModel::setAppEnabled,
+            setNotificationsPhoneMute = viewModel::setNotificationsPhoneMute,
+            setCallsPhoneMute = viewModel::setCallsPhoneMute,
+            setRespectDoNotDisturb = viewModel::setRespectDoNotDisturb,
+            setSendNotifications = viewModel::setSendNotifications,
+            setUseAndroidVibrationPatterns = viewModel::setUseAndroidVibrationPatterns,
+            setSendCalendarReminders = viewModel::setSendCalendarReminders,
          )
       }
    }
@@ -253,11 +253,11 @@ private fun AppIcon(packageName: String) {
 @ShowkaseComposable(group = "Test")
 internal fun NotificationAppListScreenContentPreview() {
    PreviewTheme {
-      val apps = List(10) {
+      val apps = List(10) { index ->
          AppWithCount(
             NotificationAppItem(
-               "pkg.$it",
-               "App $it",
+               "pkg.$index",
+               "App $index",
                MuteState.Never,
                emptyList(),
                MillisecondInstant(Instant.DISTANT_PAST),

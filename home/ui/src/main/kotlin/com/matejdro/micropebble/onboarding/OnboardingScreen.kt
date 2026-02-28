@@ -70,11 +70,11 @@ class OnboardingScreen(
          Modifier
             .fillMaxSize()
             .safeDrawingPadding()
-      ) {
+      ) { onboardingState ->
          OnboardingContent(
-            it,
-            viewModel::requestNotificationPermissions,
-            {
+            state = onboardingState,
+            requestNotificationListenerPermission = viewModel::requestNotificationPermissions,
+            continueToApp = {
                navigator.navigate(
                   ReplaceBackstack(
                      HomeScreenKey(WatchListKey),
@@ -148,8 +148,8 @@ private fun NotificationPermission() {
    var rejectedPermission by remember { mutableStateOf(false) }
    val permissionState = rememberPermissionState(
       Manifest.permission.POST_NOTIFICATIONS,
-   ) {
-      if (!it) {
+   ) { granted ->
+      if (!granted) {
          rejectedPermission = true
       }
    }
@@ -172,8 +172,8 @@ private fun ContactsPermission() {
    var rejectedPermission by remember { mutableStateOf(false) }
    val permissionState = rememberPermissionState(
       Manifest.permission.READ_CONTACTS,
-   ) {
-      if (!it) {
+   ) { granted ->
+      if (!granted) {
          rejectedPermission = true
       }
    }
@@ -206,8 +206,8 @@ private fun LocationPermission() {
    }
    val backgroundPermissionState = rememberPermissionState(
       Manifest.permission.ACCESS_BACKGROUND_LOCATION
-   ) {
-      if (!it) {
+   ) { granted ->
+      if (!granted) {
          rejectedPermission = true
       }
    }

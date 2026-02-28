@@ -224,9 +224,9 @@ private fun WebservicesAuthScreenContent(
             sources,
             potentialToken,
             onDismissed = { setupDialogShown = false },
-            onSubmitted = {
+            onSubmitted = { webToken ->
                setupDialogShown = false
-               authenticate(it)
+               authenticate(webToken)
             },
             {
                makeToken(it)

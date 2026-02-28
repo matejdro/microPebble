@@ -61,8 +61,7 @@ class UpdateFirmwareViewModel(
       resources.launchResourceControlTask(_watchInfo) {
          val watch = watches.watches.first()
             .filterIsInstance<CommonConnectedDevice>()
-            .filter { key.watchSerial == null || key.watchSerial == it.serial }
-            .firstOrNull()
+            .firstOrNull { key.watchSerial == null || key.watchSerial == it.serial }
             ?: throw WatchDisconnectedException()
 
          emit(Outcome.Success(UpdateFirmwareState(watch, key.pbzFile)))
@@ -104,12 +103,15 @@ class UpdateFirmwareViewModel(
                   ?: throw WatchDisconnectedException()
             watch.sideloadFirmware(Path(tmpFile.absolutePath))
 
-            observeFirmwareUpdateStatus(statusChannel, this@withDefault, this@launchResourceControlTask)
+            observeFirmwareUpdateStatus(
+               statusChannel = statusChannel,
+               scope = this@withDefault,
+               block = this@launchResourceControlTask,
+            )
 
             emit(Outcome.Success(Unit))
          } finally {
             tmpFile.delete()
-            Unit // Extra Unit to not trip up detekt
          }
       }
    }
@@ -128,8 +130,8 @@ class UpdateFirmwareViewModel(
                stopOnIdle = true
                progressJob?.cancel()
                progressJob = scope.launch {
-                  status.progress.collect {
-                     block.emit(Outcome.Progress(progress = it))
+                  status.progress.collect { progress ->
+                     block.emit(Outcome.Progress(progress = progress))
                   }
                }
             }
@@ -168,22 +170,19 @@ class UpdateFirmwareViewModel(
 
    private fun copyFirmwareToTempFile(uri: Uri): File {
       val tmpFile = File.createTempFile("pbz", null)
-      val stream =
-         requireNotNull(context.contentResolver.openInputStream(uri)) {
-            "Files provider should not return null streams"
+      context.contentResolver.openInputStream(uri)?.use { stream ->
+         tmpFile.sink().use { fileSink ->
+            stream.source().buffer().use { it.readAll(fileSink) }
          }
-
-      tmpFile.sink().use { fileSink ->
-         stream.source().buffer().use { it.readAll(fileSink) }
-      }
+      } ?: error("Files provider should not return null streams")
       return tmpFile
    }
 
    private fun getFileName(uri: Uri): String? {
       val projection = arrayOf<String?>(MediaStore.MediaColumns.DISPLAY_NAME)
-      return context.contentResolver.query(uri, projection, null, null, null).use {
-         if (it?.moveToFirst() != true) return@use null
-         it.getString(0)
+      return context.contentResolver.query(uri, projection, null, null, null).use { cursor ->
+         if (cursor?.moveToFirst() != true) return@use null
+         cursor.getString(0)
       }
    }
 }

@@ -56,7 +56,8 @@ class DeveloperConnectionScreenViewModel(
                flowOf(Outcome.Success(DeveloperConnectionScreenState()))
             } else {
                selectedWatch.flatMapLatest { savedSelectedWatch ->
-                  val watchesUiModels = connectedWatches.map { DeveloperConnectionScreenState.Watch(it.name, it.serial) }
+                  val watchesUiModels = connectedWatches
+                     .map { DeveloperConnectionScreenState.Watch(title = it.name, serial = it.serial) }
                   val currentlySelectedWatchSerial = savedSelectedWatch
                      .takeIf { selectedWatchSerial -> watchesUiModels.any { it.serial == selectedWatchSerial } }
                      ?: watchesUiModels.first().serial

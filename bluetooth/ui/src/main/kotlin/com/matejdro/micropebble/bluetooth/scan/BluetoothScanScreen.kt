@@ -102,11 +102,12 @@ class BluetoothScanScreen(
 
    @Composable
    private fun getBluetoothScanState(scanState: ScanState): BluetoothScanStateResult {
-      val turnOnBluetoothIntent = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-         if (it.resultCode == Activity.RESULT_OK) {
-            viewmodel.toggleScan()
+      val turnOnBluetoothIntent =
+         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+            if (activityResult.resultCode == Activity.RESULT_OK) {
+               viewmodel.toggleScan()
+            }
          }
-      }
 
       val bluetoothPermission = rememberMultiplePermissionsState(
          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -120,7 +121,7 @@ class BluetoothScanScreen(
             )
          }
       ) { permissions ->
-         if (permissions.values.all { it }) {
+         if (permissions.values.all { granted -> granted }) {
             if (!scanState.bluetoothOn) {
                turnOnBluetoothIntent.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
             } else {

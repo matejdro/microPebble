@@ -291,10 +291,10 @@ private fun AppstoreDetailsContent(
       if (showVersionSheet) {
          ModalBottomSheet(onDismissRequest = { showVersionSheet = false }, sheetState = rememberModalBottomSheetState()) {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(8.dp)) {
-               itemsWithDivider(app.changelog) {
-                  Text(it.version, Modifier.padding(8.dp), style = MaterialTheme.typography.titleLarge)
-                  Text(it.publishedDate.formatDate(timeProvider.systemDefaultZoneId()), Modifier.padding(8.dp))
-                  Text(it.releaseNotes, Modifier.padding(8.dp))
+               itemsWithDivider(app.changelog) { entry ->
+                  Text(entry.version, Modifier.padding(8.dp), style = MaterialTheme.typography.titleLarge)
+                  Text(entry.publishedDate.formatDate(timeProvider.systemDefaultZoneId()), Modifier.padding(8.dp))
+                  Text(entry.releaseNotes, Modifier.padding(8.dp))
                }
             }
          }
@@ -312,13 +312,13 @@ private fun AppstoreDetailsContent(
                for ((appPlatform, appCompatibility) in app.compatibility - "android" - "ios") {
                   if (appCompatibility.supported) {
                      val type = WatchType.fromCodename(appPlatform)
-                     type?.let {
+                     type?.let { watchType ->
                         item {
                            Row(
                               horizontalArrangement = Arrangement.spacedBy(8.dp),
                               verticalAlignment = Alignment.CenterVertically
                            ) {
-                              Icon(painterResource(it.getIcon()), contentDescription = null)
+                              Icon(painterResource(watchType.getIcon()), contentDescription = null)
                               val watches = getWatchesForCodename(type.codename).joinToString(", ")
                               Text(stringResource(R.string.compatibility_info, type.codename, watches))
                            }
@@ -337,9 +337,9 @@ private fun AppstoreDetailsContent(
 
 @Composable
 private fun Banner(app: Application, content: @Composable () -> Unit = {}) {
-   app.headerImages.firstOrNull()?.let {
+   app.headerImages.firstOrNull()?.let { image ->
       AsyncImage(
-         model = it.medium,
+         model = image.medium,
          contentDescription = "Banner for ${app.title}",
          modifier = Modifier
             .fillMaxWidth()
@@ -386,16 +386,17 @@ private fun AppScreenshotCarousel(app: Application, modifier: Modifier = Modifie
       preferredItemWidth = 144.dp,
       modifier = modifier.clip(CardDefaults.shape),
       itemSpacing = 8.dp,
-   ) {
-      val (imageUrl, hardware) = app.screenshotImages[it].getImage()
+   ) { index ->
+      val (imageUrl, hardware) = app.screenshotImages[index].getImage()
       val ratio = ApplicationScreenshot.Hardware.fromHardwarePlatform(app.screenshotHardware)?.aspectRatio
          ?: hardware.aspectRatio
       AsyncImage(
          model = imageUrl,
-         contentDescription = "Screenshot image $it for ${app.title}",
+         contentDescription = "Screenshot image $index for ${app.title}",
          modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(ratio).run {
+            .aspectRatio(ratio)
+            .run {
                if (hardware == ApplicationScreenshot.Hardware.CIRCLE) {
                   maskClip(CircleShape)
                } else {

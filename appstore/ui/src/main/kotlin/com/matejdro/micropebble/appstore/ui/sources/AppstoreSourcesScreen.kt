@@ -48,10 +48,10 @@ import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.appstore.api.AlgoliaData
 import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.appstore.ui.R
+import com.matejdro.micropebble.appstore.ui.common.NoSourcesDisplay
 import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
-import com.matejdro.micropebble.appstore.ui.common.NoSourcesDisplay
 import com.matejdro.micropebble.ui.lists.ReorderableListContainer
 import si.inova.kotlinova.compose.components.itemsWithDivider
 import si.inova.kotlinova.navigation.di.ContributesScreenBinding
@@ -71,7 +71,7 @@ class AppstoreSourcesScreen(
    override fun Content(key: AppstoreSourcesScreenKey) {
       val listState = rememberLazyListState()
       val listItems by viewModel.sources.collectAsState(emptyList())
-      val isDefaultSources = viewModel.isDefaultSources.collectAsState(initial = true).value
+      val isDefaultSources = viewModel.sourcesAreDefault.collectAsState(initial = true).value
 
       var editedSource: AppstoreSource? by remember { mutableStateOf(null) }
       var isNewSource by remember { mutableStateOf(false) }
@@ -92,8 +92,8 @@ class AppstoreSourcesScreen(
          setOrder = { source, newIndex -> viewModel.reorderSource(source, newIndex) },
          sourceEnabledChange = { source, enabled ->
             viewModel.replaceSource(
-               source,
-               source.copy(enabled = enabled)
+               oldSource = source,
+               source = source.copy(enabled = enabled)
             )
          },
          onEditSource = { editedSource = it },
@@ -107,7 +107,7 @@ class AppstoreSourcesScreen(
                if (editedSource2 == null) {
                   viewModel.addSource(newSource)
                } else {
-                  viewModel.replaceSource(editedSource2, newSource)
+                  viewModel.replaceSource(oldSource = editedSource2, source = newSource)
                }
             }
             isNewSource = false

@@ -28,7 +28,7 @@ import si.inova.kotlinova.navigation.instructions.ReplaceBackstack
 import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 
 @AssistedInject
-class MainViewModel constructor(
+class MainViewModel(
    private val actionLogger: ActionLogger,
    private val preferences: DataStore<Preferences>,
    mainScope: MainImmediateCoroutineScope,

@@ -126,9 +126,9 @@ class WatchappListScreen(
          Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
-      ) {
+      ) { screenState ->
          WatchappListScreenContent(
-            it,
+            screenState,
             viewModel.actionStatus.collectAsStateWithLifecycleAndBlinkingPrevention().value,
             installFromPbw = {
                selectPbwResult.launch(arrayOf("*/*"))
@@ -605,29 +605,32 @@ internal fun WatchappListScreenContentEmptyPreview() {
    }
 }
 
-private val fakeApps = List(10) {
-   if (it % 2 == 0) {
+private val fakeApps = List(10) { index ->
+   if (index % 2 == 0) {
       WatchappListApp(
          LockerWrapper.NormalApp(
-            AppProperties(
-               Uuid.fromLongs(0L, it.toLong()),
-               AppType.Watchapp,
-               "App $it",
-               "Dev $it",
-               emptyList(),
-               null,
-               null,
-               null,
-               null,
-               null,
-               it
+            properties = AppProperties(
+               id = Uuid.fromLongs(mostSignificantBits = 0L, leastSignificantBits = index.toLong()),
+               type = AppType.Watchapp,
+               title = "App $index",
+               developerName = "Dev $index",
+               platforms = emptyList(),
+               version = null,
+               hearts = null,
+               category = null,
+               iosCompanion = null,
+               androidCompanion = null,
+               order = index
             ),
-            true,
-            it % 4 == 0,
-            false
+            sideloaded = true,
+            configurable = index % 4 == 0,
+            sync = false
          ),
-         appStatus = if (it % 3 == 0) {
-            AppStatus.Updatable(VersionInfo(1, 0), VersionInfo(1, 2))
+         appStatus = if (index % 3 == 0) {
+            AppStatus.Updatable(
+               fromVersion = VersionInfo(majorVersion = 1, minorVersion = 0),
+               toVersion = VersionInfo(majorVersion = 1, minorVersion = 2),
+            )
          } else {
             AppStatus.UpToDate
          }
@@ -636,22 +639,25 @@ private val fakeApps = List(10) {
       WatchappListApp(
          LockerWrapper.SystemApp(
             AppProperties(
-               Uuid.fromLongs(0L, it.toLong()),
-               if (it % 4 == 0) AppType.Watchapp else AppType.Watchface,
-               "System App $it",
-               "Dev $it",
-               emptyList(),
-               null,
-               null,
-               null,
-               null,
-               null,
-               it
+               id = Uuid.fromLongs(mostSignificantBits = 0L, leastSignificantBits = index.toLong()),
+               type = if (index % 4 == 0) AppType.Watchapp else AppType.Watchface,
+               title = "System App $index",
+               developerName = "Dev $index",
+               platforms = emptyList(),
+               version = null,
+               hearts = null,
+               category = null,
+               iosCompanion = null,
+               androidCompanion = null,
+               order = index
             ),
             SystemApps.entries.first()
          ),
-         appStatus = if (it % 7 == 5) {
-            AppStatus.Updatable(VersionInfo(1, 0), VersionInfo(1, it))
+         appStatus = if (index % 7 == 5) {
+            AppStatus.Updatable(
+               fromVersion = VersionInfo(majorVersion = 1, minorVersion = 0),
+               toVersion = VersionInfo(majorVersion = 1, minorVersion = index),
+            )
          } else {
             AppStatus.UpToDate
          }

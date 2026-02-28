@@ -22,8 +22,8 @@ abstract class BaseScreenKey : ScreenKey() {
       // to implement the guidelines fully
 
       val scaleTransformOrigin = when (scope.targetState.backSwipeEdge) {
-         BackEventCompat.EDGE_LEFT -> TransformOrigin(1f, 0.5f)
-         BackEventCompat.EDGE_RIGHT -> TransformOrigin(0f, 0.5f)
+         BackEventCompat.EDGE_LEFT -> TransformOrigin(pivotFractionX = 1f, pivotFractionY = 0.5f)
+         BackEventCompat.EDGE_RIGHT -> TransformOrigin(pivotFractionX = 0f, pivotFractionY = 0.5f)
          else -> TransformOrigin.Center
       }
 

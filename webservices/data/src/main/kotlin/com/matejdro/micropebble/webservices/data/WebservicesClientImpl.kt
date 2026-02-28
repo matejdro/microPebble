@@ -61,6 +61,7 @@ data class CobbleApi(
 
 @ContributesBinding(AppScope::class)
 @Inject
+@Suppress("MissingUseCall") // getClient() is saved, we must not close it
 class WebservicesClientImpl(
    private val appInstallSourcesStore: DataStore<Map<Uuid, WebservicesToken>>,
    private val sources: AppstoreSourceService,

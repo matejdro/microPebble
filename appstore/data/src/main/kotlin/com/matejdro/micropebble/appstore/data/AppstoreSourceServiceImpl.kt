@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
 class AppstoreSourceServiceImpl(
    private val appstoreSourcesStore: DataStore<List<AppstoreSource>>,
 ) : AppstoreSourceService {
-   override val isDefault: Flow<Boolean> = sources.map { defaultSources == it }
+   override val sourcesAreDefault: Flow<Boolean> = sources.map { defaultSources == it }
    override val sources: Flow<List<AppstoreSource>>
       get() = appstoreSourcesStore.data
    override val enabledSources: Flow<List<AppstoreSource>>

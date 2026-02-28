@@ -1,7 +1,6 @@
 package com.matejdro.micropebble.apps.ui.list
 
 import androidx.compose.runtime.Stable
-import kotlin.collections.map
 
 @Stable
 data class WatchappListState(
@@ -10,6 +9,6 @@ data class WatchappListState(
 )
 
 inline fun WatchappListState.map(block: (WatchappListApp) -> WatchappListApp) = WatchappListState(
-   watchfaces.map(block),
-   watchapps.map(block),
+   watchfaces = watchfaces.map(block),
+   watchapps = watchapps.map(block),
 )

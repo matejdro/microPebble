@@ -77,11 +77,11 @@ class WatchappListViewModel(
       ) { apps, installSources, sources ->
          emit(apps)
          if (apps is Outcome.Success) {
-            val appsWithStatusUpdate = apps.data.map {
-               val appId = it.app.properties.id
+            val appsWithStatusUpdate = apps.data.map { app ->
+               val appId = app.app.properties.id
                val installSource = installSources[appId]
                val status = installationClient.isAppUpdatable(installSource, sources)
-               it.copy(appStatus = status)
+               app.copy(appStatus = status)
             }
             emit(Outcome.Success(appsWithStatusUpdate))
          }
@@ -111,8 +111,8 @@ class WatchappListViewModel(
                }
                Outcome.Success(
                   WatchappListState(
-                     watchfaces.filterIsInstance<LockerWrapper.NormalApp>().mapWatch(),
-                     watchapps.mapWatch()
+                     watchfaces = watchfaces.filterIsInstance<LockerWrapper.NormalApp>().mapWatch(),
+                     watchapps = watchapps.mapWatch()
                   )
                )
             }
@@ -120,6 +120,7 @@ class WatchappListViewModel(
       }
    }
 
+   @Suppress("MissingUseCall") // False positive
    fun startInstall(contentUri: Uri) = resources.launchResourceControlTask(_actionStatus) {
       actionLogger.logAction { "WatchappListViewModel.startInstall($contentUri)" }
 
@@ -129,13 +130,12 @@ class WatchappListViewModel(
          }
 
          val tmpFile = File.createTempFile("pbw", null)
-         val stream =
-            requireNotNull(context.contentResolver.openInputStream(contentUri)) {
-               "Files provider should not return null streams"
+         requireNotNull(context.contentResolver.openInputStream(contentUri)) {
+            "Files provider should not return null streams"
+         }.use { stream ->
+            tmpFile.sink().use { fileSink ->
+               stream.source().buffer().use { it.readAll(fileSink) }
             }
-
-         tmpFile.sink().use { fileSink ->
-            stream.source().buffer().use { it.readAll(fileSink) }
          }
 
          try {
@@ -144,7 +144,6 @@ class WatchappListViewModel(
             }
          } finally {
             tmpFile.delete()
-            Unit // Extra Unit to not trip up detekt
          }
 
          emit(Outcome.Success(Unit))
@@ -231,9 +230,9 @@ class WatchappListViewModel(
 
    private suspend fun getFileName(uri: Uri): String? = withDefault {
       val projection = arrayOf<String?>(MediaStore.MediaColumns.DISPLAY_NAME)
-      context.contentResolver.query(uri, projection, null, null, null).use {
-         if (it?.moveToFirst() != true) return@use null
-         it.getString(0)
+      context.contentResolver.query(uri, projection, null, null, null).use { cursor ->
+         if (cursor?.moveToFirst() != true) return@use null
+         cursor.getString(0)
       }
    }
 

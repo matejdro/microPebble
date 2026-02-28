@@ -15,9 +15,9 @@ import com.matejdro.micropebble.appstore.api.store.home.AppstoreCollection
 import com.matejdro.micropebble.appstore.api.store.home.AppstoreHomePage
 import com.matejdro.micropebble.appstore.api.store.home.filterApps
 import com.matejdro.micropebble.appstore.ui.common.isUnofficiallyCompatibleWith
+import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.common.util.joinUrls
-import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.metadata.WatchType
@@ -37,6 +37,7 @@ import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration.Companion.milliseconds
 
 @Stable
@@ -83,10 +84,10 @@ class AppstoreViewModel(
       }
 
    val searchResults =
-      state.debounce(100.milliseconds).transform {
-         if (it.appstoreSource != null) {
+      state.debounce(100.milliseconds).transform { searchState ->
+         if (searchState.appstoreSource != null) {
             emit(Outcome.Progress())
-            emit(getSearchResults(it))
+            emit(getSearchResults(searchState))
          }
       }
 
@@ -103,10 +104,10 @@ class AppstoreViewModel(
    fun screenKeyFor(collection: AppstoreCollection): AppstoreCollectionScreenKey {
       actionLogger.logAction { "AppstoreViewModel.screenKeyFor()" }
       return AppstoreCollectionScreenKey(
-         collection.name,
-         state.value.appstoreSource!!.url.joinUrls(collection.links.apps.trimStart('/').removePrefix("api")),
-         state.value.platformFilter?.codename,
-         state.value.appstoreSource,
+         title = collection.name,
+         endpoint = state.value.appstoreSource!!.url.joinUrls(collection.links.apps.trimStart('/').removePrefix("api")),
+         platformFilter = state.value.platformFilter?.codename,
+         appstoreSource = state.value.appstoreSource,
       )
    }
 
@@ -121,6 +122,8 @@ class AppstoreViewModel(
             .filterApps { it.isUnofficiallyCompatibleWith(platformFilter) }
          homePagesCache[source to tab to platformFilter] = result
          return Outcome.Success(result)
+      } catch (e: CancellationException) {
+         throw e
       } catch (e: Exception) {
          return Outcome.Error(DataParsingException(e.message, e))
       }

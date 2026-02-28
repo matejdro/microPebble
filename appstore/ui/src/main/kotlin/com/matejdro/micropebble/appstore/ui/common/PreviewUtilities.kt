@@ -27,7 +27,7 @@ fun makeFakeApp(
 ): Application {
    val random = Random(name.map { it.code }.sum())
    val realHasSource = hasSource ?: random.nextBoolean()
-   val realLikes = likes ?: random.nextInt(MIN_LIKES, MAX_LIKES)
+   val realLikes = likes ?: random.nextInt(from = MIN_LIKES, until = MAX_LIKES)
    return Application(
       author = author,
       capabilities = listOf("configurable"),

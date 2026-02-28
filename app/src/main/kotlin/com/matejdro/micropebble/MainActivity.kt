@@ -70,10 +70,10 @@ class MainActivity : ComponentActivity() {
 
       lifecycleScope.launch {
          viewModel.navigationTarget.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-            .collect {
+            .collect { instruction ->
                val backstack = backstack ?: return@collect
                val navigator = NavigationInjection.fromBackstack(backstack).navigator()
-               navigator.navigate(it)
+               navigator.navigate(instruction)
             }
       }
    }

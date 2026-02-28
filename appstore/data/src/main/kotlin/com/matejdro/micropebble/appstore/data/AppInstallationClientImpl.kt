@@ -83,7 +83,7 @@ class AppInstallationClientImpl(
       val response = api.fetchAppListing(updateSource, installSource) ?: return AppStatus.AppNotFound
       val latestVersion = parseVersionString(response.latestRelease.version) ?: return AppStatus.Error
       return if (latestVersion > currentVersion) {
-         AppStatus.Updatable(currentVersion, latestVersion)
+         AppStatus.Updatable(fromVersion = currentVersion, toVersion = latestVersion)
       } else {
          AppStatus.UpToDate
       }

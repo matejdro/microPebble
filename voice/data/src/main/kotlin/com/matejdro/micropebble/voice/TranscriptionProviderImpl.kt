@@ -30,6 +30,7 @@ class TranscriptionProviderImpl(
    private val context: Context,
    private val errorReporter: ErrorReporter,
 ) : TranscriptionProvider {
+   @Suppress("NestedBlockDepth") // It uses a lot of .use {}, which increase nesting. It's fine otherwise.
    override suspend fun transcribe(
       encoderInfo: VoiceEncoderInfo,
       audioFrames: Flow<UByteArray>,
@@ -44,9 +45,9 @@ class TranscriptionProviderImpl(
       try {
          val speexInfo = (encoderInfo as? VoiceEncoderInfo.Speex) ?: error("Unsupported codec: $encoderInfo")
          SpeexCodec(
-            speexInfo.sampleRate,
-            speexInfo.bitRate,
-            speexInfo.frameSize,
+            sampleRate = speexInfo.sampleRate,
+            bitRate = speexInfo.bitRate,
+            frameSize = speexInfo.frameSize,
          ).use { speexDecoder ->
             val (readPipe, writePipe) = ParcelFileDescriptor.createPipe()
 
@@ -115,8 +116,12 @@ class TranscriptionProviderImpl(
       val targetBufferSize = Short.SIZE_BYTES * speexInfo.frameSize
       val targetBuffer = ByteArray(targetBufferSize)
 
-      audioFrames.collect {
-         val result = speexDecoder.decodeFrame(it.asByteArray(), targetBuffer, hasHeaderByte = true)
+      audioFrames.collect { frame ->
+         val result = speexDecoder.decodeFrame(
+            encodedFrame = frame.asByteArray(),
+            decodedFrame = targetBuffer,
+            hasHeaderByte = true,
+         )
          if (result != SpeexDecodeResult.Success) {
             error("Speex decoding failed: $result")
          }

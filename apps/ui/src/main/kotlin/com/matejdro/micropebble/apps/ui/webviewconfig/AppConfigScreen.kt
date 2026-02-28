@@ -44,10 +44,10 @@ class AppConfigScreen(
                   modifier = Modifier
                      .fillMaxSize()
                      .windowInsetsPadding(WindowInsets.safeDrawing),
-                  onCreated = {
+                  onCreated = { webView ->
                      @SuppressLint("SetJavaScriptEnabled") // Needed for some apps
-                     it.settings.javaScriptEnabled = true
-                     it.settings.domStorageEnabled = true
+                     webView.settings.javaScriptEnabled = true
+                     webView.settings.domStorageEnabled = true
                   }
                )
             }

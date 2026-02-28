@@ -89,17 +89,17 @@ class ToolsScreen(
                .safeDrawingPadding(),
          ) { state ->
             ToolsScreenContent(
-               state,
-               logSaveStatus,
-               { navigator.navigateTo(OnboardingKey) },
-               { navigator.navigateTo(DeveloperConnectionScreenKey) },
-               { navigator.navigateTo(CalendarListScreenKey) },
-               { navigator.navigateTo(AppstoreSourcesScreenKey) },
-               { navigator.navigateTo(WebservicesAuthScreenKey()) },
-               viewModel::getLogs,
-               viewModel::resetLog,
-               { voicePermission.launchPermissionRequest() },
-               viewModel::changeMusicAlwaysPaused,
+               state = state,
+               loggingTransmissionState = logSaveStatus,
+               openPermissions = { navigator.navigateTo(OnboardingKey) },
+               openDevConnection = { navigator.navigateTo(DeveloperConnectionScreenKey) },
+               openCalendarSettings = { navigator.navigateTo(CalendarListScreenKey) },
+               openAppstoreSources = { navigator.navigateTo(AppstoreSourcesScreenKey) },
+               openWebservices = { navigator.navigateTo(WebservicesAuthScreenKey()) },
+               startLogSaving = viewModel::getLogs,
+               notifyLogIntentSent = viewModel::resetLog,
+               startVoiceService = { voicePermission.launchPermissionRequest() },
+               changeMusicAlwaysPaused = viewModel::changeMusicAlwaysPaused,
             )
          }
       }
@@ -131,11 +131,11 @@ private fun ToolsScreenContent(
             .fillMaxSize()
       ) {
          item {
-            ToolButton(openDevConnection, R.drawable.developer_connection, R.string.developer_connection)
+            ToolButton(onClick = openDevConnection, icon = R.drawable.developer_connection, text = R.string.developer_connection)
          }
 
          item {
-            ToolButton(openPermissions, R.drawable.permissions, R.string.permissions)
+            ToolButton(onClick = openPermissions, icon = R.drawable.permissions, text = R.string.permissions)
          }
 
          item {
@@ -148,7 +148,7 @@ private fun ToolsScreenContent(
                      .wrapContentWidth()
                )
             } else {
-               ToolButton(startLogSaving, R.drawable.logs, R.string.save_logs)
+               ToolButton(onClick = startLogSaving, icon = R.drawable.logs, text = R.string.save_logs)
 
                val context = LocalContext.current
                SideEffect {
@@ -168,20 +168,28 @@ private fun ToolsScreenContent(
          }
 
          item {
-            ToolButton(openCalendarSettings, R.drawable.calendar_settings, R.string.calendar)
+            ToolButton(onClick = openCalendarSettings, icon = R.drawable.calendar_settings, text = R.string.calendar)
          }
 
          item {
-            ToolButton(openAppstoreSources, R.drawable.appstore_sources, sharedR.string.manage_appstore_sources)
+            ToolButton(
+               onClick = openAppstoreSources,
+               icon = R.drawable.appstore_sources,
+               text = sharedR.string.manage_appstore_sources
+            )
          }
 
          item {
-            ToolButton(openWebservices, R.drawable.webservices_auth, sharedR.string.authenticate_webservices)
+            ToolButton(
+               onClick = openWebservices,
+               icon = R.drawable.webservices_auth,
+               text = sharedR.string.authenticate_webservices
+            )
          }
 
          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             item {
-               ToolButton(startVoiceService, sharedR.drawable.ic_mic, R.string.enable_voice)
+               ToolButton(onClick = startVoiceService, icon = sharedR.drawable.ic_mic, text = R.string.enable_voice)
             }
          }
 

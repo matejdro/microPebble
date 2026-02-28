@@ -83,13 +83,13 @@ fun <T> ReorderableListContainer(
                   }
                }
             },
-            onDrop = {
+            onDrop = { dropState ->
                vibrator?.vibrate(
                   VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK)
                )
                dragging = false
                lastDragIndex = -1
-               setOrder(reorderingList.indexOf(it.data))
+               setOrder(reorderingList.indexOf(dropState.data))
             },
             draggableContent = {
                content(Modifier)

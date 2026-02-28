@@ -50,8 +50,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.coerceAtLeast
@@ -204,7 +204,7 @@ private fun AppstoreScreenScaffold(
                         // pretty reasonable.
                         .requiredHeightIn(
                            max = with(LocalDensity.current) { lastLayoutCoordinates?.size?.height?.toDp() }
-                              ?: LocalConfiguration.current.screenHeightDp.dp,
+                              ?: with(LocalDensity.current) { LocalWindowInfo.current.containerSize.height.toDp() },
                         )
                   ) {
                      AppsSearchBox(
@@ -215,9 +215,9 @@ private fun AppstoreScreenScaffold(
                         source = selectedSource,
                         platformFilter,
                         searchExpanded = searchActive,
-                        onSearchExpandedChange = {
-                           searchActive = it
-                           if (it) {
+                        onSearchExpandedChange = { expanded ->
+                           searchActive = expanded
+                           if (expanded) {
                               gridState.requestScrollToItem(0)
                            }
                         },
@@ -324,9 +324,9 @@ private fun AppsSearchBox(
             verticalItemSpacing = 8.dp,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
          ) {
-            items(results) {
+            items(results) { result ->
                WatchAppDisplay(
-                  it.toApplication(),
+                  result.toApplication(),
                   navigator,
                   appstoreSource = source,
                   platform = platformFilter,
@@ -477,14 +477,14 @@ internal fun AppstoreHomepagePreview() {
          applications = allApps,
          banners = emptyList(),
          categories = emptyList(),
-         collections = allApps.chunked(5).withIndex().map { (index, apps) ->
+         collections = allApps.asSequence().chunked(5).withIndex().map { (index, apps) ->
             AppstoreCollection(
                appIds = apps.map { it.id },
                links = AppstoreLinks(""),
                name = "Collection $index",
                slug = "$index",
             )
-         }
+         }.toList()
       )
       AppstoreScreenScaffold(
          selectedTab = ApplicationType.Watchface,

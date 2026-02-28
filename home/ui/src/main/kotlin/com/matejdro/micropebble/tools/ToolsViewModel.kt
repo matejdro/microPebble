@@ -78,8 +78,10 @@ class ToolsViewModel(
          File(logFolder, "device.txt").writeText(fileLoggingController.getDeviceInfo())
 
          val logsZipFile = File(logFolder, "logs.zip")
-         ZipOutputStream(FileOutputStream(logsZipFile).buffered()).use { zipOutputStream ->
-            zipOutputStream.addAllLogsToZip(logFolder, logsZipFile)
+         FileOutputStream(logsZipFile).buffered().use { bufferedStream ->
+            ZipOutputStream(bufferedStream).use { zipOutputStream ->
+               zipOutputStream.addAllLogsToZip(logFolder, logsZipFile)
+            }
          }
 
          FileProvider.getUriForFile(context, "com.matejdro.micropebble.logs", logsZipFile)

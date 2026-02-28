@@ -33,10 +33,11 @@ class CalendarListScreenViewModel(
             .map { calendars ->
                Outcome.Success(
                   calendars.groupBy { it.ownerName }
-                     .entries.map {
+                     .entries
+                     .map { entry ->
                         CalendarOwner(
-                           it.key,
-                           it.value
+                           entry.key,
+                           entry.value
                         )
                      }
                )

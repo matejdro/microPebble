@@ -46,8 +46,8 @@ class OnboardingScreenViewModel(
          ) { anyPairedWatch, hasListenerPermission ->
             Outcome.Success(
                OnboardingState(
-                  hasListenerPermission,
-                  anyPairedWatch
+                  hasNotificationListenerPermission = hasListenerPermission,
+                  anyWatchPaired = anyPairedWatch,
                )
             )
          }

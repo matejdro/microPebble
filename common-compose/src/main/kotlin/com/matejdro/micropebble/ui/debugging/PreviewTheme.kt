@@ -65,7 +65,7 @@ private class ColorCyclingAsyncImagePreviewHandler(
       val nextColor = colors[currentColor++ % colors.size]
       val size = request.sizeResolver.size()
 
-      val image = ColorImage(nextColor, size.width.pxOrElse { 0 }, size.height.pxOrElse { 0 })
+      val image = ColorImage(color = nextColor, width = size.width.pxOrElse { 0 }, height = size.height.pxOrElse { 0 })
 
       return AsyncImagePainter.State.Success(image.asPainter(request.context), SuccessResult(image, request))
    }

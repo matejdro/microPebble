@@ -38,9 +38,9 @@ class FileInstallHandler(private val context: Context) {
 
    private suspend fun getFileName(uri: Uri): String? = withDefault {
       val projection = arrayOf<String?>(MediaStore.MediaColumns.DISPLAY_NAME)
-      context.contentResolver.query(uri, projection, null, null, null).use {
-         if (it?.moveToFirst() != true) return@use null
-         it.getString(0)
+      context.contentResolver.query(uri, projection, null, null, null).use { cursor ->
+         if (cursor?.moveToFirst() != true) return@use null
+         cursor.getString(0)
       }
    }
 }

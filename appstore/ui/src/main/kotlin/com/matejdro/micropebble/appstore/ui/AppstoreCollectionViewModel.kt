@@ -13,8 +13,8 @@ import com.matejdro.micropebble.appstore.api.store.application.Application
 import com.matejdro.micropebble.appstore.api.store.collection.AppstoreCollectionPage
 import com.matejdro.micropebble.appstore.api.store.collection.filterApps
 import com.matejdro.micropebble.appstore.ui.common.isUnofficiallyCompatibleWith
-import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.appstore.ui.keys.AppstoreCollectionScreenKey
+import com.matejdro.micropebble.common.logging.ActionLogger
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +44,12 @@ class AppstoreCollectionViewModel(
 
          override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Application> {
             val offset = (params.key ?: 0)
-            val page = api.fetchCollection(key.platformFilter, key.endpoint, offset, params.loadSize).filterAppsByPlatform()
+            val page = api.fetchCollection(
+               platformFilter = key.platformFilter,
+               endpoint = key.endpoint,
+               offset = offset,
+               limit = params.loadSize,
+            ).filterAppsByPlatform()
             return LoadResult.Page(
                data = page.apps,
                prevKey = if (params.loadSize >= offset) null else offset - params.loadSize,

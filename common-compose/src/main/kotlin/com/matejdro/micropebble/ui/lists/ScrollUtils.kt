@@ -24,7 +24,7 @@ internal suspend fun handleLazyListScroll(
    // Workaround to fix scroll issue when dragging the first item
    if (dropIndex == 0 || dropIndex == 1) {
       launch {
-         lazyListState.scrollToItem(firstVisibleItemIndex, firstVisibleItemScrollOffset)
+         lazyListState.scrollToItem(index = firstVisibleItemIndex, scrollOffset = firstVisibleItemScrollOffset)
       }
    }
 

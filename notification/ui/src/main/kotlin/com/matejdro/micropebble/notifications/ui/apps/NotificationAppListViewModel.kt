@@ -40,13 +40,13 @@ class NotificationAppListViewModel(
 
             Outcome.Success(
                NotificationAppListState(
-                  apps,
-                  notificationsConfig.mutePhoneNotificationSoundsWhenConnected,
-                  notificationsConfig.mutePhoneCallSoundsWhenConnected,
-                  notificationsConfig.respectDoNotDisturb,
-                  notificationsConfig.sendNotifications,
-                  notificationsConfig.useAndroidVibePatterns,
-                  watchConfig.calendarReminders,
+                  apps = apps,
+                  mutePhoneNotificationSoundsWhenConnected = notificationsConfig.mutePhoneNotificationSoundsWhenConnected,
+                  mutePhoneCallSoundsWhenConnected = notificationsConfig.mutePhoneCallSoundsWhenConnected,
+                  respectDoNotDisturb = notificationsConfig.respectDoNotDisturb,
+                  sendNotifications = notificationsConfig.sendNotifications,
+                  useAndroidVibrationPatterns = notificationsConfig.useAndroidVibePatterns,
+                  sendCalendarReminders = watchConfig.calendarReminders,
                )
             )
          }
