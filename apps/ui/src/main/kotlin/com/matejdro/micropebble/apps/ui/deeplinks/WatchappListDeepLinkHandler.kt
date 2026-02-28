@@ -8,12 +8,15 @@ import dev.zacsweers.metro.Inject
 import si.inova.kotlinova.navigation.deeplink.DeepLinkHandler
 import si.inova.kotlinova.navigation.deeplink.matchDeepLink
 import si.inova.kotlinova.navigation.di.OuterNavigationScope
+import si.inova.kotlinova.navigation.instructions.NavigationInstruction
 import si.inova.kotlinova.navigation.instructions.ReplaceBackstack
 
 @ContributesIntoSet(OuterNavigationScope::class)
 @Inject
 class WatchappListDeepLinkHandler : DeepLinkHandler {
-   override fun handleDeepLink(uri: Uri, startup: Boolean) = uri.matchDeepLink("micropebble://watchapps") {
-      return ReplaceBackstack(HomeScreenKey, WatchappListKey())
+   override fun handleDeepLink(uri: Uri, startup: Boolean): NavigationInstruction? {
+      return uri.matchDeepLink("micropebble://watchapps") {
+         return ReplaceBackstack(HomeScreenKey, WatchappListKey())
+      }
    }
 }

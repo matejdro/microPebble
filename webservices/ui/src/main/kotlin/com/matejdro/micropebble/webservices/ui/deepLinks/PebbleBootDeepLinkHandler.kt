@@ -29,7 +29,7 @@ private data class PebbleBootNavigationInstruction(val screen: @Contextual Scree
 @ContributesIntoSet(OuterNavigationScope::class)
 @Inject
 class PebbleBootDeepLinkHandler : DeepLinkHandler {
-   override fun handleDeepLink(uri: Uri, startup: Boolean) =
+   override fun handleDeepLink(uri: Uri, startup: Boolean): NavigationInstruction? =
       uri.matchDeepLink("pebble://custom-boot-config-url/{args}") { params ->
          val key = WebservicesAuthScreenKey(
             // Fall back to the undecoded URI if decoding fails.
