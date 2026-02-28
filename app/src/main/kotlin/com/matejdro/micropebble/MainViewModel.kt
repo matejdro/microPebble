@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.HomeScreenKey
 import com.matejdro.micropebble.navigation.keys.OnboardingKey
+import com.matejdro.micropebble.navigation.keys.WatchListKey
 import com.matejdro.micropebble.pbw.FileInstallHandler
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -47,11 +48,11 @@ class MainViewModel(
       actionLogger.logAction { "MainViewModel init()" }
       viewModelScope.launch {
          _startingScreens.value = if (preferences.data.first()[onboardingShown] == true) {
-            val installScreen = fileInstallHandler.getTargetScreen(intent)
-            if (installScreen is HomeScreenKey) {
-               listOf(installScreen)
+            val installScreens = fileInstallHandler.getTargetScreens(intent)
+            if (installScreens.firstOrNull() is HomeScreenKey) {
+               installScreens
             } else {
-               listOfNotNull(HomeScreenKey(), installScreen)
+               listOf(HomeScreenKey, WatchListKey) + installScreens
             }
          } else {
             listOf(OnboardingKey)
@@ -64,12 +65,15 @@ class MainViewModel(
 
    fun onNewIntent(intent: Intent) = viewModelScope.launch {
       actionLogger.logAction { "MainViewModel.onNewIntent($intent)" }
-      val installScreen = fileInstallHandler.getTargetScreen(intent) ?: return@launch
+      val installScreens = fileInstallHandler.getTargetScreens(intent)
+      if (installScreens.isEmpty()) {
+         return@launch
+      }
       _navigationTarget.send(
-         if (installScreen is HomeScreenKey) {
-            ReplaceBackstack(installScreen)
+         if (installScreens.firstOrNull() is HomeScreenKey) {
+            ReplaceBackstack(*installScreens.toTypedArray())
          } else {
-            OpenScreen(installScreen)
+            OpenScreen(installScreens.first())
          }
       )
    }

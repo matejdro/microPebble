@@ -14,24 +14,24 @@ import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 
 @Inject
 class FileInstallHandler(private val context: Context) {
-   suspend fun getTargetScreen(intent: Intent): ScreenKey? {
+   suspend fun getTargetScreens(intent: Intent): List<ScreenKey> {
       val uri = intent.data
       if (uri?.scheme != "content") {
-         return null
+         return emptyList()
       }
 
       return if (uri.path?.endsWith(".pbw") == true) {
-         HomeScreenKey(WatchappListKey(InputFile(uri, uri.pathSegments.last())))
+         listOf(HomeScreenKey, WatchappListKey(InputFile(uri, uri.pathSegments.last())))
       } else if (uri.path?.endsWith(".pbz") == true) {
-         FirmwareUpdateScreenKey(pbzFile = InputFile(uri, uri.pathSegments.last()))
+         listOf(FirmwareUpdateScreenKey(pbzFile = InputFile(uri, uri.pathSegments.last())))
       } else {
-         val fileName = getFileName(uri) ?: return null
-         if (fileName.endsWith(".pbw") == true) {
-            HomeScreenKey(WatchappListKey(InputFile(uri, fileName)))
-         } else if (fileName.endsWith(".pbz") == true) {
-            FirmwareUpdateScreenKey(pbzFile = InputFile(uri, fileName))
+         val fileName = getFileName(uri) ?: return emptyList()
+         if (fileName.endsWith(".pbw")) {
+            listOf(HomeScreenKey, WatchappListKey(InputFile(uri, fileName)))
+         } else if (fileName.endsWith(".pbz")) {
+            listOf(FirmwareUpdateScreenKey(pbzFile = InputFile(uri, fileName)))
          } else {
-            null
+            emptyList()
          }
       }
    }

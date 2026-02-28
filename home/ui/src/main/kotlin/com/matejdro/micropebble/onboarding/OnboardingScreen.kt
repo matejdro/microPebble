@@ -77,7 +77,8 @@ class OnboardingScreen(
             continueToApp = {
                navigator.navigate(
                   ReplaceBackstack(
-                     HomeScreenKey(WatchListKey),
+                     HomeScreenKey,
+                     WatchListKey
                   )
                )
             }

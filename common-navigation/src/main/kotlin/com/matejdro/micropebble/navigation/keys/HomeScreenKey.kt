@@ -1,8 +1,8 @@
 package com.matejdro.micropebble.navigation.keys
 
-import com.matejdro.micropebble.navigation.keys.base.BaseSingleTopScreenKey
+import com.matejdro.micropebble.navigation.keys.base.BaseScreenKey
+import com.matejdro.micropebble.navigation.keys.base.TabContainerKey
 import kotlinx.parcelize.Parcelize
-import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 
 @Parcelize
-data class HomeScreenKey(val selectedScreen: ScreenKey = WatchListKey) : BaseSingleTopScreenKey()
+data object HomeScreenKey : BaseScreenKey(), TabContainerKey

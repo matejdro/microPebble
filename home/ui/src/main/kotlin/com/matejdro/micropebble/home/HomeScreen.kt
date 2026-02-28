@@ -1,5 +1,9 @@
 package com.matejdro.micropebble.home
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,10 +22,6 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -31,15 +31,17 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.home.ui.R
+import com.matejdro.micropebble.navigation.instructions.ReplaceTabContentWith
 import com.matejdro.micropebble.navigation.keys.HomeScreenKey
 import com.matejdro.micropebble.navigation.keys.NotificationAppListKey
 import com.matejdro.micropebble.navigation.keys.WatchListKey
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
+import com.matejdro.micropebble.navigation.keys.base.LocalSelectedTabContent
+import com.matejdro.micropebble.navigation.keys.base.SelectedTabContent
 import com.matejdro.micropebble.tools.ToolsScreenKey
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import si.inova.kotlinova.core.activity.requireActivity
-import si.inova.kotlinova.navigation.instructions.navigateTo
 import si.inova.kotlinova.navigation.navigator.Navigator
 import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
@@ -49,60 +51,40 @@ import si.inova.kotlinova.navigation.screens.Screen
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class HomeScreen(
    private val navigator: Navigator,
-   private val watchesScreen: Screen<WatchListKey>,
-   private val watchappsScreen: Screen<WatchappListKey>,
-   private val notificationsScreen: Screen<NotificationAppListKey>,
-   private val toolsScreen: Screen<ToolsScreenKey>,
 ) : Screen<HomeScreenKey>() {
    @Composable
    override fun Content(key: HomeScreenKey) {
-      val keyState = rememberUpdatedState(key)
-
-      val mainContent = remember {
-         movableContentOf {
-            MainContent(keyState.value.selectedScreen)
-         }
-      }
-
       val sizeClass = calculateWindowSizeClass(activity = LocalContext.current.requireActivity())
 
       Surface {
          HomeScreenContent(
-            selectedScreen = key.selectedScreen,
+            LocalSelectedTabContent.current,
             tabletMode = sizeClass.widthSizeClass == WindowWidthSizeClass.Expanded,
-            mainContent = mainContent,
-            switchScreen = { navigator.navigateTo(HomeScreenKey(it)) },
+            switchScreen = { navigator.navigate(ReplaceTabContentWith(it)) },
          )
-      }
-   }
-
-   @Composable
-   private fun MainContent(tab: ScreenKey) {
-      val stateHolder = rememberSaveableStateHolder()
-      // We must provide name here, not the enum, because name stays the same after process kill, while enum object is different
-      stateHolder.SaveableStateProvider(tab.javaClass.name) {
-         when (tab) {
-            is WatchListKey -> watchesScreen.Content(tab)
-            is WatchappListKey -> watchappsScreen.Content(tab)
-            is NotificationAppListKey -> notificationsScreen.Content(tab)
-            is ToolsScreenKey -> toolsScreen.Content(tab)
-            else -> error("Unhandled screen type $tab")
-         }
       }
    }
 }
 
 @Composable
 private fun HomeScreenContent(
-   selectedScreen: ScreenKey,
+   selectedTab: SelectedTabContent,
    tabletMode: Boolean,
-   mainContent: @Composable () -> Unit,
    switchScreen: (ScreenKey) -> Unit,
 ) {
+   val animatedMainContent: @Composable () -> Unit = {
+      AnimatedContent(
+         selectedTab,
+         contentKey = { entry -> entry.key },
+         transitionSpec = { fadeIn() togetherWith fadeOut() }
+      ) {
+         it.content()
+      }
+   }
    if (tabletMode) {
-      NavigationRailContent(mainContent, selectedScreen, switchScreen)
+      NavigationRailContent(animatedMainContent, selectedTab.key, switchScreen)
    } else {
-      NavigationBarContent(mainContent, selectedScreen, switchScreen)
+      NavigationBarContent(animatedMainContent, selectedTab.key, switchScreen)
    }
 }
 
@@ -207,14 +189,16 @@ internal fun HomePhonePreview() {
    PreviewTheme {
       HomeScreenContent(
          tabletMode = false,
-         selectedScreen = WatchappListKey(),
-         mainContent = {
-            Box(
-               Modifier
-                  .fillMaxSize()
-                  .background(Color.Red)
-            )
-         },
+         selectedTab = SelectedTabContent(
+            {
+               Box(
+                  Modifier
+                     .fillMaxSize()
+                     .background(Color.Red)
+               )
+            },
+            WatchappListKey(),
+         ),
          switchScreen = {},
       )
    }
@@ -227,14 +211,16 @@ internal fun HomeTabletPreview() {
    PreviewTheme {
       HomeScreenContent(
          tabletMode = true,
-         selectedScreen = WatchappListKey(),
-         mainContent = {
-            Box(
-               Modifier
-                  .fillMaxSize()
-                  .background(Color.Red)
-            )
-         },
+         selectedTab = SelectedTabContent(
+            {
+               Box(
+                  Modifier
+                     .fillMaxSize()
+                     .background(Color.Red)
+               )
+            },
+            WatchappListKey(),
+         ),
          switchScreen = {},
       )
    }

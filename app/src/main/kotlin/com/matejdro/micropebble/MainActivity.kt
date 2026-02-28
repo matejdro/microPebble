@@ -23,6 +23,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import com.matejdro.micropebble.navigation.scenes.rememberTabListSceneDecoratorStrategy
 import com.matejdro.micropebble.ui.theme.MicroPebbleTheme
 import com.zhuinden.simplestack.Backstack
 import kotlinx.coroutines.flow.filterNotNull
@@ -135,6 +136,7 @@ class MainActivity : ComponentActivity() {
                         }
                      )
                   ),
+                  sceneStrategy = rememberTabListSceneDecoratorStrategy()
                )
 
                this.backstack = backstack

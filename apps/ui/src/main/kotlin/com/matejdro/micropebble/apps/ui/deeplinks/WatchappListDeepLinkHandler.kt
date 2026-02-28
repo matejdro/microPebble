@@ -14,6 +14,6 @@ import si.inova.kotlinova.navigation.instructions.ReplaceBackstack
 @Inject
 class WatchappListDeepLinkHandler : DeepLinkHandler {
    override fun handleDeepLink(uri: Uri, startup: Boolean) = uri.matchDeepLink("micropebble://watchapps") {
-      return ReplaceBackstack(HomeScreenKey(WatchappListKey()))
+      return ReplaceBackstack(HomeScreenKey, WatchappListKey())
    }
 }

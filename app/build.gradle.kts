@@ -107,6 +107,7 @@ dependencies {
    implementation(projects.logging.api)
    implementation(projects.logging.crashreport)
    implementation(projects.logging.data)
+   implementation(projects.navigationImpl)
    implementation(projects.sharedResources)
    implementation(projects.voice.api)
    implementation(projects.voice.data)

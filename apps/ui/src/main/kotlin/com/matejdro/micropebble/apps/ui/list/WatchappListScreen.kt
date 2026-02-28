@@ -78,7 +78,6 @@ import com.matejdro.micropebble.appstore.api.AppstoreSource
 import com.matejdro.micropebble.common.util.VersionInfo
 import com.matejdro.micropebble.common.util.toVersionString
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
-import com.matejdro.micropebble.navigation.keys.HomeScreenKey
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
 import com.matejdro.micropebble.ui.components.ErrorAlertDialog
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
@@ -168,7 +167,7 @@ class WatchappListScreen(
       val pbwFile = key.pbwFile
       if (pbwFile != null) {
          fun closeDialog() {
-            navigator.replaceTopWith(HomeScreenKey(key.copy(pbwFile = null)))
+            navigator.replaceTopWith(key.copy(pbwFile = null))
          }
 
          AlertDialog(onDismissRequest = ::closeDialog, confirmButton = {
