@@ -21,6 +21,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation3.runtime.NavEntryDecorator
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import com.matejdro.micropebble.ui.theme.MicroPebbleTheme
 import com.zhuinden.simplestack.Backstack
 import kotlinx.coroutines.flow.filterNotNull
@@ -35,8 +37,8 @@ import si.inova.kotlinova.navigation.deeplink.HandleNewIntentDeepLinks
 import si.inova.kotlinova.navigation.deeplink.MainDeepLinkHandler
 import si.inova.kotlinova.navigation.di.NavigationContext
 import si.inova.kotlinova.navigation.di.NavigationInjection
+import si.inova.kotlinova.navigation.navigation3.NavDisplay
 import si.inova.kotlinova.navigation.screenkeys.ScreenKey
-import si.inova.kotlinova.navigation.simplestack.RootNavigationContainer
 
 @Stable
 class MainActivity : ComponentActivity() {
@@ -121,13 +123,18 @@ class MainActivity : ComponentActivity() {
                LocalDateFormatter provides ComposeAndroidDateTimeFormatter(dateFormatter),
                LocalResultPassingStore provides resultPassingStore
             ) {
-               val backstack = navigationInjectionFactory.RootNavigationContainer(
+               val backstack = navigationInjectionFactory.NavDisplay(
                   initialHistory = { initialHistory },
-                  screenWrapper = { _, screen ->
-                     Surface {
-                        screen()
-                     }
-                  }
+                  entryDecorators = listOf(
+                     rememberSaveableStateHolderNavEntryDecorator(),
+                     NavEntryDecorator<ScreenKey>(
+                        decorate = { targetNavEntry ->
+                           Surface {
+                              targetNavEntry.Content()
+                           }
+                        }
+                     )
+                  ),
                )
 
                this.backstack = backstack

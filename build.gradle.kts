@@ -106,6 +106,10 @@ dependencyAnalysis {
       bundle("speex") {
          includeGroup("io.github.coredevices.speex")
       }
+
+      bundle("navigation3") {
+         includeGroup("androidx.navigation3")
+      }
    }
 }
 
