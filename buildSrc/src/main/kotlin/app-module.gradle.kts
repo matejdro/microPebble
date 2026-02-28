@@ -51,7 +51,18 @@ android {
 
          val gitHashProvider = providers.exec {
             commandLine("git", "rev-parse", "--short", "HEAD")
-         }.standardOutput.asText.map { it.trim() }
+            setIgnoreExitValue(true)
+         }.let { execOutput ->
+            execOutput.result.flatMap { result ->
+               if (result.exitValue == 0) {
+                  execOutput.standardOutput.asText.map { it.trim() }
+               } else {
+                  execOutput.standardError.asText.map {
+                     throw IllegalStateException("Git failed: $it")
+                  }
+               }
+            }
+         }
 
          val baseVersionName = defaultConfig.versionName
          val buildNumberProvider = providers.environmentVariable("BUILD_NUMBER")
