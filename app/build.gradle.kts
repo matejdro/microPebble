@@ -10,8 +10,6 @@ plugins {
    id("androidx.baselineprofile")
 }
 
-setProperty("archivesBaseName", "micropebble")
-
 android {
    namespace = "com.matejdro.micropebble"
 
@@ -103,6 +101,13 @@ android {
          )
 
          signingConfig = signingConfigs.getByName("release")
+      }
+   }
+
+   applicationVariants.all {
+      outputs.all {
+         val output = this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
+         output.outputFileName = "micropebble.apk"
       }
    }
 }
