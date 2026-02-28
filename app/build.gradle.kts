@@ -4,7 +4,6 @@ plugins {
    navigation
    parcelize
    showkase
-   id("androidx.baselineprofile")
 }
 
 android {
