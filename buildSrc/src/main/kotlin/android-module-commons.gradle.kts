@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.LibraryAndroidResources
 import com.android.build.api.dsl.LibraryBuildFeatures
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.android.build.gradle.tasks.asJavaVersion
@@ -62,10 +63,11 @@ commonAndroid {
       buildConfig = false
       resValues = false
       shaders = false
+   }
 
-      if (this is LibraryBuildFeatures) {
-         androidResources = false
-      }
+   val androidResources = androidResources
+   if (androidResources is LibraryAndroidResources) {
+      androidResources.enable = false
    }
 
    compileOptions {
