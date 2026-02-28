@@ -18,6 +18,7 @@ dependencies {
    api(libs.libpebble3)
    api(libs.kotlin.coroutines)
    implementation(projects.sharedResources)
+   implementation(libs.logcat)
    implementation(libs.speex)
    implementation(libs.androidx.annotation)
 }

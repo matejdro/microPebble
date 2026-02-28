@@ -23,10 +23,10 @@ import dispatch.core.DefaultDispatcherProvider
 import dispatch.core.defaultDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import logcat.AndroidLogcatLogger
+import logcat.LogPriority
+import logcat.LogcatLogger
 import si.inova.kotlinova.core.dispatchers.AccessCallbackDispatcherProvider
-import si.inova.kotlinova.core.logging.AndroidLogcatLogger
-import si.inova.kotlinova.core.logging.LogPriority
-import si.inova.kotlinova.core.logging.LogcatLogger
 import java.io.File
 import androidx.work.Configuration as WorkConfiguration
 import co.touchlab.kermit.Logger as KermitLogger

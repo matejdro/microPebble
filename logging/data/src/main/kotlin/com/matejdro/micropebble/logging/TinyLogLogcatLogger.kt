@@ -1,8 +1,8 @@
 package com.matejdro.micropebble.logging
 
+import logcat.LogPriority
+import logcat.LogcatLogger
 import org.tinylog.Level
-import si.inova.kotlinova.core.logging.LogPriority
-import si.inova.kotlinova.core.logging.LogcatLogger
 
 class TinyLogLogcatLogger(
    private val tinyLogLoggingThread: TinyLogLoggingThread,

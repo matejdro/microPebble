@@ -13,4 +13,5 @@ dependencies {
    api(libs.tinylog.api)
    api(libs.tinylog.impl)
    implementation(libs.kotlin.coroutines)
+   implementation(libs.logcat)
 }

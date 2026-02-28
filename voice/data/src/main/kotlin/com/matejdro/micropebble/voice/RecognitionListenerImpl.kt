@@ -8,7 +8,7 @@ import com.matejdro.micropebble.voice.data.R
 import io.rebble.libpebblecommon.voice.TranscriptionResult
 import io.rebble.libpebblecommon.voice.TranscriptionWord
 import kotlinx.coroutines.CompletableDeferred
-import si.inova.kotlinova.core.logging.logcat
+import logcat.logcat
 import si.inova.kotlinova.core.state.toMap
 
 class RecognitionListenerImpl(

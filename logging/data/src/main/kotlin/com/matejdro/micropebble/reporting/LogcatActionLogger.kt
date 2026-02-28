@@ -4,7 +4,7 @@ import com.matejdro.micropebble.common.logging.ActionLogger
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
-import si.inova.kotlinova.core.logging.logcat
+import logcat.logcat
 
 @ContributesBinding(AppScope::class)
 class LogcatActionLogger @Inject constructor() : ActionLogger {

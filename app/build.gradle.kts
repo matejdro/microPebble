@@ -170,6 +170,7 @@ dependencies {
    implementation(libs.kotlin.coroutines)
    implementation(libs.kotlinova.core)
    implementation(libs.kotlinova.navigation)
+   implementation(libs.logcat)
    implementation(libs.simpleStack)
    implementation(libs.tinylog.api)
    implementation(libs.tinylog.impl)

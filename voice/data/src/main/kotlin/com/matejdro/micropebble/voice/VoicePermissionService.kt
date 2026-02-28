@@ -16,7 +16,7 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.MutableStateFlow
-import si.inova.kotlinova.core.logging.logcat
+import logcat.logcat
 import com.matejdro.micropebble.sharedresources.R as sharedR
 
 /**

@@ -20,7 +20,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
-import si.inova.kotlinova.core.logging.logcat
+import logcat.logcat
 import si.inova.kotlinova.core.reporting.ErrorReporter
 import kotlin.coroutines.cancellation.CancellationException
 
