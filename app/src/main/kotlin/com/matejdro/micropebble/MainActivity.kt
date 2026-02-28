@@ -23,7 +23,6 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.matejdro.micropebble.ui.theme.MicroPebbleTheme
 import com.zhuinden.simplestack.Backstack
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -96,7 +95,7 @@ class MainActivity : ComponentActivity() {
          }
 
          val overridenInitialHistoryFromDeepLink = if (deepLinkTarget != null) {
-            deepLinkTarget.performNavigation(initialHistory, navigationContext).newBackstack.toPersistentList()
+            deepLinkTarget.performNavigation(initialHistory, navigationContext).newBackstack
          } else {
             initialHistory
          }

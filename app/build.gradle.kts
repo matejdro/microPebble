@@ -125,7 +125,6 @@ dependencies {
    implementation(libs.coil)
    implementation(libs.dispatch)
    implementation(libs.kable)
-   implementation(libs.kotlin.immutableCollections)
    implementation(libs.libpebble3)
    implementation(libs.kermit)
    implementation(libs.kotlin.coroutines)

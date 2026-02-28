@@ -53,7 +53,6 @@ koin = "4.1.1"
 kotest = "6.1.4"
 kotlin = "2.2.21"
 kotlin-coroutines = "1.10.2"
-kotlin-immutableCollections = "0.4.0"
 kotlin-io = "0.8.0"
 kotlin-serialization = "1.9.0"
 kotlinova = "4.0.0-alpha08"
@@ -154,7 +153,6 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlin-coroutines" }
-kotlin-immutableCollections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlin-immutableCollections" }
 kotlin-io = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlin-io" }
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-plugin-compose = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
