@@ -35,7 +35,6 @@ jspecify = "1.0.0"
 junit4 = "4.13.2"
 junit4-parameterinjector = "1.21"
 junit = "6.0.3"
-junit-launcher = "6.0.3"
 kable = "0.42.0"
 kermit = "2.0.8"
 koin = "4.1.1"
@@ -118,7 +117,7 @@ junit4 = { module = "junit:junit", version.ref = "junit4" }
 junit4-parameterinjector = { module = "com.google.testparameterinjector:test-parameter-injector", version.ref = "junit4-parameterinjector" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
-junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-launcher" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
 kable = { module = "com.juul.kable:kable-core", version.ref = "kable" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
