@@ -7,21 +7,25 @@ import org.gradle.testing.jacoco.tasks.JacocoReport
 fun Project.setupJacocoMergingAndroid() {
    registerJacocoConfigurations()
 
-   artifacts {
-      add(CONFIGURATION_JACOCO_SOURCES, layout.projectDirectory.dir("src/main/kotlin"))
-      add(CONFIGURATION_JACOCO_CLASSES, layout.buildDirectory.dir("tmp/kotlin-classes/debug").map { it.asFile })
-      add(CONFIGURATION_JACOCO_EXEC, layout.buildDirectory.dir("outputs/unit_test_code_coverage").map { it.asFile })
-      add(CONFIGURATION_JACOCO_EXEC, layout.buildDirectory.dir("outputs/code_coverage").map { it.asFile })
+   if (project.name != "test") {
+      artifacts {
+         add(CONFIGURATION_JACOCO_SOURCES, layout.projectDirectory.dir("src/main/kotlin"))
+         add(CONFIGURATION_JACOCO_CLASSES, layout.buildDirectory.dir("tmp/kotlin-classes/debug").map { it.asFile })
+         add(CONFIGURATION_JACOCO_EXEC, layout.buildDirectory.dir("outputs/unit_test_code_coverage").map { it.asFile })
+         add(CONFIGURATION_JACOCO_EXEC, layout.buildDirectory.dir("outputs/code_coverage").map { it.asFile })
+      }
    }
 }
 
 fun Project.setupJacocoMergingPureKotlin() {
    registerJacocoConfigurations()
 
-   artifacts {
-      add(CONFIGURATION_JACOCO_SOURCES, layout.projectDirectory.dir("src/main/kotlin"))
-      add(CONFIGURATION_JACOCO_CLASSES, layout.buildDirectory.dir("classes/kotlin/main").map { it.asFile })
-      add(CONFIGURATION_JACOCO_EXEC, layout.buildDirectory.dir("jacoco").map { it.asFile })
+   if (project.name != "test") {
+      artifacts {
+         add(CONFIGURATION_JACOCO_SOURCES, layout.projectDirectory.dir("src/main/kotlin"))
+         add(CONFIGURATION_JACOCO_CLASSES, layout.buildDirectory.dir("classes/kotlin/main").map { it.asFile })
+         add(CONFIGURATION_JACOCO_EXEC, layout.buildDirectory.dir("jacoco").map { it.asFile })
+      }
    }
 }
 
@@ -46,10 +50,16 @@ fun Project.setupJacocoMergingRoot() {
                   exclude("**/release/**")
 
                   // Exclude generated classes
+                  exclude("**/*ComposableSingletons*")
                   exclude("**/*MetroFactory*/**")
                   exclude("**/*MetroGraph*/**")
+                  exclude("**/metro/hints/**")
                   exclude("**/android/showkase/**")
-                  exclude("**/*ComposableSingletons*")
+                  exclude("**/*PreviewKt.class")
+
+                  // DI
+                  exclude("**/*Providers.class")
+                  exclude("**/*Providers$*.class")
                }
             }
          )
@@ -65,6 +75,8 @@ fun Project.setupJacocoMergingRoot() {
          sourceDirectories.from(
             configurations.getByName(CONFIGURATION_JACOCO_SOURCES).incoming.artifactView { isLenient = true }.files
          )
+
+         reports.xml.required.set(true)
       }
    }
 
@@ -77,7 +89,7 @@ private fun Project.loadJacocoPathsFromSubprojects() {
    subprojects {
       rootProject.dependencies.add(
          CONFIGURATION_JACOCO_CLASSES,
-         this.dependencies.project(
+         rootProject.dependencies.project(
             mapOf(
                "path" to isolated.path,
                "configuration" to CONFIGURATION_JACOCO_CLASSES
@@ -87,7 +99,7 @@ private fun Project.loadJacocoPathsFromSubprojects() {
 
       rootProject.dependencies.add(
          CONFIGURATION_JACOCO_SOURCES,
-         this.dependencies.project(
+         rootProject.dependencies.project(
             mapOf(
                "path" to isolated.path,
                "configuration" to CONFIGURATION_JACOCO_SOURCES
@@ -97,7 +109,7 @@ private fun Project.loadJacocoPathsFromSubprojects() {
 
       rootProject.dependencies.add(
          CONFIGURATION_JACOCO_EXEC,
-         this.dependencies.project(
+         rootProject.dependencies.project(
             mapOf(
                "path" to isolated.path,
                "configuration" to CONFIGURATION_JACOCO_EXEC
