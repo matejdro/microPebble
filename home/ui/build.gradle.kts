@@ -4,6 +4,7 @@ plugins {
    di
    navigation
    parcelize
+   serialization
    showkase
 }
 

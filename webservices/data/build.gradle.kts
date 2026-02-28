@@ -1,7 +1,7 @@
 plugins {
    androidLibraryModule
    di
-   alias(libs.plugins.serialization)
+   serialization
 }
 
 android {

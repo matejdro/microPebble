@@ -1,6 +1,6 @@
 plugins {
    pureKotlinModule
-   alias(libs.plugins.serialization)
+   serialization
 }
 
 dependencies {

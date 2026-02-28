@@ -3,6 +3,7 @@ plugins {
    compose
    navigation
    parcelize
+   serialization
    showkase
 }
 
@@ -132,7 +133,6 @@ dependencies {
    implementation(libs.kotlinova.navigation)
    implementation(libs.kotlinova.navigation.navigation3)
    implementation(libs.logcat)
-   implementation(libs.simpleStack)
    implementation(libs.tinylog.api)
    implementation(libs.tinylog.impl)
 

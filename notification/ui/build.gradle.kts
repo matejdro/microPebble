@@ -3,6 +3,7 @@ plugins {
    compose
    di
    navigation
+   serialization
    showkase
 }
 

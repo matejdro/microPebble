@@ -1,14 +1,14 @@
 package com.matejdro.micropebble.navigation.instructions
 
 import com.matejdro.micropebble.navigation.keys.base.TabContainerKey
-import com.zhuinden.simplestack.StateChange
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import si.inova.kotlinova.navigation.di.NavigationContext
 import si.inova.kotlinova.navigation.instructions.NavigationInstruction
 import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 
-@Parcelize
-data class ReplaceTabContentWith(val key: ScreenKey) : NavigationInstruction() {
+@Serializable
+data class ReplaceTabContentWith(val key: @Contextual ScreenKey) : NavigationInstruction() {
    override fun performNavigation(
       backstack: List<ScreenKey>,
       context: NavigationContext,
@@ -20,6 +20,6 @@ data class ReplaceTabContentWith(val key: ScreenKey) : NavigationInstruction() {
       } else {
          backstack.take(lastHomeScreenKey + 1)
       }
-      return NavigationResult(backstackUntilHomeScreen + key, StateChange.REPLACE)
+      return NavigationResult(backstackUntilHomeScreen + key)
    }
 }

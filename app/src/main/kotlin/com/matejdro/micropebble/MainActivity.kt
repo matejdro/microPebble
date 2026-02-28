@@ -25,7 +25,6 @@ import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import com.matejdro.micropebble.navigation.scenes.rememberTabListSceneDecoratorStrategy
 import com.matejdro.micropebble.ui.theme.MicroPebbleTheme
-import com.zhuinden.simplestack.Backstack
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -34,6 +33,7 @@ import si.inova.kotlinova.compose.result.ResultPassingStore
 import si.inova.kotlinova.compose.time.ComposeAndroidDateTimeFormatter
 import si.inova.kotlinova.compose.time.LocalDateFormatter
 import si.inova.kotlinova.core.time.AndroidDateTimeFormatter
+import si.inova.kotlinova.navigation.backstack.Backstack
 import si.inova.kotlinova.navigation.deeplink.HandleNewIntentDeepLinks
 import si.inova.kotlinova.navigation.deeplink.MainDeepLinkHandler
 import si.inova.kotlinova.navigation.di.NavigationContext
@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
 
    private var backstack: Backstack? = null
 
-   private val viewModel by viewModels<MainViewModel>() { ViewModelFactory() }
+   private val viewModel by viewModels<MainViewModel> { ViewModelFactory() }
    private var initComplete = false
 
    override fun onCreate(savedInstanceState: Bundle?) {

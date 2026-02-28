@@ -1,7 +1,7 @@
 package com.matejdro.micropebble.navigation.keys
 
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 
-@Parcelize
+@Serializable
 data object DeveloperConnectionScreenKey : ScreenKey()

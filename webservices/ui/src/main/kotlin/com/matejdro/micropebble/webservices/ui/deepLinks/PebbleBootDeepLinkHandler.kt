@@ -2,10 +2,10 @@ package com.matejdro.micropebble.webservices.ui.deepLinks
 
 import android.net.Uri
 import com.matejdro.micropebble.navigation.keys.WebservicesAuthScreenKey
-import com.zhuinden.simplestack.StateChange
 import dev.zacsweers.metro.ContributesIntoSet
 import dev.zacsweers.metro.Inject
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.Serializable
 import si.inova.kotlinova.navigation.deeplink.DeepLinkHandler
 import si.inova.kotlinova.navigation.deeplink.matchDeepLink
 import si.inova.kotlinova.navigation.di.NavigationContext
@@ -20,10 +20,10 @@ import kotlin.uuid.Uuid
  * Need a special instruction instead of OpenScreenOrMoveToTop as I don't want to compare by value, since it changes based on the
  * token passed.
  */
-@Parcelize
-private data class PebbleBootNavigationInstruction(val screen: ScreenKey) : NavigationInstruction() {
+@Serializable
+private data class PebbleBootNavigationInstruction(val screen: @Contextual ScreenKey) : NavigationInstruction() {
    override fun performNavigation(backstack: List<ScreenKey>, context: NavigationContext) =
-      NavigationResult(backstack.filter { it !is WebservicesAuthScreenKey } + screen, StateChange.FORWARD)
+      NavigationResult(backstack.filter { it !is WebservicesAuthScreenKey } + screen)
 }
 
 @ContributesIntoSet(OuterNavigationScope::class)

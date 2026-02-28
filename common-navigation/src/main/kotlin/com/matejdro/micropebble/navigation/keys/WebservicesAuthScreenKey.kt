@@ -1,10 +1,10 @@
 package com.matejdro.micropebble.navigation.keys
 
 import com.matejdro.micropebble.navigation.keys.base.BaseScreenKey
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
-@Parcelize
+@Serializable
 data class WebservicesAuthScreenKey(
    /**
     * Received from the boot URL, looks something like https://boot.rebble.io/api/stage2/?access_token=ACCESS_TOKEN&t=SOME_TIMESTAMP
