@@ -13,18 +13,6 @@ plugins {
    id("di")
 }
 
-kotlinova {
-   tomlVersionBump {
-      versionReportFiles.set(
-         fileTree(rootDir).apply {
-            include("**/build/dependencyUpdates/versions.json")
-         }
-      )
-
-      tomlFile.set(File(rootDir, "config/libs.toml"))
-   }
-}
-
 moduleGraphAssert {
    maxHeight = 6
    restricted = arrayOf(
