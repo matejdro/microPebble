@@ -7,7 +7,8 @@ import dev.zacsweers.metro.Inject
 import logcat.logcat
 
 @ContributesBinding(AppScope::class)
-class LogcatActionLogger @Inject constructor() : ActionLogger {
+@Inject
+class LogcatActionLogger : ActionLogger {
    override fun logAction(text: () -> String) {
       logcat(message = text, tag = "UserAction")
    }
