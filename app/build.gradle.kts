@@ -1,12 +1,9 @@
-import com.slack.keeper.optInToKeeper
-
 plugins {
    androidAppModule
    compose
    navigation
    parcelize
    showkase
-   id("com.slack.keeper")
    id("androidx.baselineprofile")
 }
 
@@ -31,10 +28,6 @@ android {
 
    testOptions {
       execution = "ANDROIDX_TEST_ORCHESTRATOR"
-   }
-
-   if (hasProperty("testAppWithProguard")) {
-      testBuildType = "proguardedDebug"
    }
 
    signingConfigs {
@@ -64,26 +57,6 @@ android {
          signingConfig = signingConfigs.getByName("debug")
       }
 
-      create("proguardedDebug") {
-         isMinifyEnabled = true
-         isShrinkResources = true
-
-         proguardFiles(
-            getDefaultProguardFile("proguard-android-optimize.txt"),
-            "proguard-rules.pro",
-         )
-
-         testProguardFiles(
-            getDefaultProguardFile("proguard-android-optimize.txt"),
-            "proguard-rules.pro",
-            "proguard-rules-test.pro"
-         )
-
-         matchingFallbacks += "debug"
-
-         signingConfig = signingConfigs.getByName("debug")
-      }
-
       create("benchmark") {
          isDebuggable = true
          initWith(buildTypes.getByName("release"))
@@ -110,18 +83,6 @@ android {
          output.outputFileName = "micropebble.apk"
       }
    }
-}
-
-androidComponents {
-   beforeVariants { builder ->
-      if (builder.name.contains("proguardedDebug")) {
-         builder.optInToKeeper()
-      }
-   }
-}
-
-keeper {
-   automaticR8RepoManagement = false
 }
 
 custom {
@@ -179,6 +140,4 @@ dependencies {
    implementation(libs.androidx.datastore.preferences)
 
    runtimeOnly(libs.ktor.okhttp)
-
-   keeperR8(libs.androidx.r8)
 }

@@ -48,7 +48,6 @@ junit4-parameterinjector = "1.21"
 junit = "6.0.3"
 junit-launcher = "6.0.3"
 kable = "0.42.0"
-keeperPlugin = "0.16.1"
 kermit = "2.0.8"
 koin = "4.1.1"
 kotest = "6.1.4"
@@ -150,7 +149,6 @@ junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jun
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-launcher" }
 kable = { module = "com.juul.kable:kable-core", version.ref = "kable" }
-keeperPlugin = { module = "com.slack.keeper:keeper", version.ref = "keeperPlugin" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
