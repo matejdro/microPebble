@@ -9,7 +9,9 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlin.uuid.Uuid
 
 @Inject
 @ContributesBinding(AppScope::class)
@@ -67,4 +69,7 @@ class AppstoreSourceServiceImpl(
          data
       }
    }
+
+   override suspend fun find(id: Uuid) = sources.first().find { it.id == id }
+   override suspend fun find(predicate: (AppstoreSource) -> Boolean) = sources.first().find(predicate)
 }

@@ -5,7 +5,8 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="manage_appstore_sources">Appstore sources</string>
-    
+    <string name="authenticate_webservices">Webservices</string>
+
     <string name="watch_classic">Pebble Classic</string>
     <string name="watch_classic_steel">Pebble Steel</string>
     <string name="watch_time">Pebble Time</string>

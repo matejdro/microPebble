@@ -12,6 +12,8 @@ interface AppstoreSourceService {
    suspend fun replaceSource(oldSource: AppstoreSource, source: AppstoreSource)
    suspend fun restoreSources()
    suspend fun removeSource(source: AppstoreSource)
+   suspend fun find(id: Uuid): AppstoreSource?
+   suspend fun find(predicate: (AppstoreSource) -> Boolean): AppstoreSource?
 
    companion object {
       val defaultSources = listOf(

@@ -42,6 +42,7 @@ import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
 import com.matejdro.micropebble.navigation.keys.CalendarListScreenKey
 import com.matejdro.micropebble.navigation.keys.DeveloperConnectionScreenKey
 import com.matejdro.micropebble.navigation.keys.OnboardingKey
+import com.matejdro.micropebble.navigation.keys.WebservicesAuthScreenKey
 import com.matejdro.micropebble.ui.components.ErrorAlertDialog
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
@@ -92,6 +93,7 @@ class ToolsScreen(
                { navigator.navigateTo(DeveloperConnectionScreenKey) },
                { navigator.navigateTo(CalendarListScreenKey) },
                { navigator.navigateTo(AppstoreSourcesScreenKey) },
+               { navigator.navigateTo(WebservicesAuthScreenKey()) },
                viewModel::getLogs,
                viewModel::resetLog,
                { voicePermission.launchPermissionRequest() },
@@ -110,6 +112,7 @@ private fun ToolsScreenContent(
    openDevConnection: () -> Unit,
    openCalendarSettings: () -> Unit,
    openAppstoreSources: () -> Unit,
+   openWebservices: () -> Unit,
    startLogSaving: () -> Unit,
    notifyLogIntentSent: () -> Unit,
    startVoiceService: () -> Unit,
@@ -170,6 +173,10 @@ private fun ToolsScreenContent(
             ToolButton(openAppstoreSources, R.drawable.appstore_sources, sharedR.string.manage_appstore_sources)
          }
 
+         item {
+            ToolButton(openWebservices, R.drawable.webservices_auth, sharedR.string.authenticate_webservices)
+         }
+
          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             item {
                ToolButton(startVoiceService, sharedR.drawable.ic_mic, R.string.enable_voice)
@@ -224,6 +231,7 @@ internal fun ToolsScreenPreview() {
          openDevConnection = {},
          openCalendarSettings = {},
          openAppstoreSources = {},
+         openWebservices = {},
          startLogSaving = {},
          notifyLogIntentSent = {},
          changeMusicAlwaysPaused = {},

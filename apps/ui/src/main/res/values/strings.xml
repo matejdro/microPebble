@@ -19,4 +19,5 @@
     <string name="not_updatable_tooltip">Failed to fetch version information</string>
     <string name="not_updatable_app_not_found_tooltip">Failed to fetch version information - app not found</string>
     <string name="change_source">Change app\'s installation source</string>
+    <string name="boot_url">Boot URL</string>
 </resources>

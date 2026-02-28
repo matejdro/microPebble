@@ -95,6 +95,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="micropebble" android:host="watchapps" />
             </intent-filter>
+            <intent-filter android:label="@string/boot_url">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="pebble" android:host="custom-boot-config-url" android:pathPrefix="/" />
+            </intent-filter>
             <property
                 android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
                 android:value="true" />
