@@ -2,10 +2,13 @@ package com.matejdro.micropebble
 
 import android.app.ActivityManager
 import android.app.Application
+import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
 import android.util.Log
+import androidx.compose.runtime.Composer
+import androidx.compose.runtime.tooling.ComposeStackTraceMode
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.work.Configuration
@@ -57,9 +60,14 @@ open class MicroPebbleApplication : Application(), WorkConfiguration.Provider {
       }
 
       setupLogging()
-
       enableStrictMode()
-
+      Composer.setDiagnosticStackTraceMode(
+         if (isDebuggable()) {
+            ComposeStackTraceMode.SourceInformation
+         } else {
+            ComposeStackTraceMode.GroupKeys
+         }
+      )
       DefaultDispatcherProvider.set(
          AccessCallbackDispatcherProvider(DefaultDispatcherProvider.get()) {
             if (BuildConfig.DEBUG) {
@@ -217,6 +225,12 @@ open class MicroPebbleApplication : Application(), WorkConfiguration.Provider {
          it.pid == myPid && packageName == it.processName
       } == true
    }
+
+   /**
+    * A better way to check that application is debuggable - BuildConfig.DEBUG does not work when compiling application
+    * as profileable
+    */
+   private fun isDebuggable(): Boolean = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
 
    override val workManagerConfiguration: WorkConfiguration
       get() = Configuration.Builder().run {
