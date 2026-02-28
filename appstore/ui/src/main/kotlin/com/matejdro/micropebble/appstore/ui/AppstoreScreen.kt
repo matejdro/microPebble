@@ -73,6 +73,7 @@ import com.matejdro.micropebble.appstore.ui.common.makeFakeApp
 import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
 import com.matejdro.micropebble.ui.components.BasicExposedDropdownMenuBox
+import com.matejdro.micropebble.ui.components.ErrorAlertDialog
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
@@ -398,6 +399,8 @@ private fun AppstoreHomepageContent(
       onRefresh = onRefresh,
       modifier = Modifier.fillMaxWidth(),
    ) {
+      ErrorAlertDialog(state)
+
       if (state is Outcome.Success) {
          val data = state.data
          LazyVerticalStaggeredGrid(

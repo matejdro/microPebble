@@ -69,32 +69,10 @@ class WatchappListViewModel(
    val installationSources = installationClient.appInstallSources
 
    private val _appUpdatingStatus = MutableStateFlow(emptyMap<Uuid, AppStatus>())
-   val uiState =
-      combineTransform(
-         _apps,
-         installationSources,
-         appstoreSourceService.sources,
-      ) { apps, installSources, sources ->
-         emit(apps)
-         if (apps is Outcome.Success) {
-            val appsWithStatusUpdate = apps.data.map { app ->
-               val appId = app.app.properties.id
-               val installSource = installSources[appId]
-               val status = installationClient.isAppUpdatable(installSource, sources)
-               app.copy(appStatus = status)
-            }
-            emit(Outcome.Success(appsWithStatusUpdate))
-         }
-      }.combine(_appUpdatingStatus) { stateOutcome, appStatuses ->
-         if (appStatuses.isNotEmpty()) {
-            stateOutcome.mapData { state ->
-               state.map { it.copy(appStatus = appStatuses[it.app.properties.id] ?: it.appStatus) }
-            }
-         } else {
-            stateOutcome
-         }
-      }
 
+   private val _uiState = MutableStateFlow<Outcome<WatchappListState>>(Outcome.Progress())
+   val uiState: StateFlow<Outcome<WatchappListState>>
+      get() = _uiState
    val appstoreSources = appstoreSourceService.sources.map { it.filter { s -> s.enabled } }
 
    override fun onServiceRegistered() {
@@ -115,6 +93,35 @@ class WatchappListViewModel(
                      watchapps = watchapps.mapWatch()
                   )
                )
+            }
+         )
+      }
+
+      resources.launchResourceControlTask(_uiState) {
+         emitAll(
+            combineTransform(
+               _apps,
+               installationSources,
+               appstoreSourceService.sources,
+            ) { apps, installSources, sources ->
+               emit(apps)
+               if (apps is Outcome.Success) {
+                  val appsWithStatusUpdate = apps.data.map { app ->
+                     val appId = app.app.properties.id
+                     val installSource = installSources[appId]
+                     val status = installationClient.isAppUpdatable(installSource, sources)
+                     app.copy(appStatus = status)
+                  }
+                  emit(Outcome.Success(appsWithStatusUpdate))
+               }
+            }.combine(_appUpdatingStatus) { stateOutcome, appStatuses ->
+               if (appStatuses.isNotEmpty()) {
+                  stateOutcome.mapData { state ->
+                     state.map { it.copy(appStatus = appStatuses[it.app.properties.id] ?: it.appStatus) }
+                  }
+               } else {
+                  stateOutcome
+               }
             }
          )
       }

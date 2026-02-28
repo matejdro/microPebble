@@ -22,6 +22,7 @@ import com.matejdro.micropebble.navigation.keys.AppstoreScreenKey
 import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.metadata.WatchType
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
@@ -63,7 +64,7 @@ data class AppstoreScreenState(
 @Inject
 @ContributesScopedService
 class AppstoreViewModel(
-   resources: CoroutineResourceManager,
+   private val resources: CoroutineResourceManager,
    private val actionLogger: ActionLogger,
    appstoreSourceService: AppstoreSourceService,
    private val api: ApiClient,
@@ -75,21 +76,11 @@ class AppstoreViewModel(
    private val _state by savedFlow { AppstoreScreenState() }
    val state: StateFlow<AppstoreScreenState> = _state
 
-   val homePageState =
-      state.transform { (source, tab, platform) ->
-         if (source != null) {
-            emit(Outcome.Progress())
-            emit(getHomePage(source, tab, platform))
-         }
-      }
+   private val _homePageState = MutableStateFlow<Outcome<AppstoreHomePage>>(Outcome.Progress())
+   val homePageState: StateFlow<Outcome<AppstoreHomePage>> = _homePageState
 
-   val searchResults =
-      state.debounce(100.milliseconds).transform { searchState ->
-         if (searchState.appstoreSource != null) {
-            emit(Outcome.Progress())
-            emit(getSearchResults(searchState))
-         }
-      }
+   private val _searchResults = MutableStateFlow<Outcome<List<AlgoliaApplication>>>(Outcome.Progress())
+   val searchResults: StateFlow<Outcome<List<AlgoliaApplication>>> = _searchResults
 
    private val homePagesCache: MutableMap<Pair<Pair<AppstoreSource, ApplicationType>, WatchType?>, AppstoreHomePage> =
       mutableMapOf()
@@ -98,6 +89,28 @@ class AppstoreViewModel(
       actionLogger.logAction { "AppstoreViewModel.onServiceRegistered()" }
       coroutineScope.launch {
          updateState { copy(appstoreSource = appstoreSources.first().firstOrNull()) }
+      }
+
+      resources.launchResourceControlTask(_homePageState) {
+         emitAll(
+            state.transform { (source, tab, platform) ->
+               if (source != null) {
+                  emit(Outcome.Progress())
+                  emit(getHomePage(source, tab, platform))
+               }
+            }
+         )
+      }
+
+      resources.launchResourceControlTask(_searchResults) {
+         emitAll(
+            state.debounce(100.milliseconds).transform { searchState ->
+               if (searchState.appstoreSource != null) {
+                  emit(Outcome.Progress())
+                  emit(getSearchResults(searchState))
+               }
+            }
+         )
       }
    }
 
