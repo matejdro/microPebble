@@ -18,7 +18,6 @@ import com.matejdro.micropebble.di.ApplicationGraph
 import com.matejdro.micropebble.di.ComponentFactory
 import com.matejdro.micropebble.di.MainApplicationGraph
 import com.matejdro.micropebble.logging.ErrorReportingKermitWriter
-import com.matejdro.micropebble.logging.MultiLogcatLogger
 import com.matejdro.micropebble.logging.TinyLogKermitWriter
 import com.matejdro.micropebble.logging.TinyLogLogcatLogger
 import dev.zacsweers.metro.createGraphFactory
@@ -126,7 +125,9 @@ open class MicroPebbleApplication : Application(), WorkConfiguration.Provider {
             null
          }
       )
-      LogcatLogger.install(MultiLogcatLogger(logcatLoggers))
+
+      LogcatLogger.loggers += logcatLoggers
+      LogcatLogger.install()
 
       KermitLogger.addLogWriter(TinyLogKermitWriter(loggingThread))
       if (BuildConfig.DEBUG) {
