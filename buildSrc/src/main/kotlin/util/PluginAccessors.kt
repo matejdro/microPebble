@@ -22,9 +22,6 @@ inline val PluginDependenciesSpec.pureKotlinModule: PluginDependencySpec
 inline val PluginDependenciesSpec.parcelize: PluginDependencySpec
    get() = id("kotlin-parcelize")
 
-inline val PluginDependenciesSpec.moshi: PluginDependencySpec
-   get() = id("moshi")
-
 inline val PluginDependenciesSpec.navigation: PluginDependencySpec
    get() = id("navigation")
 

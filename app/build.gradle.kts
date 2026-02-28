@@ -166,7 +166,6 @@ dependencies {
    implementation(libs.kable)
    implementation(libs.kotlin.immutableCollections)
    implementation(libs.libpebble3)
-   implementation(libs.moshi)
    implementation(libs.kermit)
    implementation(libs.kotlin.coroutines)
    implementation(libs.kotlinova.core)
