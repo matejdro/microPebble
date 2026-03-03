@@ -12,7 +12,7 @@ jobs:
       cancel-in-progress: true
     runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           lfs: true
           submodules: recursive
@@ -22,7 +22,7 @@ jobs:
 
       - run: "v=$(cat version.txt);echo \"OLD_VERSION=$v\" > $GITHUB_ENV"
       # nx-set-shas action needs at least node 16 installed
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20
       - name: Get current branch
@@ -44,7 +44,7 @@ jobs:
           to: '${{ env.NX_HEAD }}'
       - run: "echo \"No feature or fix commits. Skipping build...\""
         if: "${{ steps.version-check.outputs.version == env.OLD_VERSION }}"
-      - uses: andymckay/cancel-action@0.3
+      - uses: andymckay/cancel-action@b9280e3f8986d7a8e91c7462efc0fa318010c8b1 # 0.3
         if: "${{ steps.version-check.outputs.version == env.OLD_VERSION }}"
       - name: "Wait for cancel to stick"
         run: "sleep 99999"
@@ -86,7 +86,7 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
       - name: "Upload proguard mappings"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: mapping-app-develop-release.txt
           path: app/build/outputs/mapping/release/mapping.txt
@@ -104,7 +104,7 @@ jobs:
       - name: "Run Screenshot Tests"
         run: "./gradlew --continue verifyPaparazziDebug"
       - name: "Upload Screenshot test failures"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: failure()
         with:
           name: failed-screenshot-tests
@@ -131,12 +131,12 @@ jobs:
           git tag ${{ env.VERSION }}
           git push origin ${{ env.VERSION }}
       - name: "Publish arficats to action"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: release-apk
           path: app/build/outputs/**/*-release.apk
       - name: Create a Release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b # v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
