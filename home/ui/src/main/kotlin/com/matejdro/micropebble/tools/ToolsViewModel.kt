@@ -12,7 +12,7 @@ import dispatch.core.withDefault
 import io.rebble.libpebblecommon.connection.LibPebble
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.services.ContributesScopedService
@@ -48,11 +48,12 @@ class ToolsViewModel(
       val appVersion = pInfo.versionName.orEmpty()
 
       emitAll(
-         libPebble.config.map { config ->
+         combine(libPebble.config, voiceServiceControl.voiceServiceActive) { config, voiceActive ->
             Outcome.Success(
                ToolsState(
                   appVersion,
-                  config.watchConfig.alwaysSendMusicPaused
+                  config.watchConfig.alwaysSendMusicPaused,
+                  voiceActive
                )
             )
          }
@@ -125,6 +126,7 @@ class ToolsViewModel(
 data class ToolsState(
    val appVersion: String,
    val alwaysSendPausedMusic: Boolean,
+   val voiceEnabled: Boolean,
 )
 
 private const val ZIP_BUFFER_SIZE = 1024

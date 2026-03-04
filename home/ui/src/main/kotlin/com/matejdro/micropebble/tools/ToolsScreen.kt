@@ -189,7 +189,12 @@ private fun ToolsScreenContent(
 
          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             item {
-               ToolButton(onClick = startVoiceService, icon = sharedR.drawable.ic_mic, text = R.string.enable_voice)
+               ToolButton(
+                  onClick = startVoiceService,
+                  icon = sharedR.drawable.ic_mic,
+                  text = if (state.voiceEnabled) R.string.voice_enabled else R.string.enable_voice,
+                  enabled = !state.voiceEnabled,
+               )
             }
          }
 
@@ -215,8 +220,8 @@ private fun ToolsScreenContent(
 }
 
 @Composable
-private fun ToolButton(onClick: () -> Unit, icon: Int, text: Int) {
-   Button(onClick = onClick, Modifier.sizeIn(minHeight = 60.dp)) {
+private fun ToolButton(onClick: () -> Unit, icon: Int, text: Int, enabled: Boolean = true) {
+   Button(onClick = onClick, Modifier.sizeIn(minHeight = 60.dp), enabled = enabled) {
       Row(verticalAlignment = Alignment.CenterVertically) {
          Icon(
             painterResource(icon),
@@ -235,7 +240,11 @@ private fun ToolButton(onClick: () -> Unit, icon: Int, text: Int) {
 internal fun ToolsScreenPreview() {
    PreviewTheme {
       ToolsScreenContent(
-         state = ToolsState("1.0.0-alpha07", false),
+         state = ToolsState(
+            appVersion = "1.0.0-alpha07",
+            alwaysSendPausedMusic = false,
+            voiceEnabled = false
+         ),
          loggingTransmissionState = Outcome.Success(null),
          openPermissions = {},
          openDevConnection = {},
