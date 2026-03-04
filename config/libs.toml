@@ -1,6 +1,7 @@
 [versions]
 accompanist = "0.37.3"
-algolia = "3.39.0"
+# @pin Updating to 3.39.0 updates ktor, which breaks developer connectionap
+algolia = "3.36.0"
 android-securityLints = "1.0.4"
 # See https://developer.android.com/jetpack/androidx/releases/compose-kotlin
 androidGradleCacheFix = "3.0.1"
@@ -45,7 +46,8 @@ kotlin-io = "0.9.0"
 kotlin-serialization = "1.10.0"
 kotlinova = "4.0.0-alpha16"
 ksp = "2.3.6"
-ktor = "3.4.0"
+# @pin Updating to 3.2.3 breaks developer connection for some reason. Need to diagnose.
+ktor = "3.2.3"
 libpebble3 = "0.0.0"
 logcat = "0.4"
 metro = "0.10.2"
