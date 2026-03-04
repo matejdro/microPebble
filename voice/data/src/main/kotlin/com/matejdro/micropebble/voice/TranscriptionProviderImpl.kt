@@ -8,6 +8,7 @@ import android.os.ParcelFileDescriptor
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.annotation.RequiresApi
+import com.matejdro.micropebble.voice.data.R
 import coredevices.speex.SpeexCodec
 import coredevices.speex.SpeexDecodeResult
 import dev.zacsweers.metro.AppScope
@@ -39,7 +40,11 @@ class TranscriptionProviderImpl(
       // SpeechRecognizer's audio source is only supported on 13+
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
          logcat { "Android version fail" }
-         return TranscriptionResult.Error("Voice Requires Android 13 or above")
+         return staticSuccess(context.getString(R.string.error_voice_android_version))
+      }
+
+      if (!SpeechRecognizer.isRecognitionAvailable(context)) {
+         return staticSuccess(context.getString(R.string.error_no_voice_recognizer))
       }
 
       try {
@@ -137,6 +142,6 @@ class TranscriptionProviderImpl(
    }
 
    override suspend fun canServeSession(): Boolean {
-      return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && SpeechRecognizer.isRecognitionAvailable(context)
+      return true
    }
 }
