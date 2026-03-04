@@ -112,12 +112,15 @@ jobs:
 
       - name: Generate Changelog
         id: changelog
-        uses: inovait/actions-common/git-changelog-generator@v7
+        uses: inovait/actions-common/git-changelog-generator@e39161d71d6b0200b425ed4145cc4cc080c4cf56
         with:
           from: '${{ env.NX_BASE }}'
           to: '${{ env.NX_HEAD }}'
           git_commit_url_prefix: 'https://github.com/matejdro/microPebble/commit/'
           jira_url: 'https://github.com/matejdro/microPebble'
+          show_names: true
+          excluded_name_emails: |
+            matej@matejdro.com
       - name: 'Add version'
         run: 'git add version.txt'
       - run: 'git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"'
