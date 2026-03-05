@@ -51,9 +51,9 @@ class ToolsViewModel(
          combine(libPebble.config, voiceServiceControl.voiceServiceActive) { config, voiceActive ->
             Outcome.Success(
                ToolsState(
-                  appVersion,
-                  config.watchConfig.alwaysSendMusicPaused,
-                  voiceActive
+                  appVersion = appVersion,
+                  alwaysSendPausedMusic = config.watchConfig.alwaysSendMusicPaused,
+                  voiceEnabled = voiceActive
                )
             )
          }
