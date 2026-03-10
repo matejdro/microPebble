@@ -48,7 +48,7 @@ jobs:
         working-directory: repo
       - name: Post SARIF findings as comments in the pull request
         if: always() && steps.download.outcome == 'success' && hashFiles('artifacts/results/microPebble/microPebble/merge.sarif') != ''
-        uses: sett-and-hive/sarif-to-comment-action/composite@7e69cd5f511daf8e8804487150df819f8380018e
+        uses: sett-and-hive/sarif-to-comment-action/composite@fa71cd8b608012acd1802380d32523b0555c222f
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
