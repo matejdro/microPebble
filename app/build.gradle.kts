@@ -77,10 +77,10 @@ android {
       }
    }
 
-   applicationVariants.all {
+   applicationVariants.configureEach {
       outputs.all {
          val output = this as com.android.build.gradle.internal.api.ApkVariantOutputImpl
-         output.outputFileName = "micropebble.apk"
+         output.outputFileName = "micropebble-${name}.apk"
       }
    }
 }
