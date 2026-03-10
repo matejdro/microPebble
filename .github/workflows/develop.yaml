@@ -112,7 +112,7 @@ jobs:
 
       - name: Generate Changelog
         id: changelog
-        uses: inovait/actions-common/git-changelog-generator@e39161d71d6b0200b425ed4145cc4cc080c4cf56
+        uses: inovait/actions-common/git-changelog-generator@f3d77376ea90f29d95645ec3974155bbc0ef31c1
         with:
           from: '${{ env.NX_BASE }}'
           to: '${{ env.NX_HEAD }}'
