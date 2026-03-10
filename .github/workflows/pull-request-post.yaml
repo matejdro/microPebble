@@ -59,7 +59,7 @@ jobs:
           sarif-file: 'artifacts/results/microPebble/microPebble/merge.sarif'
           simple: true
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action/linux@c950f6fb443cb5af20a377fd0dfaa78838901040
+        uses: EnricoMi/publish-unit-test-result-action/linux@f3a4c8ee80460c780d2932e55fb914138ecaca2c
         if: always() && steps.download.outcome == 'success'
         with:
           comment_mode: failures
