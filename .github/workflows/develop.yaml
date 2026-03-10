@@ -30,7 +30,7 @@ jobs:
         run: |
           echo "CURRENT_BRANCH=$(git branch --show)" >> $GITHUB_ENV
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@177b48373c6dc583ce0d9257ffb484bdd232fedf
+        uses: nrwl/nx-set-shas@3e9ad7370203c1e93d109be57f3b72eb0eb511b1
         with:
           main-branch-name: "${{ env.CURRENT_BRANCH }}"
           last-successful-event: "schedule"
