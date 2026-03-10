@@ -4,7 +4,7 @@ accompanist = "0.37.3"
 algolia = "3.36.0"
 android-securityLints = "1.0.4"
 # See https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-androidGradleCacheFix = "3.0.1"
+androidGradleCacheFix = "3.0.3"
 # @pin needs to match libpebble3's plugin
 androidGradlePlugin = "8.13.2"
 androidx-activity-compose = "1.12.4"
