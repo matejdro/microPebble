@@ -14,8 +14,9 @@
     ]
   },
   "schedule": [
-    "* 17-23 * * 2"
+    "* 20-23 * * 2"
   ],
+  "prHourlyLimit": 5,
   "updateNotScheduled": true,
   "timezone": "Europe/Ljubljana",
   "packageRules": [
