@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download and Extract Artifacts
-        uses: dawidd6/action-download-artifact@3fe16e87952bd761ad5fb4274bceb971b63f772f
+        uses: dawidd6/action-download-artifact@09b07ec687d10771279a426c79925ee415c12906
         continue-on-error: true
         id: download
         with:
