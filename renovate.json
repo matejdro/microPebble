@@ -25,6 +25,15 @@
         "com.coredevices:libpebble3"
       ],
       "enabled": false
+    },
+    {
+      "matchDepTypes": [
+        "action"
+      ],
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "enabled": false
     }
   ]
 }
