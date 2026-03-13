@@ -1,16 +1,16 @@
 package com.matejdro.micropebble.appstore.api.serializer
 
+import kotlinx.datetime.format.DateTimeComponents
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import kotlin.time.Instant
-import kotlin.time.toKotlinInstant
 
 /**
  * The first one that doesn't throw goes
@@ -20,13 +20,10 @@ private val parsers: List<(String) -> Instant> = listOf(
       Instant.parse(it)
    },
    {
-      LocalDateTime.parse(it, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant(ZoneOffset.UTC).toKotlinInstant()
+      DateTimeComponents.Formats.RFC_1123.parse(it).toInstantUsingOffset()
    },
    {
-      LocalDateTime.parse(it, DateTimeFormatter.ISO_LOCAL_DATE_TIME).toInstant(ZoneOffset.UTC).toKotlinInstant()
-   },
-   {
-      LocalDateTime.parse(it, DateTimeFormatter.ISO_DATE_TIME).toInstant(ZoneOffset.UTC).toKotlinInstant()
+      LocalDateTime.parse(it).toInstant(TimeZone.UTC)
    },
 )
 
@@ -38,8 +35,8 @@ private fun tryAllOfThem(input: String): Instant {
 }
 
 /**
- * Serializes an [Instant] with [Instant.parse] (ISO), then [DateTimeFormatter.RFC_1123_DATE_TIME], then
- * [DateTimeFormatter.ISO_DATE_TIME].
+ * Serializes an [Instant] with [Instant.parse] (ISO), then [DateTimeComponents.Formats.RFC_1123], then
+ * [LocalDateTime.parse] (ISO local).
  *
  * This is necessary because the Pebble store API doesn't use the ISO 8601 format, which is what [Instant]s get
  * serialized as.
