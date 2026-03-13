@@ -1,5 +1,5 @@
 plugins {
-   pureKotlinModule
+   multiplatformModule
 }
 
 dependencies {
