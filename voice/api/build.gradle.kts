@@ -1,7 +1,11 @@
 plugins {
-   pureKotlinModule
+   multiplatformModule
 }
 
-dependencies {
-   implementation(libs.kotlin.coroutines)
+kotlin {
+   sourceSets {
+      commonMain.dependencies {
+         implementation(libs.kotlin.coroutines)
+      }
+   }
 }
