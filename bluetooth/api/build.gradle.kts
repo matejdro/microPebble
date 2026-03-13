@@ -1,3 +1,3 @@
 plugins {
-   pureKotlinModule
+   multiplatformModule
 }
