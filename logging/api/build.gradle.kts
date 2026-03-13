@@ -1,6 +1,11 @@
 plugins {
-   pureKotlinModule
+   multiplatformModule
 }
 
-dependencies {
+kotlin {
+   sourceSets {
+      commonMain.dependencies {
+         api(libs.okio)
+      }
+   }
 }

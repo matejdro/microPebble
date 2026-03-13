@@ -1,11 +1,11 @@
 package com.matejdro.micropebble.logging
 
-import java.io.File
+import okio.Path
 
 interface FileLoggingController {
    fun flush()
 
-   fun getLogFolder(): File
+   fun getLogFolder(): Path
 
    fun getDeviceInfo(): String
 }

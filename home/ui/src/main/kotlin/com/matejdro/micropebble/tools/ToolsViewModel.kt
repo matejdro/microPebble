@@ -75,7 +75,7 @@ class ToolsViewModel(
       val zipUri = withDefault {
          fileLoggingController.flush()
 
-         val logFolder = fileLoggingController.getLogFolder()
+         val logFolder = File(fileLoggingController.getLogFolder().toString())
          File(logFolder, "device.txt").writeText(fileLoggingController.getDeviceInfo())
 
          val logsZipFile = File(logFolder, "logs.zip")
