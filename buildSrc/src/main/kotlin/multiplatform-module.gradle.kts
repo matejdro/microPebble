@@ -25,6 +25,11 @@ configure<DependencyAnalysisSubExtension> {
          // It's not ideal, but it's best to at least use other aspects of the dependency analysis plugin
          excludeRegex(".*")
       }
+
+      onModuleStructure {
+         // These modules are multiplatform, "could be a JVM project insted of an Android project" advice does not make any sense
+         this.excludeRegex(".*")
+      }
    }
 }
 
