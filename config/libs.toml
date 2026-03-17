@@ -39,7 +39,7 @@ junit4-parameterinjector = "1.21"
 kable = "0.42.0"
 kermit = "2.0.8"
 koin = "4.1.1"
-kotest = "6.1.4"
+kotest = "6.1.6"
 # Temporarily use RC kotlin as a workaround for the https://github.com/ZacSweers/metro/issues/460
 kotlin = "2.3.20-RC"
 kotlin-coroutines = "1.10.2"
