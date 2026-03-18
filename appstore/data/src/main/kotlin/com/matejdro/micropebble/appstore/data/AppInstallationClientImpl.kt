@@ -1,11 +1,13 @@
 package com.matejdro.micropebble.appstore.data
 
+import androidx.core.net.toUri
 import androidx.datastore.core.DataStore
 import com.matejdro.micropebble.appstore.api.ApiClient
 import com.matejdro.micropebble.appstore.api.AppInstallSource
 import com.matejdro.micropebble.appstore.api.AppInstallationClient
 import com.matejdro.micropebble.appstore.api.AppStatus
 import com.matejdro.micropebble.appstore.api.AppstoreSource
+import com.matejdro.micropebble.appstore.api.AppstoreSourceService
 import com.matejdro.micropebble.common.util.compareTo
 import com.matejdro.micropebble.common.util.parseVersionString
 import dev.zacsweers.metro.AppScope
@@ -31,10 +33,21 @@ class AppInstallationClientImpl(
    private val lockerApi: LockerApi,
    private val api: ApiClient,
    private val appInstallSourcesStore: DataStore<Map<Uuid, AppInstallSource>>,
+   private val appstoreSourceService: AppstoreSourceService,
 ) : AppInstallationClient {
    override val appInstallSources = appInstallSourcesStore.data
 
    override suspend fun install(url: String, source: AppInstallSource?, tmpFileName: String) = withIO {
+      val appstoreSource = source?.sourceId?.let { appstoreSourceService.find(it) }
+      val parsedUrl = url.toUri()
+      val updatedUrl = if (parsedUrl.host == null) {
+         requireNotNull(appstoreSource) { "Got relative url '$url' with null store source" }
+
+         appstoreSource.url.toUri().buildUpon().path(parsedUrl.path).query(parsedUrl.query).build()
+      } else {
+         parsedUrl
+      }
+
       if (source != null) {
          appInstallSourcesStore.updateData { it + (source.appId to source) }
       }
@@ -42,7 +55,7 @@ class AppInstallationClientImpl(
       val tmpFile = File.createTempFile(tmpFileName, "pbw")
 
       try {
-         tmpFile.outputStream().asSink().use { api.openInputStream(url).readTo(it) }
+         tmpFile.outputStream().asSink().use { api.openInputStream(updatedUrl.toString()).readTo(it) }
          lockerApi.sideloadApp(Path(tmpFile.absolutePath))
          Outcome.Success(Unit)
       } finally {
