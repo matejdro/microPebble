@@ -1,10 +1,12 @@
 package com.matejdro.micropebble.crashreport
 
 import android.app.ActivityManager
+import android.app.BackgroundServiceStartNotAllowedException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Build
 import android.os.IBinder
 import android.os.Messenger
 import androidx.core.content.getSystemService
@@ -56,10 +58,18 @@ internal class CrashReportInitializer : Initializer<CrashReportInitializer.Initi
       if (importance != null &&
          importance <= ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
       ) {
+         @Suppress("InstanceOfCheckForException") // We are forced to do this due to exception only being present in SDK >= 31
          // Start service so that it outlives our app in case of a startup crash
          // Only start if our app is considered to be in the foreground,
          // otherwise Android will crash us
-         context.startService(intent)
+         try {
+            context.startService(intent)
+         } catch (e: IllegalStateException) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || e !is BackgroundServiceStartNotAllowedException) {
+               throw e
+            }
+            // We are not allowed to start. Just ignore the error
+         }
       }
       context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
