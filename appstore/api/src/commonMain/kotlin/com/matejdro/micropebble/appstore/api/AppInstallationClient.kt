@@ -3,7 +3,6 @@ package com.matejdro.micropebble.appstore.api
 import kotlinx.coroutines.flow.Flow
 import si.inova.kotlinova.core.outcome.CauseException
 import si.inova.kotlinova.core.outcome.Outcome
-import java.io.IOException
 import kotlin.uuid.Uuid
 
 enum class AppInstallState {
@@ -13,7 +12,7 @@ enum class AppInstallState {
 }
 
 class AppSideloadFailed : CauseException(message = "App failed to sideload", isProgrammersFault = false)
-class AppDownloadFailed(cause: IOException) : CauseException(message = "App download failed", cause)
+class AppDownloadFailed(cause: Throwable) : CauseException(message = "App download failed", cause)
 
 interface AppInstallationClient {
    val appInstallSources: Flow<Map<Uuid, AppInstallSource>>

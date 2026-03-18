@@ -9,6 +9,8 @@ import dev.zacsweers.metro.Inject
 import org.tinylog.core.TinylogLoggingProvider
 import org.tinylog.provider.ProviderRegistry
 import java.io.File
+import okio.Path
+import okio.Path.Companion.toPath
 
 @Inject
 @ContributesBinding(AppScope::class)
@@ -21,8 +23,8 @@ class FileLoggingControllerImpl(
       }
    }
 
-   override fun getLogFolder(): File {
-      return File(context.cacheDir, "logs")
+   override fun getLogFolder(): Path {
+      return File(context.cacheDir, "logs").toString().toPath()
    }
 
    override fun getDeviceInfo(): String {

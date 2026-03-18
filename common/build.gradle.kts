@@ -1,7 +1,11 @@
 plugins {
-   pureKotlinModule
+   multiplatformModule
 }
 
-dependencies {
-   implementation(libs.kotlinova.core)
+kotlin {
+   sourceSets {
+      commonMain.dependencies {
+         implementation(libs.kotlinova.core)
+      }
+   }
 }
