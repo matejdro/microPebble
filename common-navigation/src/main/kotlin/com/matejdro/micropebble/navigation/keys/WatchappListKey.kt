@@ -7,4 +7,8 @@ import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 @Serializable
 data class WatchappListKey(
    val pbwFile: InputFile? = null,
-) : ScreenKey()
+) : ScreenKey() {
+   override fun getScopeTag(): String {
+      return this::class.java.name
+   }
+}
