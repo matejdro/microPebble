@@ -11,4 +11,4 @@ interface TabContainerKey
 
 val LocalSelectedTabContent = staticCompositionLocalOf<SelectedTabContent> { error("SelectedTabContent not provided") }
 
-data class SelectedTabContent(val content: @Composable () -> Unit, val key: ScreenKey)
+data class SelectedTabContent(val content: @Composable () -> Unit, val key: ScreenKey, val contentKey: Any)

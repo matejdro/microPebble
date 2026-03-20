@@ -75,7 +75,7 @@ private fun HomeScreenContent(
    val animatedMainContent: @Composable () -> Unit = {
       AnimatedContent(
          selectedTab,
-         contentKey = { entry -> entry.key },
+         contentKey = { entry -> entry.contentKey },
          transitionSpec = { fadeIn() togetherWith fadeOut() }
       ) {
          it.content()
@@ -198,6 +198,7 @@ internal fun HomePhonePreview() {
                )
             },
             WatchappListKey(),
+            ""
          ),
          switchScreen = {},
       )
@@ -220,6 +221,7 @@ internal fun HomeTabletPreview() {
                )
             },
             WatchappListKey(),
+            ""
          ),
          switchScreen = {},
       )

@@ -22,7 +22,12 @@ class TabListScene(
    override val content: @Composable (() -> Unit) = {
       val tabContainerEntry = entries.first()
 
-      val selectedTabContent = SelectedTabContent(displayedEntry::Content, displayedEntry.key())
+      val selectedTabContent = SelectedTabContent(
+         displayedEntry::Content,
+         displayedEntry.key(),
+         contentKey = displayedEntry.contentKey
+      )
+
       CompositionLocalProvider(LocalSelectedTabContent provides selectedTabContent) {
          tabContainerEntry.Content()
       }
