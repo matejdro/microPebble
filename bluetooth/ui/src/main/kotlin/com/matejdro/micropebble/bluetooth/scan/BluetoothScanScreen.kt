@@ -53,6 +53,7 @@ import io.rebble.libpebblecommon.connection.ConnectingPebbleDevice
 import io.rebble.libpebblecommon.connection.ConnectionFailureInfo
 import io.rebble.libpebblecommon.connection.DiscoveredPebbleDevice
 import io.rebble.libpebblecommon.connection.FakeConnectedDevice
+import io.rebble.libpebblecommon.connection.FirmwareUpdateCheckState
 import io.rebble.libpebblecommon.connection.PebbleBleIdentifier
 import io.rebble.libpebblecommon.connection.PebbleDevice
 import io.rebble.libpebblecommon.connection.PebbleIdentifier
@@ -301,7 +302,7 @@ internal fun ScanStartedWithDevicesPreview() {
                },
                FakeConnectedDevice(
                   PebbleBleIdentifier(""),
-                  null,
+                  FirmwareUpdateCheckState(false, null),
                   FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
                   "Connected watch",
                   null,

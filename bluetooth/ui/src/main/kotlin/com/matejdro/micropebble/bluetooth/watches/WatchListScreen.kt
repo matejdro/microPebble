@@ -56,6 +56,7 @@ import io.rebble.libpebblecommon.connection.ConnectedPebbleDeviceInRecovery
 import io.rebble.libpebblecommon.connection.ConnectingPebbleDevice
 import io.rebble.libpebblecommon.connection.FakeConnectedDevice
 import io.rebble.libpebblecommon.connection.FakeConnectedDeviceInRecovery
+import io.rebble.libpebblecommon.connection.FirmwareUpdateCheckState
 import io.rebble.libpebblecommon.connection.KnownPebbleDevice
 import io.rebble.libpebblecommon.connection.PebbleBleIdentifier
 import io.rebble.libpebblecommon.connection.endpointmanager.FirmwareUpdater
@@ -229,7 +230,7 @@ internal fun WatchListWithDevicesPreview() {
    val deviceList = listOf(
       FakeConnectedDevice(
          PebbleBleIdentifier(""),
-         null,
+         FirmwareUpdateCheckState(false, null),
          FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
          "Red PT",
          null,
@@ -239,7 +240,7 @@ internal fun WatchListWithDevicesPreview() {
       ),
       FakeConnectedDeviceInRecovery(
          PebbleBleIdentifier(""),
-         null,
+         FirmwareUpdateCheckState(false, null),
          FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
          "Black P2D",
          null,

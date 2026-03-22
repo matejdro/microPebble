@@ -619,7 +619,11 @@ private val fakeApps = List(10) { index ->
                category = null,
                iosCompanion = null,
                androidCompanion = null,
-               order = index
+               order = index,
+               developerId = null,
+               sourceLink = null,
+               storeId = null,
+               capabilities = emptyList(),
             ),
             sideloaded = true,
             configurable = index % 4 == 0,
@@ -648,7 +652,11 @@ private val fakeApps = List(10) { index ->
                category = null,
                iosCompanion = null,
                androidCompanion = null,
-               order = index
+               order = index,
+               developerId = null,
+               sourceLink = null,
+               storeId = null,
+               capabilities = emptyList(),
             ),
             SystemApps.entries.first()
          ),

@@ -264,7 +264,8 @@ internal fun NotificationAppListScreenContentPreview() {
                MillisecondInstant(Instant.DISTANT_PAST),
                null,
                null,
-               null
+               null,
+               iconCode = null,
             ),
             0
          )

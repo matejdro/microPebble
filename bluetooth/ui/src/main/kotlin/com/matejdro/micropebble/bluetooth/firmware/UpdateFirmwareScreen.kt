@@ -40,6 +40,7 @@ import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import io.rebble.libpebblecommon.connection.FakeConnectedDevice
+import io.rebble.libpebblecommon.connection.FirmwareUpdateCheckState
 import io.rebble.libpebblecommon.connection.PebbleBleIdentifier
 import io.rebble.libpebblecommon.connection.endpointmanager.FirmwareUpdater
 import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
@@ -180,7 +181,7 @@ internal fun FirmwareUpdateNotSelectedPreview() {
          UpdateFirmwareState(
             FakeConnectedDevice(
                PebbleBleIdentifier(""),
-               null,
+               FirmwareUpdateCheckState(false, null),
                FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
                "My Watch 123",
                null,
@@ -203,7 +204,7 @@ internal fun FirmwareUpdatePendingPreview() {
          UpdateFirmwareState(
             FakeConnectedDevice(
                PebbleBleIdentifier(""),
-               null,
+               FirmwareUpdateCheckState(false, null),
                FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
                "My Watch 123",
                null,
@@ -228,7 +229,7 @@ internal fun FirmwareUpdateCompletePreview() {
          UpdateFirmwareState(
             FakeConnectedDevice(
                PebbleBleIdentifier(""),
-               null,
+               FirmwareUpdateCheckState(false, null),
                FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
                "My Watch 123",
                null,
@@ -253,7 +254,7 @@ internal fun FirmwareUpdateProgressPreview() {
          UpdateFirmwareState(
             FakeConnectedDevice(
                PebbleBleIdentifier(""),
-               null,
+               FirmwareUpdateCheckState(false, null),
                FirmwareUpdater.FirmwareUpdateStatus.NotInProgress.Idle(),
                "My Watch 123",
                null,

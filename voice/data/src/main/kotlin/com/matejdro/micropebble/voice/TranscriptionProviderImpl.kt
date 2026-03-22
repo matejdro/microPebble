@@ -35,6 +35,7 @@ class TranscriptionProviderImpl(
    override suspend fun transcribe(
       encoderInfo: VoiceEncoderInfo,
       audioFrames: Flow<UByteArray>,
+      isNotificationReply: Boolean,
    ): TranscriptionResult {
       logcat { "Start transcribe" }
       // SpeechRecognizer's audio source is only supported on 13+
