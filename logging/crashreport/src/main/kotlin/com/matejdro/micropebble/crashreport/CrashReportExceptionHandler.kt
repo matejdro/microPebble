@@ -1,8 +1,8 @@
 package com.matejdro.micropebble.crashreport
 
 import android.content.Context
+import android.os.Bundle
 import android.os.Message
-import androidx.core.os.bundleOf
 
 /**
  * A [Thread.UncaughtExceptionHandler] which is meant to be used as a default exception handler on
@@ -29,7 +29,7 @@ internal class CrashReportExceptionHandler(
       if (serviceMessenger != null) {
          serviceMessenger.send(
             Message().apply {
-               data = bundleOf(CrashReportActivity.EXTRA_TEXT to exceptionText)
+               data = Bundle().apply { putString(CrashReportActivity.EXTRA_TEXT, exceptionText) }
             }
          )
       } else {

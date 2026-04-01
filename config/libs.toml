@@ -6,7 +6,7 @@ android-securityLints = "1.0.4"
 androidGradleCacheFix = "3.0.3"
 # @pin needs to match libpebble3's plugin
 androidGradlePlugin = "8.13.2"
-androidx-activity-compose = "1.12.4"
+androidx-activity-compose = "1.13.0"
 androidx-annotation = "1.9.1"
 androidx-compose-material3 = "1.5.0-alpha15"
 androidx-compose-runtime = "1.10.5"
