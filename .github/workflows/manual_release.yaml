@@ -77,7 +77,7 @@ jobs:
       - name: Run Unit Tests
         run: "./gradlew runDebugTests -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest --continue"
       - name: "Generate new Screenshot Tests"
-        run: "config/generate-screenshots.sh master"
+        run: "config/generate-screenshots.sh main"
       - name: "Run Screenshot Tests"
         run: "./gradlew --continue verifyPaparazziDebug"
       - name: "Upload Screenshot test failures"
