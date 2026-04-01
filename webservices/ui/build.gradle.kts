@@ -18,6 +18,7 @@ dependencies {
    api(projects.webservices.api)
    api(projects.common)
    api(libs.kotlinova.navigation)
+   api(libs.kotlinova.navigation.deeplink)
    api(libs.kotlin.coroutines)
    api(projects.appstore.api)
    api(libs.kotlinova.core)
