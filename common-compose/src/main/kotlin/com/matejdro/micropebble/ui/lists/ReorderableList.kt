@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,8 +18,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.core.content.getSystemService
 import com.mohamedrejeb.compose.dnd.reorder.ReorderContainer
+import com.mohamedrejeb.compose.dnd.reorder.ReorderState
 import com.mohamedrejeb.compose.dnd.reorder.ReorderableItem
-import com.mohamedrejeb.compose.dnd.reorder.rememberReorderState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -29,15 +30,19 @@ fun <T> ReorderableListContainer(
    enabled: Boolean = true,
    content: @Composable ReorderableListScope<T>.(List<T>) -> Unit,
 ) {
-   val reorderState = rememberReorderState<T>(dragAfterLongPress = true)
+   val reorderState = remember<ReorderState<T>>(data) {
+      ReorderState(
+         dragAfterLongPress = true,
+      )
+   }
 
    var reorderingList by remember(data) { mutableStateOf(data) }
-   var dragging by remember { mutableStateOf(false) }
+   var dragging by remember(reorderState) { mutableStateOf(false) }
    val density = LocalDensity.current
    val vibrator = LocalContext.current.getSystemService<Vibrator>()
    val coroutineScope = rememberCoroutineScope()
 
-   var lastDragIndex by remember { mutableIntStateOf(-1) }
+   var lastDragIndex by remember(reorderState) { mutableIntStateOf(-1) }
 
    val scope = object : ReorderableListScope<T> {
       @Composable
@@ -105,12 +110,14 @@ fun <T> ReorderableListContainer(
       }
    }
 
-   ReorderContainer(
-      reorderState,
-      enabled = enabled,
-      modifier = modifier,
-   ) {
-      scope.content(reorderingList)
+   key(reorderState) {
+      ReorderContainer(
+         reorderState,
+         enabled = enabled,
+         modifier = modifier,
+      ) {
+         scope.content(reorderingList)
+      }
    }
 }
 
