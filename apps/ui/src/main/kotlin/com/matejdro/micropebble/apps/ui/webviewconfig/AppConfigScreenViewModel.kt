@@ -6,6 +6,7 @@ import dev.zacsweers.metro.Inject
 import io.rebble.libpebblecommon.connection.ConnectedPebbleDevice
 import io.rebble.libpebblecommon.connection.Watches
 import io.rebble.libpebblecommon.js.PKJSApp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -14,6 +15,7 @@ import si.inova.kotlinova.core.outcome.CoroutineResourceManager
 import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
+import kotlin.time.Duration.Companion.seconds
 
 @Stable
 @Inject
@@ -44,7 +46,19 @@ class AppConfigScreenViewModel(
          }.first()
 
          this@AppConfigScreenViewModel.session = session
-         emit(Outcome.Success(AppConfigScreenState.WebView(session.requestConfigurationUrl() ?: error("No URL"))))
+         var requestConfigurationUrl: String? = session.requestConfigurationUrl()
+         var retries = 0
+
+         while (requestConfigurationUrl == null) {
+            if (retries++ > URL_OPEN_RETRIES) {
+               error("No URL. Did the app open?")
+            }
+
+            delay(1.seconds)
+            requestConfigurationUrl = session.requestConfigurationUrl()
+         }
+
+         emit(Outcome.Success(AppConfigScreenState.WebView(requestConfigurationUrl)))
       }
    }
 
@@ -61,3 +75,5 @@ sealed class AppConfigScreenState {
    data class WebView(val url: String) : AppConfigScreenState()
    object Close : AppConfigScreenState()
 }
+
+private const val URL_OPEN_RETRIES = 10
