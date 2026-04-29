@@ -24,7 +24,6 @@ dependencies {
    implementation(libs.kotlin.serialization.core)
    implementation(libs.kotlinova.core)
    implementation(libs.androidx.datastore.preferences)
-   implementation(libs.androidx.work.runtime)
    implementation(libs.ktor.contentNegotiation)
    implementation(libs.ktor.serialization.kotlinx.json)
    implementation(libs.ktor.okhttp)
