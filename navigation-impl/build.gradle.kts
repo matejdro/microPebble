@@ -1,7 +1,6 @@
 plugins {
    androidLibraryModule
    compose
-   di
    navigation
 }
 

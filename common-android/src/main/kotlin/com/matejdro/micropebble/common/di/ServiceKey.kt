@@ -5,5 +5,5 @@ import dev.zacsweers.metro.MapKey
 import kotlin.reflect.KClass
 
 @MapKey
-@Target(AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 annotation class ServiceKey(val value: KClass<out Service>)
