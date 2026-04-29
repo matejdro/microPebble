@@ -28,7 +28,7 @@ desugarJdkLibs = "2.1.5"
 detekt = "2.0.0-alpha.2"
 detekt-compose = "0.5.6"
 dispatch = "1.0.0-beta10"
-foundationLayout = "1.10.5"
+foundationLayout = "1.10.6"
 # @keep used in kts scripts directly
 jacoco = "0.8.14"
 jspecify = "1.0.0"
