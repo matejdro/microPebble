@@ -131,6 +131,7 @@ dependencies {
    implementation(libs.kotlin.coroutines)
    implementation(libs.kotlinova.core)
    implementation(libs.kotlinova.navigation)
+   implementation(libs.kotlinova.navigation.deeplink)
    implementation(libs.kotlinova.navigation.navigation3)
    implementation(libs.logcat)
    implementation(libs.tinylog.api)

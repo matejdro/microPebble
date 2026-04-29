@@ -11,11 +11,9 @@ import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.IntoMap
 import dev.zacsweers.metro.binding
 
 @AssistedInject
-@IntoMap
 class AppUpdateFinderWorker(
    @Assisted
    context: Context,
@@ -31,7 +29,6 @@ class AppUpdateFinderWorker(
       }
 
    @AssistedFactory
-   @IntoMap
    @ContributesIntoMap(AppScope::class, binding<(Context, WorkerParameters) -> ListenableWorker>())
    @WorkerKey(AppUpdateFinderWorker::class)
    interface Factory : (Context, WorkerParameters) -> ListenableWorker {
