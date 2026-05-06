@@ -19,6 +19,7 @@ import io.ktor.utils.io.InternalAPI
 import io.ktor.utils.io.core.remaining
 import io.ktor.utils.io.rethrowCloseCauseIfNeeded
 import io.rebble.libpebblecommon.connection.LockerApi
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.io.RawSink
 import kotlinx.io.asSink
@@ -127,6 +128,8 @@ private suspend fun ByteReadChannel.readTo(sink: RawSink, limit: Long = Long.MAX
          remaining -= byteCount
          sink.flush()
       }
+   } catch (e: CancellationException) {
+      throw e
    } catch (cause: Throwable) {
       cancel(cause)
       sink.close()
