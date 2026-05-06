@@ -71,9 +71,9 @@ class AppConfigScreenViewModel(
    }
 }
 
-sealed class AppConfigScreenState {
-   data class WebView(val url: String) : AppConfigScreenState()
-   object Close : AppConfigScreenState()
+sealed interface AppConfigScreenState {
+   data class WebView(val url: String) : AppConfigScreenState
+   object Close : AppConfigScreenState
 }
 
 private const val URL_OPEN_RETRIES = 10
