@@ -136,7 +136,7 @@ class MainActivity : ComponentActivity() {
                         }
                      )
                   ),
-                  sceneStrategy = rememberTabListSceneDecoratorStrategy()
+                  sceneStrategies = listOf(rememberTabListSceneDecoratorStrategy())
                )
 
                this.backstack = backstack
