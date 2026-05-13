@@ -9,6 +9,7 @@ import io.rebble.libpebblecommon.connection.LibPebble
 import io.rebble.libpebblecommon.connection.LockerApi
 import io.rebble.libpebblecommon.connection.NotificationApps
 import io.rebble.libpebblecommon.connection.Scanning
+import io.rebble.libpebblecommon.connection.WatchPrefs
 import io.rebble.libpebblecommon.connection.Watches
 
 @ContributesTo(AppScope::class)
@@ -42,4 +43,9 @@ interface LibPebbleBindings {
    fun bindToCalendar(
       libPebble: LibPebble,
    ): Calendar
+
+   @Binds
+   fun bindToWatchPrefs(
+      libPebble: LibPebble,
+   ): WatchPrefs
 }

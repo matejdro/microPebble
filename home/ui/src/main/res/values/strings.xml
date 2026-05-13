@@ -35,4 +35,7 @@
     <string name="enable_voice">Enable voice</string>
     <string name="permission_denied">Permission denied</string>
     <string name="voice_enabled">Voice enabled</string>
+    <string name="watch_settings">Watch Settings</string>
+    <string name="backlight_color_custom">Custom</string>
+    <string name="backlight_color_hex_label">Hex color</string>
 </resources>
