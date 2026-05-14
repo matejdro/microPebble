@@ -7,4 +7,8 @@
     <string name="error_voice_not_enabled_short">Error: Press \'Enable voice\' in the phone app in Tools</string>
     <string name="error_voice_android_version">Error: sorry, voice recognition is only supported on Android 13+</string>
     <string name="error_no_voice_recognizer">Error: Phone does not have a voice recognition service installed</string>
+    <string name="error_no_default_voice_service">Error: No voice input app set as default on phone. Check phone notifications.</string>
+    <string name="voice_setup_channel_name">Voice setup hints</string>
+    <string name="voice_setup_needed_title">Voice dictation needs setup</string>
+    <string name="voice_setup_needed_text">No voice input service is set as default. Tap to configure.</string>
 </resources>

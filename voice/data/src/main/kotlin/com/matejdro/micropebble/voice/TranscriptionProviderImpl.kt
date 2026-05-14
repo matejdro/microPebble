@@ -5,6 +5,7 @@ import android.content.Intent
 import android.media.AudioFormat
 import android.os.Build
 import android.os.ParcelFileDescriptor
+import android.provider.Settings
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.annotation.RequiresApi
@@ -19,10 +20,13 @@ import io.rebble.libpebblecommon.voice.TranscriptionResult
 import io.rebble.libpebblecommon.voice.VoiceEncoderInfo
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import si.inova.kotlinova.core.reporting.ErrorReporter
+import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
 
 @Inject
@@ -30,6 +34,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class TranscriptionProviderImpl(
    private val context: Context,
    private val errorReporter: ErrorReporter,
+   private val voiceSetupNotifier: VoiceSetupNotifier,
 ) : TranscriptionProvider {
    @Suppress("NestedBlockDepth") // It uses a lot of .use {}, which increase nesting. It's fine otherwise.
    override suspend fun transcribe(
@@ -46,6 +51,14 @@ class TranscriptionProviderImpl(
 
       if (!SpeechRecognizer.isRecognitionAvailable(context)) {
          return staticSuccess(context.getString(R.string.error_no_voice_recognizer))
+      }
+
+      // isRecognitionAvailable() returns true even when no service is the system default.
+      val defaultService = Settings.Secure.getString(context.contentResolver, VOICE_RECOGNITION_SERVICE_SETTING)
+      if (defaultService.isNullOrBlank()) {
+         logcat { "No default voice recognition service selected" }
+         voiceSetupNotifier.showNoDefaultVoiceServiceNotification()
+         return staticSuccess(context.getString(R.string.error_no_default_voice_service))
       }
 
       try {
@@ -65,13 +78,7 @@ class TranscriptionProviderImpl(
                   this@TranscriptionProviderImpl.logcat { "Created speech recognizer" }
 
                   return try {
-                     decodeWatchAudioIntoSpeechRecognizerStream(
-                        speexInfo,
-                        audioFrames,
-                        speexDecoder,
-                        writeStream,
-                        finishedReceiver
-                     )
+                     pipeAudioWithEarlyTermination(speexInfo, audioFrames, speexDecoder, writeStream, finishedReceiver)
                      this@TranscriptionProviderImpl.logcat { "Submitted all the audio, awaiting completed recognition" }
                      finishedReceiver.await()
                         .also {
@@ -111,6 +118,30 @@ class TranscriptionProviderImpl(
       speechRecognizer
    }
 
+   // The recognizer can fire onResults and stop reading the pipe before the watch
+   // finishes streaming. The pipe then fills and writeStream.write() blocks forever.
+   // Close the pipe the moment finishedReceiver completes — the in-flight write throws
+   // IOException, which we swallow.
+   private suspend fun pipeAudioWithEarlyTermination(
+      speexInfo: VoiceEncoderInfo.Speex,
+      audioFrames: Flow<UByteArray>,
+      speexDecoder: SpeexCodec,
+      writeStream: ParcelFileDescriptor.AutoCloseOutputStream,
+      finishedReceiver: CompletableDeferred<TranscriptionResult>,
+   ) = coroutineScope {
+      val closeWatcher = launch {
+         finishedReceiver.await()
+         runCatching { writeStream.close() }
+      }
+      try {
+         decodeWatchAudioIntoSpeechRecognizerStream(speexInfo, audioFrames, speexDecoder, writeStream, finishedReceiver)
+      } catch (e: IOException) {
+         logcat { "Pipe closed after recognition completed: ${e.message ?: "no message"}" }
+      } finally {
+         closeWatcher.cancel()
+      }
+   }
+
    @Suppress("BlockingMethodInNonBlockingContext") // We already are on IO
    private suspend fun decodeWatchAudioIntoSpeechRecognizerStream(
       speexInfo: VoiceEncoderInfo.Speex,
@@ -146,3 +177,6 @@ class TranscriptionProviderImpl(
       return true
    }
 }
+
+// Settings.Secure.VOICE_RECOGNITION_SERVICE is @hide; the underlying key is stable.
+private const val VOICE_RECOGNITION_SERVICE_SETTING = "voice_recognition_service"
