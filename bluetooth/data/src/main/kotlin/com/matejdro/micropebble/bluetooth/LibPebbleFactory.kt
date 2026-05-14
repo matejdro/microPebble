@@ -40,8 +40,14 @@ interface LibPebbleFactory {
             return FirmwareUpdateCheckResult.FoundNoUpdate
          }
 
-         override suspend fun uploadMemfaultChunk(
+         override fun uploadMemfaultChunk(
             chunk: ByteArray,
+            watchInfo: WatchInfo,
+         ) {
+         }
+
+         override fun uploadAnalyticsHeartbeat(
+            payload: ByteArray,
             watchInfo: WatchInfo,
          ) {
          }

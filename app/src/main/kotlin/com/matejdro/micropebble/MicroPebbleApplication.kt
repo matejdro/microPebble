@@ -90,7 +90,6 @@ open class MicroPebbleApplication : Application(), WorkConfiguration.Provider {
                config.copy(
                   watchConfig = config.watchConfig.copy(
                      lanDevConnection = true,
-                     preferBtClassicV2 = true,
                      verboseWatchManagerLogging = true
                   ),
                   bleConfig = config.bleConfig.copy(verbosePpogLogging = false)
