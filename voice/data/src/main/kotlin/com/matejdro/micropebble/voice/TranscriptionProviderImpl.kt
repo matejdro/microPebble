@@ -20,9 +20,11 @@ import io.rebble.libpebblecommon.voice.TranscriptionResult
 import io.rebble.libpebblecommon.voice.VoiceEncoderInfo
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import si.inova.kotlinova.core.reporting.ErrorReporter
@@ -118,59 +120,74 @@ class TranscriptionProviderImpl(
       speechRecognizer
    }
 
-   // The recognizer can fire onResults and stop reading the pipe before the watch
-   // finishes streaming. The pipe then fills and writeStream.write() blocks forever.
-   // Close the pipe the moment finishedReceiver completes — the in-flight write throws
-   // IOException, which we swallow.
+   // Decode and pipe watch audio to the SpeechRecognizer, breaking three possible
+   // deadlocks:
+   //   1. Recognizer fires onResults early and stops reading the pipe: the pipe
+   //      fills and the next write() blocks forever.
+   //   2. Recognizer never fires onResults (waiting for EOF) while audio source
+   //      ends naturally via StopTransfer: same pipe-fills-then-blocks symptom,
+   //      but we never see the recognizer signal completion.
+   //   3. Recognizer is slow consuming the pipe while the watch streams faster
+   //      than it can process: pipe fills mid-stream, write blocks before either
+   //      audio end or recognition complete signals fire.
+   //
+   // Decode runs on its own coroutine and feeds an unbounded channel — it always
+   // drains the source flow regardless of how fast the writer can keep up.
+   // A watcher coroutine closes the pipe (interrupting any blocked write with
+   // IOException) when either the recognizer completes or the audio source ends.
+   @Suppress("BlockingMethodInNonBlockingContext") // We already are on IO
    private suspend fun pipeAudioWithEarlyTermination(
       speexInfo: VoiceEncoderInfo.Speex,
       audioFrames: Flow<UByteArray>,
       speexDecoder: SpeexCodec,
       writeStream: ParcelFileDescriptor.AutoCloseOutputStream,
       finishedReceiver: CompletableDeferred<TranscriptionResult>,
-   ) = coroutineScope {
+   ): Unit = coroutineScope {
+      val targetBufferSize = Short.SIZE_BYTES * speexInfo.frameSize
+      val decodedFrames = Channel<ByteArray>(Channel.UNLIMITED)
+      val audioEnded = CompletableDeferred<Unit>()
+
       val closeWatcher = launch {
-         finishedReceiver.await()
+         select<Unit> {
+            finishedReceiver.onAwait { }
+            audioEnded.onAwait { }
+         }
+         logcat { "Closing audio pipe to deliver EOF to recognizer" }
          runCatching { writeStream.close() }
       }
+
+      val decoder = launch {
+         try {
+            audioFrames.collect { frame ->
+               val buffer = ByteArray(targetBufferSize)
+               val result = speexDecoder.decodeFrame(
+                  encodedFrame = frame.asByteArray(),
+                  decodedFrame = buffer,
+                  hasHeaderByte = true,
+               )
+               if (result != SpeexDecodeResult.Success) {
+                  error("Speex decoding failed: $result")
+               }
+               decodedFrames.send(buffer)
+            }
+         } finally {
+            decodedFrames.close()
+            audioEnded.complete(Unit)
+         }
+      }
+
       try {
-         decodeWatchAudioIntoSpeechRecognizerStream(speexInfo, audioFrames, speexDecoder, writeStream, finishedReceiver)
+         for (decoded in decodedFrames) {
+            this@TranscriptionProviderImpl.logcat { "Wrote audio stream packet" }
+            if (finishedReceiver.isCompleted) continue
+            writeStream.write(decoded, 0, targetBufferSize)
+         }
       } catch (e: IOException) {
-         logcat { "Pipe closed after recognition completed: ${e.message ?: "no message"}" }
+         logcat { "Pipe closed during write: ${e.message ?: "no message"}" }
       } finally {
+         decoder.cancel()
          closeWatcher.cancel()
       }
-   }
-
-   @Suppress("BlockingMethodInNonBlockingContext") // We already are on IO
-   private suspend fun decodeWatchAudioIntoSpeechRecognizerStream(
-      speexInfo: VoiceEncoderInfo.Speex,
-      audioFrames: Flow<UByteArray>,
-      speexDecoder: SpeexCodec,
-      writeStream: ParcelFileDescriptor.AutoCloseOutputStream,
-      finishedReceiver: CompletableDeferred<TranscriptionResult>,
-   ) {
-      val targetBufferSize = Short.SIZE_BYTES * speexInfo.frameSize
-      val targetBuffer = ByteArray(targetBufferSize)
-
-      audioFrames.collect { frame ->
-         val result = speexDecoder.decodeFrame(
-            encodedFrame = frame.asByteArray(),
-            decodedFrame = targetBuffer,
-            hasHeaderByte = true,
-         )
-         if (result != SpeexDecodeResult.Success) {
-            error("Speex decoding failed: $result")
-         }
-         this@TranscriptionProviderImpl.logcat { "Wrote audio stream packet" }
-
-         if (finishedReceiver.isCompleted) {
-            // Speech recognizer has already finished. We cannot write more data to it
-         } else {
-            writeStream.write(targetBuffer, 0, targetBufferSize)
-         }
-      }
-      writeStream.close()
    }
 
    override suspend fun canServeSession(): Boolean {
