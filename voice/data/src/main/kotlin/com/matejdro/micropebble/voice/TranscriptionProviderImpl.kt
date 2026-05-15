@@ -5,6 +5,7 @@ import android.content.Intent
 import android.media.AudioFormat
 import android.os.Build
 import android.os.ParcelFileDescriptor
+import android.provider.Settings
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.annotation.RequiresApi
@@ -19,10 +20,15 @@ import io.rebble.libpebblecommon.voice.TranscriptionResult
 import io.rebble.libpebblecommon.voice.VoiceEncoderInfo
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import si.inova.kotlinova.core.reporting.ErrorReporter
+import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
 
 @Inject
@@ -30,6 +36,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class TranscriptionProviderImpl(
    private val context: Context,
    private val errorReporter: ErrorReporter,
+   private val voiceSetupNotifier: VoiceSetupNotifier,
 ) : TranscriptionProvider {
    @Suppress("NestedBlockDepth") // It uses a lot of .use {}, which increase nesting. It's fine otherwise.
    override suspend fun transcribe(
@@ -46,6 +53,14 @@ class TranscriptionProviderImpl(
 
       if (!SpeechRecognizer.isRecognitionAvailable(context)) {
          return staticSuccess(context.getString(R.string.error_no_voice_recognizer))
+      }
+
+      // isRecognitionAvailable() returns true even when no service is the system default.
+      val defaultService = Settings.Secure.getString(context.contentResolver, VOICE_RECOGNITION_SERVICE_SETTING)
+      if (defaultService.isNullOrBlank()) {
+         logcat { "No default voice recognition service selected" }
+         voiceSetupNotifier.showNoDefaultVoiceServiceNotification()
+         return staticSuccess(context.getString(R.string.error_no_default_voice_service))
       }
 
       try {
@@ -65,13 +80,7 @@ class TranscriptionProviderImpl(
                   this@TranscriptionProviderImpl.logcat { "Created speech recognizer" }
 
                   return try {
-                     decodeWatchAudioIntoSpeechRecognizerStream(
-                        speexInfo,
-                        audioFrames,
-                        speexDecoder,
-                        writeStream,
-                        finishedReceiver
-                     )
+                     pipeAudioWithEarlyTermination(speexInfo, audioFrames, speexDecoder, writeStream, finishedReceiver)
                      this@TranscriptionProviderImpl.logcat { "Submitted all the audio, awaiting completed recognition" }
                      finishedReceiver.await()
                         .also {
@@ -111,38 +120,80 @@ class TranscriptionProviderImpl(
       speechRecognizer
    }
 
+   // Decode and pipe watch audio to the SpeechRecognizer, breaking three possible
+   // deadlocks:
+   //   1. Recognizer fires onResults early and stops reading the pipe: the pipe
+   //      fills and the next write() blocks forever.
+   //   2. Recognizer never fires onResults (waiting for EOF) while audio source
+   //      ends naturally via StopTransfer: same pipe-fills-then-blocks symptom,
+   //      but we never see the recognizer signal completion.
+   //   3. Recognizer is slow consuming the pipe while the watch streams faster
+   //      than it can process: pipe fills mid-stream, write blocks before either
+   //      audio end or recognition complete signals fire.
+   //
+   // Decode runs on its own coroutine and feeds an unbounded channel — it always
+   // drains the source flow regardless of how fast the writer can keep up.
+   // A watcher coroutine closes the pipe (interrupting any blocked write with
+   // IOException) when either the recognizer completes or the audio source ends.
    @Suppress("BlockingMethodInNonBlockingContext") // We already are on IO
-   private suspend fun decodeWatchAudioIntoSpeechRecognizerStream(
+   private suspend fun pipeAudioWithEarlyTermination(
       speexInfo: VoiceEncoderInfo.Speex,
       audioFrames: Flow<UByteArray>,
       speexDecoder: SpeexCodec,
       writeStream: ParcelFileDescriptor.AutoCloseOutputStream,
       finishedReceiver: CompletableDeferred<TranscriptionResult>,
-   ) {
+   ): Unit = coroutineScope {
       val targetBufferSize = Short.SIZE_BYTES * speexInfo.frameSize
-      val targetBuffer = ByteArray(targetBufferSize)
+      val decodedFrames = Channel<ByteArray>(Channel.UNLIMITED)
+      val audioEnded = CompletableDeferred<Unit>()
 
-      audioFrames.collect { frame ->
-         val result = speexDecoder.decodeFrame(
-            encodedFrame = frame.asByteArray(),
-            decodedFrame = targetBuffer,
-            hasHeaderByte = true,
-         )
-         if (result != SpeexDecodeResult.Success) {
-            error("Speex decoding failed: $result")
+      val closeWatcher = launch {
+         select<Unit> {
+            finishedReceiver.onAwait { }
+            audioEnded.onAwait { }
          }
-         this@TranscriptionProviderImpl.logcat { "Wrote audio stream packet" }
+         logcat { "Closing audio pipe to deliver EOF to recognizer" }
+         runCatching { writeStream.close() }
+      }
 
-         if (finishedReceiver.isCompleted) {
-            // Speech recognizer has already finished. We cannot write more data to it
-         } else {
-            writeStream.write(targetBuffer, 0, targetBufferSize)
+      val decoder = launch {
+         try {
+            audioFrames.collect { frame ->
+               val buffer = ByteArray(targetBufferSize)
+               val result = speexDecoder.decodeFrame(
+                  encodedFrame = frame.asByteArray(),
+                  decodedFrame = buffer,
+                  hasHeaderByte = true,
+               )
+               if (result != SpeexDecodeResult.Success) {
+                  error("Speex decoding failed: $result")
+               }
+               decodedFrames.send(buffer)
+            }
+         } finally {
+            decodedFrames.close()
+            audioEnded.complete(Unit)
          }
       }
-      writeStream.close()
+
+      try {
+         for (decoded in decodedFrames) {
+            this@TranscriptionProviderImpl.logcat { "Wrote audio stream packet" }
+            if (finishedReceiver.isCompleted) continue
+            writeStream.write(decoded, 0, targetBufferSize)
+         }
+      } catch (e: IOException) {
+         logcat { "Pipe closed during write: ${e.message ?: "no message"}" }
+      } finally {
+         decoder.cancel()
+         closeWatcher.cancel()
+      }
    }
 
    override suspend fun canServeSession(): Boolean {
       return true
    }
 }
+
+// Settings.Secure.VOICE_RECOGNITION_SERVICE is @hide; the underlying key is stable.
+private const val VOICE_RECOGNITION_SERVICE_SETTING = "voice_recognition_service"
