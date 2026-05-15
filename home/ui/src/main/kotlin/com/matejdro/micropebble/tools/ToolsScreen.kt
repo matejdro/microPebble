@@ -43,6 +43,7 @@ import com.matejdro.micropebble.navigation.keys.AppstoreSourcesScreenKey
 import com.matejdro.micropebble.navigation.keys.CalendarListScreenKey
 import com.matejdro.micropebble.navigation.keys.DeveloperConnectionScreenKey
 import com.matejdro.micropebble.navigation.keys.OnboardingKey
+import com.matejdro.micropebble.navigation.keys.WatchSettingsScreenKey
 import com.matejdro.micropebble.navigation.keys.WebservicesAuthScreenKey
 import com.matejdro.micropebble.ui.components.ErrorAlertDialog
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
@@ -96,6 +97,7 @@ class ToolsScreen(
                openCalendarSettings = { navigator.navigateTo(CalendarListScreenKey) },
                openAppstoreSources = { navigator.navigateTo(AppstoreSourcesScreenKey) },
                openWebservices = { navigator.navigateTo(WebservicesAuthScreenKey()) },
+               openWatchSettings = { navigator.navigateTo(WatchSettingsScreenKey) },
                startLogSaving = viewModel::getLogs,
                notifyLogIntentSent = viewModel::resetLog,
                startVoiceService = { voicePermission.launchPermissionRequest() },
@@ -115,6 +117,7 @@ private fun ToolsScreenContent(
    openCalendarSettings: () -> Unit,
    openAppstoreSources: () -> Unit,
    openWebservices: () -> Unit,
+   openWatchSettings: () -> Unit,
    startLogSaving: () -> Unit,
    notifyLogIntentSent: () -> Unit,
    startVoiceService: () -> Unit,
@@ -187,6 +190,14 @@ private fun ToolsScreenContent(
             )
          }
 
+         item {
+            ToolButton(
+               onClick = openWatchSettings,
+               icon = R.drawable.watches,
+               text = R.string.watch_settings
+            )
+         }
+
          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             item {
                ToolButton(
@@ -251,6 +262,7 @@ internal fun ToolsScreenPreview() {
          openCalendarSettings = {},
          openAppstoreSources = {},
          openWebservices = {},
+         openWatchSettings = {},
          startLogSaving = {},
          notifyLogIntentSent = {},
          changeMusicAlwaysPaused = {},
