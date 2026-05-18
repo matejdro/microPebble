@@ -38,4 +38,20 @@
     <string name="watch_settings">Watch Settings</string>
     <string name="backlight_color_custom">Custom</string>
     <string name="backlight_color_hex_label">Hex color</string>
+    <string name="notification_vibe_title">Notification Vibration</string>
+    <string name="notification_vibe_description">Override the default vibration pattern for notifications</string>
+    <string name="calendar_vibe_title">Calendar Vibration</string>
+    <string name="calendar_vibe_description">Override the default vibration pattern for calendar reminders</string>
+    <string name="vibe_pattern_none">None</string>
+    <string name="vibe_pattern_standard">Standard</string>
+    <string name="vibe_pattern_pulses">Pulses</string>
+    <string name="vibe_pattern_double">Double</string>
+    <string name="vibe_pattern_triple">Triple</string>
+    <string name="vibe_pattern_bloom">Bloom</string>
+    <string name="vibe_pattern_pips">Pips</string>
+    <string name="vibe_pattern_ole">Olé</string>
+    <string name="vibe_pattern_sos">SOS</string>
+    <string name="vibe_pattern_ohhh_oh">Ohhh, Oh</string>
+    <string name="vibe_pattern_five">Five</string>
+    <string name="vibe_pattern_two">Two</string>
 </resources>

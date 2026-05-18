@@ -9,6 +9,7 @@ import io.rebble.libpebblecommon.connection.LibPebble
 import io.rebble.libpebblecommon.connection.LockerApi
 import io.rebble.libpebblecommon.connection.NotificationApps
 import io.rebble.libpebblecommon.connection.Scanning
+import io.rebble.libpebblecommon.connection.Vibrations
 import io.rebble.libpebblecommon.connection.WatchPrefs
 import io.rebble.libpebblecommon.connection.Watches
 
@@ -48,4 +49,9 @@ interface LibPebbleBindings {
    fun bindToWatchPrefs(
       libPebble: LibPebble,
    ): WatchPrefs
+
+   @Binds
+   fun bindToVibrations(
+      libPebble: LibPebble,
+   ): Vibrations
 }

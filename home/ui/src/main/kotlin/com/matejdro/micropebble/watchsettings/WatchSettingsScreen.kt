@@ -20,7 +20,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -47,30 +51,17 @@ import com.airbnb.android.showkase.annotation.ShowkaseComposable
 import com.matejdro.micropebble.home.ui.R
 import com.matejdro.micropebble.navigation.keys.WatchSettingsScreenKey
 import com.matejdro.micropebble.ui.components.ProgressErrorSuccessScaffold
-import si.inova.kotlinova.core.outcome.Outcome
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
 import io.rebble.libpebblecommon.database.entity.RgbColorPreset
 import io.rebble.libpebblecommon.database.entity.RgbColorWatchPref
+import io.rebble.libpebblecommon.notification.DefaultVibePattern
+import io.rebble.libpebblecommon.notification.VibePattern
 import si.inova.kotlinova.compose.flow.collectAsStateWithLifecycleAndBlinkingPrevention
+import si.inova.kotlinova.core.outcome.Outcome
 import si.inova.kotlinova.navigation.di.ContributesScreenBinding
 import si.inova.kotlinova.navigation.screens.InjectNavigationScreen
 import si.inova.kotlinova.navigation.screens.Screen
-
-private val BACKLIGHT_COLOR_PRESETS = listOf(
-   RgbColorPreset(0x00FF0000u, "Red"),
-   RgbColorPreset(0x00FF7F00u, "Orange"),
-   RgbColorPreset(0x00FFFF00u, "Yellow"),
-   RgbColorPreset(0x007FFF00u, "Lime"),
-   RgbColorPreset(0x0000FF00u, "Green"),
-   RgbColorPreset(0x0000FFFFu, "Cyan"),
-   RgbColorPreset(0x000000FFu, "Blue"),
-   RgbColorPreset(0x007F00FFu, "Purple"),
-   RgbColorPreset(0x00FF00FFu, "Magenta"),
-   RgbColorPreset(0x00FF66CCu, "Pink"),
-   RgbColorPreset(0x00F0D0B0u, "Warm White"),
-   RgbColorPreset(0x00FFFFFFu, "Cool White"),
-)
 
 @InjectNavigationScreen
 @ContributesScreenBinding
@@ -85,6 +76,8 @@ class WatchSettingsScreen(
       WatchSettingsContent(
          state = state::value,
          onColorSelected = viewModel::setBacklightColor,
+         onNotificationVibePatternSelected = viewModel::setOverrideNotificationVibePattern,
+         onCalendarVibePatternSelected = viewModel::setOverrideCalendarVibePattern,
       )
    }
 }
@@ -94,6 +87,8 @@ class WatchSettingsScreen(
 private fun WatchSettingsContent(
    state: () -> Outcome<WatchSettingsState>?,
    onColorSelected: (UInt) -> Unit,
+   onNotificationVibePatternSelected: (String?) -> Unit,
+   onCalendarVibePatternSelected: (String?) -> Unit,
 ) {
    Scaffold(
       topBar = { TopAppBar(title = { Text(stringResource(R.string.watch_settings)) }) },
@@ -132,6 +127,26 @@ private fun WatchSettingsContent(
             CustomRgbPicker(
                currentRgb = watchSettingsState.backlightColor,
                onColorChanged = onColorSelected,
+            )
+
+            Spacer(Modifier.height(24.dp))
+
+            VibePatternPicker(
+               title = stringResource(R.string.notification_vibe_title),
+               description = stringResource(R.string.notification_vibe_description),
+               customVibePatterns = watchSettingsState.customVibePatterns,
+               selectedPatternName = watchSettingsState.overrideNotificationVibePattern,
+               onPatternSelected = onNotificationVibePatternSelected,
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            VibePatternPicker(
+               title = stringResource(R.string.calendar_vibe_title),
+               description = stringResource(R.string.calendar_vibe_description),
+               customVibePatterns = watchSettingsState.customVibePatterns,
+               selectedPatternName = watchSettingsState.overrideCalendarVibePattern,
+               onPatternSelected = onCalendarVibePatternSelected,
             )
          }
       }
@@ -255,12 +270,115 @@ private fun ColorChannelSlider(
    }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun VibePatternPicker(
+   title: String,
+   description: String,
+   customVibePatterns: List<VibePattern>,
+   selectedPatternName: String?,
+   onPatternSelected: (String?) -> Unit,
+) {
+   var expanded by remember { mutableStateOf(false) }
+   val noneLabel = stringResource(R.string.vibe_pattern_none)
+   val defaultLabels = defaultVibePatternLabels()
+   val selectedLabel = if (selectedPatternName == null) {
+      noneLabel
+   } else {
+      defaultLabels[selectedPatternName] ?: selectedPatternName
+   }
+
+   Column {
+      Text(text = title, style = MaterialTheme.typography.titleMedium)
+      Text(
+         text = description,
+         style = MaterialTheme.typography.bodySmall,
+         color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+      Spacer(Modifier.height(8.dp))
+      ExposedDropdownMenuBox(
+         expanded = expanded,
+         onExpandedChange = { expanded = it },
+      ) {
+         OutlinedTextField(
+            value = selectedLabel,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+            modifier = Modifier
+               .fillMaxWidth()
+               .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+         )
+         ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+         ) {
+            DropdownMenuItem(
+               text = { Text(text = noneLabel) },
+               onClick = {
+                  onPatternSelected(null)
+                  expanded = false
+               },
+            )
+            defaultLabels.forEach { (storageKey, label) ->
+               DropdownMenuItem(
+                  text = { Text(text = label) },
+                  onClick = {
+                     onPatternSelected(storageKey)
+                     expanded = false
+                  },
+               )
+            }
+            customVibePatterns.forEach { pattern ->
+               DropdownMenuItem(
+                  text = { Text(text = pattern.name) },
+                  onClick = {
+                     onPatternSelected(pattern.name)
+                     expanded = false
+                  },
+               )
+            }
+         }
+      }
+   }
+}
+
+@Composable
+private fun defaultVibePatternLabels(): Map<String, String> = mapOf(
+   DefaultVibePattern.Standard.displayName to stringResource(R.string.vibe_pattern_standard),
+   DefaultVibePattern.Pulses.displayName to stringResource(R.string.vibe_pattern_pulses),
+   DefaultVibePattern.Double.displayName to stringResource(R.string.vibe_pattern_double),
+   DefaultVibePattern.Triple.displayName to stringResource(R.string.vibe_pattern_triple),
+   DefaultVibePattern.Bloom.displayName to stringResource(R.string.vibe_pattern_bloom),
+   DefaultVibePattern.Pips.displayName to stringResource(R.string.vibe_pattern_pips),
+   DefaultVibePattern.Ole.displayName to stringResource(R.string.vibe_pattern_ole),
+   DefaultVibePattern.SOS.displayName to stringResource(R.string.vibe_pattern_sos),
+   DefaultVibePattern.OhhhOh.displayName to stringResource(R.string.vibe_pattern_ohhh_oh),
+   DefaultVibePattern.Five.displayName to stringResource(R.string.vibe_pattern_five),
+   DefaultVibePattern.Two.displayName to stringResource(R.string.vibe_pattern_two),
+)
+
 private const val RED_SHIFT = 16
 private const val GREEN_SHIFT = 8
 private const val COLOR_CHANNEL_MASK = 0xFFu
 private const val MAX_COLOR_CHANNEL = 255f
 private const val HEX_COLOR_LENGTH = 6
 private const val HEX_RADIX = 16
+
+private val BACKLIGHT_COLOR_PRESETS = listOf(
+   RgbColorPreset(0x00FF0000u, "Red"),
+   RgbColorPreset(0x00FF7F00u, "Orange"),
+   RgbColorPreset(0x00FFFF00u, "Yellow"),
+   RgbColorPreset(0x007FFF00u, "Lime"),
+   RgbColorPreset(0x0000FF00u, "Green"),
+   RgbColorPreset(0x0000FFFFu, "Cyan"),
+   RgbColorPreset(0x000000FFu, "Blue"),
+   RgbColorPreset(0x007F00FFu, "Purple"),
+   RgbColorPreset(0x00FF00FFu, "Magenta"),
+   RgbColorPreset(0x00FF66CCu, "Pink"),
+   RgbColorPreset(0x00F0D0B0u, "Warm White"),
+   RgbColorPreset(0x00FFFFFFu, "Cool White"),
+)
 
 private fun rgbToHex(r: Int, g: Int, b: Int) =
    String.format(java.util.Locale.ROOT, "%06X", (r shl RED_SHIFT) or (g shl GREEN_SHIFT) or b)
@@ -279,8 +397,17 @@ internal fun WatchSettingsScreenPreview() {
    var color by remember { mutableStateOf(RgbColorWatchPref.BacklightColor.defaultValue) }
    PreviewTheme {
       WatchSettingsContent(
-         state = { Outcome.Success(WatchSettingsState(backlightColor = color)) },
+         state = {
+            Outcome.Success(
+               WatchSettingsState(
+                  backlightColor = color,
+                  customVibePatterns = listOf(VibePattern("My Custom Pattern", listOf(200, 100, 400), bundled = false)),
+               )
+            )
+         },
          onColorSelected = { color = it },
+         onNotificationVibePatternSelected = {},
+         onCalendarVibePatternSelected = {},
       )
    }
 }
