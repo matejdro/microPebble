@@ -24,7 +24,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import si.inova.kotlinova.core.reporting.ErrorReporter
@@ -120,21 +119,24 @@ class TranscriptionProviderImpl(
       speechRecognizer
    }
 
-   // Decode and pipe watch audio to the SpeechRecognizer, breaking three possible
-   // deadlocks:
-   //   1. Recognizer fires onResults early and stops reading the pipe: the pipe
-   //      fills and the next write() blocks forever.
-   //   2. Recognizer never fires onResults (waiting for EOF) while audio source
-   //      ends naturally via StopTransfer: same pipe-fills-then-blocks symptom,
-   //      but we never see the recognizer signal completion.
-   //   3. Recognizer is slow consuming the pipe while the watch streams faster
-   //      than it can process: pipe fills mid-stream, write blocks before either
-   //      audio end or recognition complete signals fire.
+   // Decode and pipe watch audio to the SpeechRecognizer. Two coroutines plus
+   // the main writer body handle the four termination paths:
    //
-   // Decode runs on its own coroutine and feeds an unbounded channel — it always
-   // drains the source flow regardless of how fast the writer can keep up.
-   // A watcher coroutine closes the pipe (interrupting any blocked write with
-   // IOException) when either the recognizer completes or the audio source ends.
+   //   1. Audio source ends (watch StopTransfer): decoder's finally closes
+   //      the channel and the pipe — writer drains remaining items and exits;
+   //      EOF on the pipe signals the recognizer to fire onResults.
+   //   2. Recognizer fires onResults / onError early: finishedWaiter closes
+   //      the pipe (interrupts any blocked write with IOException) and
+   //      cancels the decoder; writer exits via closed channel or IOException.
+   //   3. Recognizer is a slow consumer and the pipe fills mid-stream:
+   //      the decoder keeps draining the source into the unbounded channel,
+   //      so StopTransfer can still arrive — eventually path 1 or 2 fires.
+   //   4. Recognizer fires early AND the watch sends no more audio and no
+   //      StopTransfer: path 2's decoder.cancel() forces the decoder's
+   //      finally, which closes the channel and frees the writer's for-loop.
+   //
+   // writeStream.close() is idempotent under runCatching, so both paths can
+   // race to close the pipe without coordination.
    @Suppress("BlockingMethodInNonBlockingContext") // We already are on IO
    private suspend fun pipeAudioWithEarlyTermination(
       speexInfo: VoiceEncoderInfo.Speex,
@@ -145,16 +147,6 @@ class TranscriptionProviderImpl(
    ): Unit = coroutineScope {
       val targetBufferSize = Short.SIZE_BYTES * speexInfo.frameSize
       val decodedFrames = Channel<ByteArray>(Channel.UNLIMITED)
-      val audioEnded = CompletableDeferred<Unit>()
-
-      val closeWatcher = launch {
-         select<Unit> {
-            finishedReceiver.onAwait { }
-            audioEnded.onAwait { }
-         }
-         logcat { "Closing audio pipe to deliver EOF to recognizer" }
-         runCatching { writeStream.close() }
-      }
 
       val decoder = launch {
          try {
@@ -172,13 +164,20 @@ class TranscriptionProviderImpl(
             }
          } finally {
             decodedFrames.close()
-            audioEnded.complete(Unit)
+            this@TranscriptionProviderImpl.logcat { "Audio source ended, closing pipe to deliver EOF" }
+            runCatching { writeStream.close() }
          }
+      }
+
+      val finishedWaiter = launch {
+         finishedReceiver.await()
+         this@TranscriptionProviderImpl.logcat { "Recognizer finished, closing pipe and stopping decoder" }
+         runCatching { writeStream.close() }
+         decoder.cancel()
       }
 
       try {
          for (decoded in decodedFrames) {
-            this@TranscriptionProviderImpl.logcat { "Wrote audio stream packet" }
             if (finishedReceiver.isCompleted) continue
             writeStream.write(decoded, 0, targetBufferSize)
          }
@@ -186,7 +185,7 @@ class TranscriptionProviderImpl(
          logcat { "Pipe closed during write: ${e.message ?: "no message"}" }
       } finally {
          decoder.cancel()
-         closeWatcher.cancel()
+         finishedWaiter.cancel()
       }
    }
 
