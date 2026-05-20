@@ -42,11 +42,9 @@ configure<DependencyAnalysisSubExtension> {
       }
 
       onIncorrectConfiguration {
-         // Showkase is only used by the generated code, by app module that also needs to explicitly include showkase
-         exclude("com.airbnb.android:showkase")
-
-         // Navigation should be included as-needed to reduce already huge amount of modules depending on it
-         exclude(":common-navigation")
+         // There is no clear benefit to using api and it is causing extra effort to manage those.
+         // Let's just use implementation
+         severity("ignore")
       }
 
       onUsedTransitiveDependencies {
