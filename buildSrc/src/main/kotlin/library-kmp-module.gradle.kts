@@ -1,5 +1,8 @@
 import dev.detekt.gradle.Detekt
+import org.gradle.accessors.dm.LibrariesForLibs
 import tasks.setupTooManyKotlinFilesTaskForCommon
+
+val libs = the<LibrariesForLibs>()
 
 plugins {
    id("org.jetbrains.kotlin.multiplatform")
@@ -37,7 +40,7 @@ kotlin {
 
    sourceSets {
       commonMain.dependencies {
-         implementation(compose.runtime)
+         implementation(libs.compose.runtime)
       }
    }
 }
