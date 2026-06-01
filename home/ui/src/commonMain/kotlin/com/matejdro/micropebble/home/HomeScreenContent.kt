@@ -32,8 +32,8 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun HomeScreenContent(
    selectedContent: SelectedTabContent,
-   tabletMode: Boolean,
    switchTab: (Tab) -> Unit,
+   tabletMode: Boolean = isExpandedWidth(),
 ) {
    val tabs = homeTabs()
    val animatedMainContent: @Composable () -> Unit = {
