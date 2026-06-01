@@ -1,5 +1,6 @@
 package com.matejdro.micropebble.ios
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -12,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.ComposeUIViewController
 import com.matejdro.micropebble.home.HomeScreenContent
 import com.matejdro.micropebble.navigation.keys.base.SelectedTabContent
@@ -40,7 +42,20 @@ fun MainViewController(): UIViewController = ComposeUIViewController {
 
 @Composable
 private fun TabPlaceholder(tab: Tab) {
-   Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-      Text(tab.name)
+   Box(
+      Modifier
+         .fillMaxSize()
+         .background(tab.placeholderColor),
+      contentAlignment = Alignment.Center,
+   ) {
+      Text(tab.name, color = Color.White)
    }
 }
+
+private val Tab.placeholderColor: Color
+   get() = when (this) {
+      Tab.WATCHES -> Color(0xFF1565C0)
+      Tab.WATCH_APPS -> Color(0xFF2E7D32)
+      Tab.NOTIFICATIONS -> Color(0xFFEF6C00)
+      Tab.TOOLS -> Color(0xFF6A1B9A)
+   }
