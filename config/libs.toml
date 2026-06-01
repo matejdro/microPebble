@@ -21,6 +21,8 @@ androidx-test-runner = "1.7.0"
 androidx-work = "2.11.2"
 coil = "3.4.0"
 composeDnd = "0.4.0"
+# @pin CMP material3 tracks its own version; 1.10.0-alpha05 matches libpebble3 (1.11.x alpha is broken)
+composeMaterial3 = "1.10.0-alpha05"
 # @pin needs to match libpebble3's Compose Multiplatform version
 composeMultiplatform = "1.10.1"
 composePreference = "2.2.0"
@@ -106,8 +108,10 @@ coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "
 composeDnd = { module = "com.mohamedrejeb.dnd:compose-dnd", version.ref = "composeDnd" }
 # Compose Multiplatform artifacts (used by KMP modules; android variants relocate to androidx.compose)
 compose-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "composeMultiplatform" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 # Compose Multiplatform Gradle plugin, used by the library-kmp-module convention plugin in buildSrc
 compose-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeMultiplatform" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMaterial3" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
 compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
 composePreference = { module = "me.zhanghai.compose.preference:preference", version.ref = "composePreference" }

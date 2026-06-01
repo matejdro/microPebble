@@ -12,6 +12,14 @@ kotlin {
    }
 
    sourceSets {
+      commonMain.dependencies {
+         implementation(projects.commonNavigation)
+         implementation(libs.compose.foundation)
+         implementation(libs.compose.material3)
+         implementation(libs.compose.animation)
+         implementation(libs.compose.ui)
+      }
+
       androidMain {
          languageSettings.optIn("com.google.accompanist.permissions.ExperimentalPermissionsApi")
 
@@ -24,7 +32,6 @@ kotlin {
             api(libs.kotlinova.core)
             api(libs.kotlinova.navigation)
 
-            implementation(projects.commonNavigation)
             implementation(projects.sharedResources)
             implementation(projects.commonCompose)
             implementation(libs.accompanist.permissions)

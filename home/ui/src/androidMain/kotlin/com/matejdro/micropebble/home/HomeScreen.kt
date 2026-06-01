@@ -1,27 +1,14 @@
 package com.matejdro.micropebble.home
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -59,11 +46,36 @@ class HomeScreen(
 
       Surface {
          HomeScreenContent(
-            LocalSelectedTabContent.current,
+            tabs = homeTabs(),
+            selectedContent = LocalSelectedTabContent.current,
             tabletMode = sizeClass.widthSizeClass == WindowWidthSizeClass.Expanded,
             switchTab = { navigator.navigate(ReplaceTabContentWith(it.toScreenKey())) },
          )
       }
+   }
+}
+
+@Composable
+private fun homeTabs(): List<HomeTab> {
+   val watchesIcon = painterResource(R.drawable.watches)
+   val watchAppsIcon = painterResource(R.drawable.watchapps)
+   val notificationsIcon = painterResource(R.drawable.notifications)
+   val toolsIcon = painterResource(R.drawable.tools)
+   val watchesLabel = stringResource(R.string.watches)
+   val watchAppsLabel = stringResource(R.string.watch_apps)
+   val notificationsLabel = stringResource(R.string.notifications)
+   val toolsLabel = stringResource(R.string.tools)
+
+   return remember(
+      watchesIcon, watchAppsIcon, notificationsIcon, toolsIcon,
+      watchesLabel, watchAppsLabel, notificationsLabel, toolsLabel,
+   ) {
+      listOf(
+         HomeTab(Tab.WATCHES, watchesIcon, watchesLabel),
+         HomeTab(Tab.WATCH_APPS, watchAppsIcon, watchAppsLabel),
+         HomeTab(Tab.NOTIFICATIONS, notificationsIcon, notificationsLabel),
+         HomeTab(Tab.TOOLS, toolsIcon, toolsLabel),
+      )
    }
 }
 
@@ -74,130 +86,14 @@ private fun Tab.toScreenKey(): ScreenKey = when (this) {
    Tab.TOOLS -> ToolsScreenKey
 }
 
-@Composable
-private fun HomeScreenContent(
-   selectedTab: SelectedTabContent,
-   tabletMode: Boolean,
-   switchTab: (Tab) -> Unit,
-) {
-   val animatedMainContent: @Composable () -> Unit = {
-      AnimatedContent(
-         selectedTab,
-         contentKey = { entry -> entry.contentKey },
-         transitionSpec = { fadeIn() togetherWith fadeOut() }
-      ) {
-         it.content()
-      }
-   }
-   if (tabletMode) {
-      NavigationRailContent(animatedMainContent, selectedTab.tab, switchTab)
-   } else {
-      NavigationBarContent(animatedMainContent, selectedTab.tab, switchTab)
-   }
-}
-
-@Composable
-private fun NavigationBarContent(
-   mainContent: @Composable () -> Unit,
-   selectedTab: Tab?,
-   switchTab: (Tab) -> Unit,
-) {
-   Column {
-      Box(
-         Modifier
-            .fillMaxWidth()
-            .weight(1f)
-      ) {
-         mainContent()
-      }
-
-      NavigationBar {
-         NavigationBarItem(
-            selected = selectedTab == Tab.WATCHES,
-            onClick = { switchTab(Tab.WATCHES) },
-            icon = { Icon(painter = painterResource(id = R.drawable.watches), contentDescription = null) },
-            label = { Text(stringResource(R.string.watches)) }
-         )
-
-         NavigationBarItem(
-            selected = selectedTab == Tab.WATCH_APPS,
-            onClick = { switchTab(Tab.WATCH_APPS) },
-            icon = { Icon(painter = painterResource(id = R.drawable.watchapps), contentDescription = null) },
-            label = { Text(stringResource(R.string.watch_apps)) }
-         )
-
-         NavigationBarItem(
-            selected = selectedTab == Tab.NOTIFICATIONS,
-            onClick = { switchTab(Tab.NOTIFICATIONS) },
-            icon = { Icon(painter = painterResource(id = R.drawable.notifications), contentDescription = null) },
-            label = { Text(stringResource(R.string.notifications)) }
-         )
-
-         NavigationBarItem(
-            selected = selectedTab == Tab.TOOLS,
-            onClick = { switchTab(Tab.TOOLS) },
-            icon = { Icon(painter = painterResource(id = R.drawable.tools), contentDescription = null) },
-            label = { Text(stringResource(R.string.tools)) }
-         )
-      }
-   }
-}
-
-@Composable
-private fun NavigationRailContent(
-   mainContent: @Composable () -> Unit,
-   selectedTab: Tab?,
-   switchTab: (Tab) -> Unit,
-) {
-   Row {
-      NavigationRail {
-         NavigationRailItem(
-            selected = selectedTab == Tab.WATCHES,
-            onClick = { switchTab(Tab.WATCHES) },
-            icon = { Icon(painter = painterResource(id = R.drawable.watches), contentDescription = null) },
-            label = { Text(stringResource(R.string.watches)) }
-         )
-
-         NavigationRailItem(
-            selected = selectedTab == Tab.WATCH_APPS,
-            onClick = { switchTab(Tab.WATCH_APPS) },
-            icon = { Icon(painter = painterResource(id = R.drawable.watchapps), contentDescription = null) },
-            label = { Text(stringResource(R.string.watch_apps)) }
-         )
-
-         NavigationRailItem(
-            selected = selectedTab == Tab.NOTIFICATIONS,
-            onClick = { switchTab(Tab.NOTIFICATIONS) },
-            icon = { Icon(painter = painterResource(id = R.drawable.notifications), contentDescription = null) },
-            label = { Text(stringResource(R.string.notifications)) }
-         )
-
-         NavigationRailItem(
-            selected = selectedTab == Tab.TOOLS,
-            onClick = { switchTab(Tab.TOOLS) },
-            icon = { Icon(painter = painterResource(id = R.drawable.tools), contentDescription = null) },
-            label = { Text(stringResource(R.string.tools)) }
-         )
-      }
-
-      Box(
-         Modifier
-            .fillMaxHeight()
-            .weight(1f)
-      ) {
-         mainContent()
-      }
-   }
-}
-
 @FullScreenPreviews
 @Composable
 @ShowkaseComposable(group = "Test")
 internal fun HomePhonePreview() {
    PreviewTheme {
       HomeScreenContent(
-         tabletMode = false,
-         selectedTab = SelectedTabContent(
+         tabs = homeTabs(),
+         selectedContent = SelectedTabContent(
             {
                Box(
                   Modifier
@@ -208,6 +104,7 @@ internal fun HomePhonePreview() {
             Tab.WATCH_APPS,
             ""
          ),
+         tabletMode = false,
          switchTab = {},
       )
    }
@@ -219,8 +116,8 @@ internal fun HomePhonePreview() {
 internal fun HomeTabletPreview() {
    PreviewTheme {
       HomeScreenContent(
-         tabletMode = true,
-         selectedTab = SelectedTabContent(
+         tabs = homeTabs(),
+         selectedContent = SelectedTabContent(
             {
                Box(
                   Modifier
@@ -231,6 +128,7 @@ internal fun HomeTabletPreview() {
             Tab.WATCH_APPS,
             ""
          ),
+         tabletMode = true,
          switchTab = {},
       )
    }
