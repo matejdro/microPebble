@@ -18,6 +18,7 @@ kotlin {
          implementation(libs.compose.material3)
          implementation(libs.compose.animation)
          implementation(libs.compose.ui)
+         implementation(libs.compose.components.resources)
       }
 
       androidMain {
@@ -57,6 +58,10 @@ kotlin {
 val stableClassesFile = project.layout.settingsDirectory.file("config/global_compose_stable_classes.txt")
 composeCompiler {
    stabilityConfigurationFiles.add(stableClassesFile)
+}
+
+compose.resources {
+   packageOfResClass = "com.matejdro.micropebble.home.resources"
 }
 
 ksp {

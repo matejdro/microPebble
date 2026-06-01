@@ -8,16 +8,12 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.airbnb.android.showkase.annotation.ShowkaseComposable
-import com.matejdro.micropebble.home.ui.R
 import com.matejdro.micropebble.navigation.instructions.ReplaceTabContentWith
 import com.matejdro.micropebble.navigation.keys.HomeScreenKey
 import com.matejdro.micropebble.navigation.keys.NotificationAppListKey
@@ -46,36 +42,11 @@ class HomeScreen(
 
       Surface {
          HomeScreenContent(
-            tabs = homeTabs(),
             selectedContent = LocalSelectedTabContent.current,
             tabletMode = sizeClass.widthSizeClass == WindowWidthSizeClass.Expanded,
             switchTab = { navigator.navigate(ReplaceTabContentWith(it.toScreenKey())) },
          )
       }
-   }
-}
-
-@Composable
-private fun homeTabs(): List<HomeTab> {
-   val watchesIcon = painterResource(R.drawable.watches)
-   val watchAppsIcon = painterResource(R.drawable.watchapps)
-   val notificationsIcon = painterResource(R.drawable.notifications)
-   val toolsIcon = painterResource(R.drawable.tools)
-   val watchesLabel = stringResource(R.string.watches)
-   val watchAppsLabel = stringResource(R.string.watch_apps)
-   val notificationsLabel = stringResource(R.string.notifications)
-   val toolsLabel = stringResource(R.string.tools)
-
-   return remember(
-      watchesIcon, watchAppsIcon, notificationsIcon, toolsIcon,
-      watchesLabel, watchAppsLabel, notificationsLabel, toolsLabel,
-   ) {
-      listOf(
-         HomeTab(Tab.WATCHES, watchesIcon, watchesLabel),
-         HomeTab(Tab.WATCH_APPS, watchAppsIcon, watchAppsLabel),
-         HomeTab(Tab.NOTIFICATIONS, notificationsIcon, notificationsLabel),
-         HomeTab(Tab.TOOLS, toolsIcon, toolsLabel),
-      )
    }
 }
 
@@ -92,7 +63,6 @@ private fun Tab.toScreenKey(): ScreenKey = when (this) {
 internal fun HomePhonePreview() {
    PreviewTheme {
       HomeScreenContent(
-         tabs = homeTabs(),
          selectedContent = SelectedTabContent(
             {
                Box(
@@ -116,7 +86,6 @@ internal fun HomePhonePreview() {
 internal fun HomeTabletPreview() {
    PreviewTheme {
       HomeScreenContent(
-         tabs = homeTabs(),
          selectedContent = SelectedTabContent(
             {
                Box(
