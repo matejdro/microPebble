@@ -13,7 +13,8 @@ kotlin {
 
    sourceSets {
       commonMain.dependencies {
-         implementation(projects.commonNavigation)
+         // api: HomeScreenContent's public signature exposes common-navigation's Tab / SelectedTabContent.
+         api(projects.commonNavigation)
          implementation(libs.compose.foundation)
          implementation(libs.compose.material3)
          implementation(libs.compose.animation)

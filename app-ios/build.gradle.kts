@@ -13,6 +13,7 @@ kotlin {
 
    sourceSets {
       iosMain.dependencies {
+         implementation(projects.home.ui)
          implementation(libs.compose.runtime)
          implementation(libs.compose.foundation)
          implementation(libs.compose.material3)
