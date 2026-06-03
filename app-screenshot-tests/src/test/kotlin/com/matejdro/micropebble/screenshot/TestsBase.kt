@@ -6,6 +6,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalInspectionMode
 import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_5
 import app.cash.paparazzi.Paparazzi
+import app.cash.paparazzi.TestName
 import com.airbnb.android.showkase.models.Showkase
 import com.airbnb.android.showkase.models.ShowkaseBrowserComponent
 import com.android.ide.common.rendering.api.SessionParams
@@ -13,22 +14,11 @@ import com.android.resources.NightMode
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.google.testing.junit.testparameterinjector.TestParameterValuesProvider
 import com.matejdro.micropebble.showkase.getMetadata
-import org.junit.Rule
 import org.junit.runner.RunWith
 
 @Suppress("JUnitMalformedDeclaration")
 @RunWith(TestParameterInjector::class)
 abstract class TestsBase {
-   @get:Rule
-   val paparazzi = Paparazzi(
-      deviceConfig = PIXEL_5,
-      theme = "android:Theme.Material.Light.NoActionBar",
-      maxPercentDifference = 0.0,
-      showSystemUi = false,
-      renderingMode = SessionParams.RenderingMode.SHRINK,
-      snapshotHandler = determinedHandlerWithRenaming(maxPercentDifference = 0.0),
-   )
-
    object PreviewProvider : TestParameterValuesProvider() {
       override fun provideValues(context: Context): List<*> {
          val splitIndex = context.getOtherAnnotation(SplitIndex::class.java).index
@@ -72,44 +62,61 @@ abstract class TestsBase {
 
       testKey: TestKey,
    ) {
-      val composable = @Composable {
-         CompositionLocalProvider(LocalInspectionMode provides true) {
-            testKey.showkaseBrowserComponent.component()
-         }
-      }
-      val previewName = testKey.toString()
-      require(previewName.isNotBlank()) { "Test name should not be blank for ${testKey.key}" }
+      val paparazzi = Paparazzi(
+         deviceConfig = PIXEL_5,
+         theme = "android:Theme.Material.Light.NoActionBar",
+         showSystemUi = false,
+         renderingMode = SessionParams.RenderingMode.SHRINK,
+      )
 
-      paparazzi.snapshot(previewName) {
-         composable()
-      }
-      paparazzi.unsafeUpdateConfig(
-         PIXEL_5.copy(
-            nightMode = NightMode.NIGHT
+      try {
+         paparazzi.setup(
+            testName = TestName(
+               packageName = "",
+               className = "",
+               methodName = testKey.toString().substringBefore("(")
+            )
          )
-      )
-      paparazzi.snapshot("${previewName}_night") {
-         composable()
-      }
-      paparazzi.unsafeUpdateConfig(
-         PIXEL_5.copy(
-            ydpi = 600,
-            xdpi = 300,
-            screenWidth = 300 * 440 / 160,
-            screenHeight = 600 * 440 / 160,
-            nightMode = NightMode.NOTNIGHT
+         val composable = @Composable {
+            CompositionLocalProvider(LocalInspectionMode provides true) {
+               testKey.showkaseBrowserComponent.component()
+            }
+         }
+
+         fun snapshot(suffix: String? = null) {
+            paparazzi.snapshot(name = suffix) {
+               composable()
+            }
+         }
+
+         snapshot()
+
+         paparazzi.unsafeUpdateConfig(
+            PIXEL_5.copy(
+               nightMode = NightMode.NIGHT
+            )
          )
-      )
-      paparazzi.snapshot("${previewName}_small") {
-         composable()
-      }
-      paparazzi.unsafeUpdateConfig(
-         PIXEL_5.copy(
-            fontScale = 1.5f
+         snapshot("night")
+
+         paparazzi.unsafeUpdateConfig(
+            PIXEL_5.copy(
+               ydpi = 600,
+               xdpi = 300,
+               screenWidth = 300 * 440 / 160,
+               screenHeight = 600 * 440 / 160,
+               nightMode = NightMode.NOTNIGHT
+            )
          )
-      )
-      paparazzi.snapshot("${previewName}_largefont") {
-         composable()
+         snapshot("small")
+
+         paparazzi.unsafeUpdateConfig(
+            PIXEL_5.copy(
+               fontScale = 1.5f
+            )
+         )
+         snapshot("largefont")
+      } finally {
+         paparazzi.teardown()
       }
    }
 
