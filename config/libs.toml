@@ -1,6 +1,6 @@
 [versions]
 accompanist = "0.37.3"
-algolia = "3.41.1"
+algolia = "3.42.0"
 android-securityLints = "1.0.4"
 # See https://developer.android.com/jetpack/androidx/releases/compose-kotlin
 androidGradleCacheFix = "3.0.3"
