@@ -61,6 +61,14 @@ class NotificationAppListViewModel(
       notificationApps.updateNotificationAppMuteState(packageName, if (enabled) MuteState.Never else MuteState.Always)
    }
 
+   fun setAppAllowDuplicates(packageName: String, allowDuplicates: Boolean) {
+      actionLogger.logAction {
+         "NotificationAppListViewModel.setAppAllowDuplicates(packageName = $packageName, allowDuplicates = $allowDuplicates)"
+      }
+
+      notificationApps.updateNotificationAppAllowDuplicates(packageName, allowDuplicates)
+   }
+
    fun setNotificationsPhoneMute(mute: Boolean) {
       actionLogger.logAction { "NotificationAppListViewModel.toggleNotificationsPhoneMute()" }
 

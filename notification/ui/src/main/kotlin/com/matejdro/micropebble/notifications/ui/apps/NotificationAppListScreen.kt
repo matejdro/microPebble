@@ -4,28 +4,34 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,6 +78,7 @@ class NotificationAppListScreen(
          NotificationAppListScreenContent(
             state = screenState,
             setAppEnabled = viewModel::setAppEnabled,
+            setAppAllowDuplicates = viewModel::setAppAllowDuplicates,
             setNotificationsPhoneMute = viewModel::setNotificationsPhoneMute,
             setCallsPhoneMute = viewModel::setCallsPhoneMute,
             setRespectDoNotDisturb = viewModel::setRespectDoNotDisturb,
@@ -87,6 +94,7 @@ class NotificationAppListScreen(
 private fun NotificationAppListScreenContent(
    state: NotificationAppListState,
    setAppEnabled: (String, Boolean) -> Unit,
+   setAppAllowDuplicates: (String, Boolean) -> Unit,
    setNotificationsPhoneMute: (Boolean) -> Unit,
    setCallsPhoneMute: (Boolean) -> Unit,
    setRespectDoNotDisturb: (Boolean) -> Unit,
@@ -94,6 +102,18 @@ private fun NotificationAppListScreenContent(
    setUseAndroidVibrationPatterns: (Boolean) -> Unit,
    setSendCalendarReminders: (Boolean) -> Unit,
 ) {
+   var selectedPackageName by rememberSaveable { mutableStateOf<String?>(null) }
+   val selectedApp = selectedPackageName?.let { pkg -> state.apps.find { it.app.packageName == pkg } }
+
+   if (selectedApp != null) {
+      AppSettingsDialog(
+         app = selectedApp,
+         setAppEnabled = { enabled -> setAppEnabled(selectedApp.app.packageName, enabled) },
+         setAllowDuplicates = { allow -> setAppAllowDuplicates(selectedApp.app.packageName, allow) },
+         onDismiss = { selectedPackageName = null },
+      )
+   }
+
    LazyColumn(
       Modifier.fillMaxSize(),
       contentPadding = WindowInsets.safeDrawing.asPaddingValues()
@@ -193,27 +213,77 @@ private fun NotificationAppListScreenContent(
       item { HorizontalDivider(Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.onSurface) }
 
       itemsWithDivider(state.apps) { app ->
-         App(app, setAppEnabled = { setAppEnabled(app.app.packageName, it) })
+         App(
+            app = app,
+            setAppEnabled = { enabled -> setAppEnabled(app.app.packageName, enabled) },
+            onClick = { selectedPackageName = app.app.packageName },
+         )
       }
    }
 }
 
 @Composable
-private fun App(app: AppWithCount, setAppEnabled: (Boolean) -> Unit) {
+private fun App(app: AppWithCount, setAppEnabled: (Boolean) -> Unit, onClick: () -> Unit) {
    Row(
       Modifier
          .fillMaxSize()
+         .clickable(onClick = onClick)
          .padding(16.dp),
       horizontalArrangement = Arrangement.spacedBy(16.dp),
       verticalAlignment = Alignment.CenterVertically
    ) {
       AppIcon(app.app.packageName)
 
-      Text(app.app.name)
+      Text(text = app.app.name)
 
       Spacer(Modifier.weight(1f))
-      Switch(app.app.muteState == MuteState.Never, onCheckedChange = setAppEnabled)
+      Switch(checked = app.app.muteState == MuteState.Never, onCheckedChange = setAppEnabled)
    }
+}
+
+@Composable
+private fun AppSettingsDialog(
+   app: AppWithCount,
+   setAppEnabled: (Boolean) -> Unit,
+   setAllowDuplicates: (Boolean) -> Unit,
+   onDismiss: () -> Unit,
+) {
+   AlertDialog(
+      onDismissRequest = onDismiss,
+      title = { Text(text = app.app.name) },
+      text = {
+         Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+               Text(
+                  text = stringResource(R.string.notification_app_send_to_watch),
+                  modifier = Modifier.weight(1f),
+               )
+               Switch(
+                  checked = app.app.muteState == MuteState.Never,
+                  onCheckedChange = setAppEnabled,
+               )
+            }
+
+            Spacer(Modifier.height(12.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+               Text(
+                  text = stringResource(R.string.notification_app_allow_duplicates),
+                  modifier = Modifier.weight(1f),
+               )
+               Switch(
+                  checked = app.app.allowDuplicates,
+                  onCheckedChange = setAllowDuplicates,
+               )
+            }
+         }
+      },
+      confirmButton = {
+         TextButton(onClick = onDismiss) {
+            Text(text = stringResource(R.string.done))
+         }
+      },
+   )
 }
 
 @Composable
@@ -245,6 +315,34 @@ private fun AppIcon(packageName: String) {
             }
          }
       }
+   }
+}
+
+@FullScreenPreviews
+@Composable
+@ShowkaseComposable(group = "Test")
+internal fun AppSettingsDialogPreview() {
+   PreviewTheme {
+      AppSettingsDialog(
+         app = AppWithCount(
+            NotificationAppItem(
+               packageName = "pkg.0",
+               name = "App 0",
+               muteState = MuteState.Never,
+               channelGroups = emptyList(),
+               stateUpdated = MillisecondInstant(Instant.DISTANT_PAST),
+               lastNotified = MillisecondInstant(Instant.DISTANT_PAST),
+               vibePatternName = null,
+               colorName = null,
+               iconCode = null,
+               allowDuplicates = true,
+            ),
+            count = 0,
+         ),
+         setAppEnabled = {},
+         setAllowDuplicates = {},
+         onDismiss = {},
+      )
    }
 }
 
@@ -283,6 +381,7 @@ internal fun NotificationAppListScreenContentPreview() {
 
       NotificationAppListScreenContent(
          state,
+         { _, _ -> },
          { _, _ -> },
          {},
          {},
