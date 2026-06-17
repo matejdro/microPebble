@@ -42,4 +42,7 @@ Ignore unknown issue id to allow us to configure issues in this file  that
 
     <!-- Temporarily ignore until https://github.com/google/android-security-lints/pull/14 is released -->
     <issue id="MissingAutoVerifyAttribute" severity="ignore" />
+
+    <!-- This rule has false positive with Kotlin's "use {}" function -->
+    <issue id="Recycle" severity="ignore" />
 </lint>
