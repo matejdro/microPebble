@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.io.files.Path
+import logcat.logcat
 import okio.buffer
 import okio.sink
 import okio.source
@@ -169,12 +170,16 @@ class UpdateFirmwareViewModel(
    }
 
    private fun copyFirmwareToTempFile(uri: Uri): File {
-      val tmpFile = File.createTempFile("pbz", null)
+      val tmpFile = File(context.cacheDir, "firmware.pbz")
+      logcat { "Copying firmware to the ${tmpFile.absolutePath}" }
+
       context.contentResolver.openInputStream(uri)?.use { stream ->
          tmpFile.sink().use { fileSink ->
             stream.source().buffer().use { it.readAll(fileSink) }
          }
       } ?: error("Files provider should not return null streams")
+
+      logcat { "Firmware copied. Target size: ${tmpFile.length()} bytes" }
       return tmpFile
    }
 

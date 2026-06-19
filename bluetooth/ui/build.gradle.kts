@@ -30,5 +30,6 @@ dependencies {
    implementation(libs.kotlin.coroutines)
    implementation(libs.kotlin.io)
    implementation(libs.kotlinova.core)
+   implementation(libs.logcat)
    implementation(libs.okio)
 }
