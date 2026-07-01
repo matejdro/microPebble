@@ -61,7 +61,7 @@ speex = "1946c84"
 tinylog = "2.7.0"
 turbine = "1.2.1"
 unmock-androidJar = "16-robolectric-13921718"
-unmock-plugin = "0.9.0"
+unmock-plugin = "0.11.0"
 versionCatalogUpdate = "1.1.0"
 
 [libraries]
