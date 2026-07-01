@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="grant">Grant</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="permissions">Permissions</string>
+    <string name="notification_listener_permission_title">Notification access</string>
+    <string name="notification_listener_permission_description">Needed for forwarding notifications to the watch</string>
+    <string name="notification_listener_permission_disabled_explanation">Can only be granted when connected to a watch</string>
+    <string name="location_permission_title">Location</string>
+    <string name="location_permission_description">Needed for watch app\'s access to location (for example for the Weather).
+        Background location is needed so watch apps can also access location when this app is not open.
+    </string>
+    <string name="contacts_permission_title">Contacts</string>
+    <string name="contacts_permission_description">Needed for SMS alerts</string>
+    <string name="notifications_permission_title">Notifications</string>
+    <string name="notification_permission_description">Needed for watch disconnection alerts and for error reporting</string>
+    <string name="continue_to_the_app">Continue to the app</string>
+    <string name="onboarding_title">Welcome to the Micropebble App!</string>
+    <string name="onboarding_intro">Since the app is mostly running on its own in the background, afterwards, all permissions are
+        being asked up front. All are optional:
+    </string>
+    <string name="grant_background">Grant background</string>
+    <string name="calendar_permission_title">Calendar</string>
+    <string name="calendar_permission_description">Needed to sync calendar to the Timeline</string>
+    <string name="developer_connection">Developer connection</string>
+    <string name="version">MicroPebble version %1$s</string>
+    <string name="save_logs">Save logs</string>
+    <string name="voice_permission_title">Voice recording</string>
+    <string name="voice_permission_description">Needed for the voice recognition from the watch</string>
+    <string name="calendar">Calendar</string>
+    <string name="enable_voice">Enable voice</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="voice_enabled">Voice enabled</string>
+    <string name="watch_settings">Watch Settings</string>
+    <string name="backlight_color_custom">Custom</string>
+    <string name="backlight_color_hex_label">Hex color</string>
+    <string name="notification_vibe_title">Notification Vibration</string>
+    <string name="notification_vibe_description">Override the default vibration pattern for notifications</string>
+    <string name="calendar_vibe_title">Calendar Vibration</string>
+    <string name="calendar_vibe_description">Override the default vibration pattern for calendar reminders</string>
+    <string name="vibe_pattern_none">None</string>
+    <string name="vibe_pattern_standard">Standard</string>
+    <string name="vibe_pattern_pulses">Pulses</string>
+    <string name="vibe_pattern_double">Double</string>
+    <string name="vibe_pattern_triple">Triple</string>
+    <string name="vibe_pattern_bloom">Bloom</string>
+    <string name="vibe_pattern_pips">Pips</string>
+    <string name="vibe_pattern_ole">Olé</string>
+    <string name="vibe_pattern_sos">SOS</string>
+    <string name="vibe_pattern_ohhh_oh">Ohhh, Oh</string>
+    <string name="vibe_pattern_five">Five</string>
+    <string name="vibe_pattern_two">Two</string>
+</resources>
