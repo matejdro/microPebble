@@ -93,3 +93,27 @@ jobs:
         with:
           name: failed-screenshot-tests
           path: app-screenshot-tests/build/paparazzi/failures
+
+  build-ios:
+    runs-on: "macos-latest"
+    concurrency:
+      group: ${{ github.workflow }}-ios-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          lfs: false
+          submodules: recursive
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          java-version: '21'
+          distribution: temurin
+      - uses: burrunan/gradle-cache-action@663fbad34e03c8f12b27f4999ac46e3d90f87eca
+        with:
+          debug: false
+          concurrent: true
+          read-only: true
+      - name: Compile shared iOS framework
+        run: "./gradlew :app-ios:linkDebugFrameworkIosSimulatorArm64"
