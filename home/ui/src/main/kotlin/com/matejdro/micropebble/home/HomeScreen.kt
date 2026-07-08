@@ -38,6 +38,7 @@ import com.matejdro.micropebble.navigation.keys.WatchListKey
 import com.matejdro.micropebble.navigation.keys.WatchappListKey
 import com.matejdro.micropebble.navigation.keys.base.LocalSelectedTabContent
 import com.matejdro.micropebble.navigation.keys.base.SelectedTabContent
+import com.matejdro.micropebble.navigation.keys.base.Tab
 import com.matejdro.micropebble.tools.ToolsScreenKey
 import com.matejdro.micropebble.ui.debugging.FullScreenPreviews
 import com.matejdro.micropebble.ui.debugging.PreviewTheme
@@ -60,17 +61,24 @@ class HomeScreen(
          HomeScreenContent(
             LocalSelectedTabContent.current,
             tabletMode = sizeClass.widthSizeClass == WindowWidthSizeClass.Expanded,
-            switchScreen = { navigator.navigate(ReplaceTabContentWith(it)) },
+            switchTab = { navigator.navigate(ReplaceTabContentWith(it.toScreenKey())) },
          )
       }
    }
+}
+
+private fun Tab.toScreenKey(): ScreenKey = when (this) {
+   Tab.WATCHES -> WatchListKey
+   Tab.WATCH_APPS -> WatchappListKey()
+   Tab.NOTIFICATIONS -> NotificationAppListKey
+   Tab.TOOLS -> ToolsScreenKey
 }
 
 @Composable
 private fun HomeScreenContent(
    selectedTab: SelectedTabContent,
    tabletMode: Boolean,
-   switchScreen: (ScreenKey) -> Unit,
+   switchTab: (Tab) -> Unit,
 ) {
    val animatedMainContent: @Composable () -> Unit = {
       AnimatedContent(
@@ -82,17 +90,17 @@ private fun HomeScreenContent(
       }
    }
    if (tabletMode) {
-      NavigationRailContent(animatedMainContent, selectedTab.key, switchScreen)
+      NavigationRailContent(animatedMainContent, selectedTab.tab, switchTab)
    } else {
-      NavigationBarContent(animatedMainContent, selectedTab.key, switchScreen)
+      NavigationBarContent(animatedMainContent, selectedTab.tab, switchTab)
    }
 }
 
 @Composable
 private fun NavigationBarContent(
    mainContent: @Composable () -> Unit,
-   selectedScreen: ScreenKey,
-   switchScreen: (ScreenKey) -> Unit,
+   selectedTab: Tab?,
+   switchTab: (Tab) -> Unit,
 ) {
    Column {
       Box(
@@ -105,29 +113,29 @@ private fun NavigationBarContent(
 
       NavigationBar {
          NavigationBarItem(
-            selected = selectedScreen is WatchListKey,
-            onClick = { switchScreen(WatchListKey) },
+            selected = selectedTab == Tab.WATCHES,
+            onClick = { switchTab(Tab.WATCHES) },
             icon = { Icon(painter = painterResource(id = R.drawable.watches), contentDescription = null) },
             label = { Text(stringResource(R.string.watches)) }
          )
 
          NavigationBarItem(
-            selected = selectedScreen is WatchappListKey,
-            onClick = { switchScreen(WatchappListKey()) },
+            selected = selectedTab == Tab.WATCH_APPS,
+            onClick = { switchTab(Tab.WATCH_APPS) },
             icon = { Icon(painter = painterResource(id = R.drawable.watchapps), contentDescription = null) },
             label = { Text(stringResource(R.string.watch_apps)) }
          )
 
          NavigationBarItem(
-            selected = selectedScreen is NotificationAppListKey,
-            onClick = { switchScreen(NotificationAppListKey) },
+            selected = selectedTab == Tab.NOTIFICATIONS,
+            onClick = { switchTab(Tab.NOTIFICATIONS) },
             icon = { Icon(painter = painterResource(id = R.drawable.notifications), contentDescription = null) },
             label = { Text(stringResource(R.string.notifications)) }
          )
 
          NavigationBarItem(
-            selected = selectedScreen is ToolsScreenKey,
-            onClick = { switchScreen(ToolsScreenKey) },
+            selected = selectedTab == Tab.TOOLS,
+            onClick = { switchTab(Tab.TOOLS) },
             icon = { Icon(painter = painterResource(id = R.drawable.tools), contentDescription = null) },
             label = { Text(stringResource(R.string.tools)) }
          )
@@ -138,35 +146,35 @@ private fun NavigationBarContent(
 @Composable
 private fun NavigationRailContent(
    mainContent: @Composable () -> Unit,
-   selectedScreen: ScreenKey,
-   switchScreen: (ScreenKey) -> Unit,
+   selectedTab: Tab?,
+   switchTab: (Tab) -> Unit,
 ) {
    Row {
       NavigationRail {
          NavigationRailItem(
-            selected = selectedScreen is WatchListKey,
-            onClick = { switchScreen(WatchListKey) },
+            selected = selectedTab == Tab.WATCHES,
+            onClick = { switchTab(Tab.WATCHES) },
             icon = { Icon(painter = painterResource(id = R.drawable.watches), contentDescription = null) },
             label = { Text(stringResource(R.string.watches)) }
          )
 
          NavigationRailItem(
-            selected = selectedScreen is WatchappListKey,
-            onClick = { switchScreen(WatchappListKey()) },
+            selected = selectedTab == Tab.WATCH_APPS,
+            onClick = { switchTab(Tab.WATCH_APPS) },
             icon = { Icon(painter = painterResource(id = R.drawable.watchapps), contentDescription = null) },
             label = { Text(stringResource(R.string.watch_apps)) }
          )
 
          NavigationRailItem(
-            selected = selectedScreen is NotificationAppListKey,
-            onClick = { switchScreen(NotificationAppListKey) },
+            selected = selectedTab == Tab.NOTIFICATIONS,
+            onClick = { switchTab(Tab.NOTIFICATIONS) },
             icon = { Icon(painter = painterResource(id = R.drawable.notifications), contentDescription = null) },
             label = { Text(stringResource(R.string.notifications)) }
          )
 
          NavigationRailItem(
-            selected = selectedScreen is ToolsScreenKey,
-            onClick = { switchScreen(ToolsScreenKey) },
+            selected = selectedTab == Tab.TOOLS,
+            onClick = { switchTab(Tab.TOOLS) },
             icon = { Icon(painter = painterResource(id = R.drawable.tools), contentDescription = null) },
             label = { Text(stringResource(R.string.tools)) }
          )
@@ -197,10 +205,10 @@ internal fun HomePhonePreview() {
                      .background(Color.Red)
                )
             },
-            WatchappListKey(),
+            Tab.WATCH_APPS,
             ""
          ),
-         switchScreen = {},
+         switchTab = {},
       )
    }
 }
@@ -220,10 +228,10 @@ internal fun HomeTabletPreview() {
                      .background(Color.Red)
                )
             },
-            WatchappListKey(),
+            Tab.WATCH_APPS,
             ""
          ),
-         switchScreen = {},
+         switchTab = {},
       )
    }
 }
