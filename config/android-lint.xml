@@ -34,6 +34,9 @@ Ignore unknown issue id to allow us to configure issues in this file  that
     <!-- We use custom AppComponentFactory -->
     <issue id="Instantiatable" severity="ignore" />
 
+    <!-- Produces false positives with Kotlin 2.4.0  -->
+    <issue id="Recycle" severity="ignore" />
+
     <!-- Ignore issues in the 3rd party libraries -->
     <issue id="all">
         <ignore path="**/libpebble3/**" />
