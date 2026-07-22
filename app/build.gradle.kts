@@ -102,6 +102,7 @@ dependencies {
    implementation(projects.bluetooth.ui)
    implementation(projects.commonNavigation)
    implementation(projects.commonCompose)
+   implementation(projects.notification.api)
    implementation(projects.notification.data)
    implementation(projects.notification.ui)
    implementation(projects.home.ui)
