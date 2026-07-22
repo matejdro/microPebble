@@ -680,7 +680,6 @@ potential-bugs:
     active: false
   Deprecation:
     active: true
-    excludeImportStatements: true
   DontDowncastCollectionTypes:
     active: true
   DoubleMutabilityForCollection:
