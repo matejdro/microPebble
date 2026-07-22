@@ -147,25 +147,28 @@ class AppstoreViewModel(
          return Outcome.Success(emptyList())
       }
       val algoliaData = state.appstoreSource?.algoliaData ?: return Outcome.Error(UnknownCauseException())
-      val client = SearchClient(
+
+      return SearchClient(
          appId = algoliaData.appId,
          apiKey = algoliaData.apiKey,
-      )
-      val filters = TagFilters.of(
-         buildList {
-            add(TagFilters.of(state.selectedTab.searchTag))
-            if (state.platformFilter != null) {
-               add(TagFilters.of(state.platformFilter.codename))
+      ).use { client ->
+         val filters = TagFilters.of(
+            buildList {
+               add(TagFilters.of(state.selectedTab.searchTag))
+               if (state.platformFilter != null) {
+                  add(TagFilters.of(state.platformFilter.codename))
+               }
             }
+         )
+         val response: List<AlgoliaApplication> = client.searchSingleIndex(
+            algoliaData.indexName,
+            SearchParamsObject(state.searchQuery, tagFilters = filters)
+         ).hits.mapNotNull { hit ->
+            hit.additionalProperties?.let { api.json.decodeFromJsonElement(JsonObject(it)) }
          }
-      )
-      val response: List<AlgoliaApplication> = client.searchSingleIndex(
-         algoliaData.indexName,
-         SearchParamsObject(state.searchQuery, tagFilters = filters)
-      ).hits.mapNotNull { hit ->
-         hit.additionalProperties?.let { api.json.decodeFromJsonElement(JsonObject(it)) }
+
+         Outcome.Success(response)
       }
-      return Outcome.Success(response)
    }
 
    private suspend fun ensureAppstoreSource(): AppstoreSource {
