@@ -21,6 +21,8 @@ androidx-test-runner = "1.7.0"
 androidx-work = "2.11.2"
 coil = "3.4.0"
 composeDnd = "0.4.0"
+# @pin needs to match libpebble3's Compose Multiplatform version
+composeMultiplatform = "1.10.1"
 composePreference = "2.2.0"
 composeWebview = "0.33.6"
 dependencyAnalysis = "3.15.0"
@@ -102,6 +104,8 @@ androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 composeDnd = { module = "com.mohamedrejeb.dnd:compose-dnd", version.ref = "composeDnd" }
+# Compose Multiplatform Gradle plugin, used by the library-kmp-module convention plugin in buildSrc
+compose-gradlePlugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeMultiplatform" }
 composePreference = { module = "me.zhanghai.compose.preference:preference", version.ref = "composePreference" }
 composeWebview = { module = "io.github.kevinnzou:compose-webview", version.ref = "composeWebview" }
 dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
