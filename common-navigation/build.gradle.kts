@@ -1,14 +1,21 @@
 plugins {
-   androidLibraryModule
-   compose
-   parcelize
-   serialization
+   kmpLibraryModule
+   id("org.jetbrains.kotlin.plugin.serialization")
 }
 
-dependencies {
-   api(libs.kotlinova.navigation)
-   implementation(libs.androidx.activity.compose)
-   implementation(libs.androidx.core)
-   implementation(libs.androidx.compose.material3.sizeClasses)
-   implementation(libs.kotlinova.compose)
+kotlin {
+   androidLibrary {
+      namespace = "com.matejdro.micropebble.navigation"
+   }
+
+   sourceSets {
+      androidMain.dependencies {
+         api(libs.kotlinova.navigation)
+         implementation(libs.androidx.activity.compose)
+         implementation(libs.androidx.core)
+         implementation(libs.kotlin.serialization.core)
+         implementation(libs.compose.animation)
+         implementation(libs.compose.ui)
+      }
+   }
 }
