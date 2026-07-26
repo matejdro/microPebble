@@ -10,6 +10,7 @@ import androidx.navigation3.scene.SceneStrategyScope
 import com.matejdro.micropebble.navigation.keys.base.LocalSelectedTabContent
 import com.matejdro.micropebble.navigation.keys.base.SelectedTabContent
 import com.matejdro.micropebble.navigation.keys.base.TabContainerKey
+import com.matejdro.micropebble.navigation.keys.base.TabKey
 import si.inova.kotlinova.navigation.navigation3.key
 import si.inova.kotlinova.navigation.screenkeys.ScreenKey
 
@@ -24,7 +25,7 @@ class TabListScene(
 
       val selectedTabContent = SelectedTabContent(
          displayedEntry::Content,
-         displayedEntry.key(),
+         (displayedEntry.key() as? TabKey)?.tab,
          contentKey = displayedEntry.contentKey
       )
 
