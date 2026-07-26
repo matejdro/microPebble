@@ -16,6 +16,9 @@ inline val PluginDependenciesSpec.androidAppModule: PluginDependencySpec
 inline val PluginDependenciesSpec.androidLibraryModule: PluginDependencySpec
    get() = id("library-android-module")
 
+inline val PluginDependenciesSpec.kmpLibraryModule: PluginDependencySpec
+   get() = id("library-kmp-module")
+
 inline val PluginDependenciesSpec.pureKotlinModule: PluginDependencySpec
    get() = id("pure-kotlin-module")
 
