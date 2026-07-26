@@ -61,3 +61,8 @@ include(":voice:data")
 include(":webservices:api")
 include(":webservices:data")
 include(":webservices:ui")
+
+// The iOS app framework only builds on macOS; skip it elsewhere (e.g. Linux CI) so configuration succeeds.
+if (System.getProperty("os.name").contains("mac", ignoreCase = true)) {
+   include(":app-ios")
+}
