@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="connecting">Connecting</string>
     <string name="app_name">Micro Pebble</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="manage_appstore_sources">Appstore sources</string>
-    <string name="authenticate_webservices">Webservices</string>
+    <!-- Used only from :home:ui, a KMP module whose sources Android Lint does not scan for resource
+         references, so it false-positives UnusedResources. -->
+    <string name="authenticate_webservices" tools:ignore="UnusedResources">Webservices</string>
 
     <string name="watch_classic">Pebble Classic</string>
     <string name="watch_classic_steel">Pebble Steel</string>
