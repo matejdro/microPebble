@@ -29,6 +29,26 @@ Supported features:
 [<img src="docs/badge_obtainium.png" alt="Get it on Obtainium" height="80">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/matejdro/microPebble)
 [<img src="docs/badge_github.png" alt="Get it on GitHub" height="80">](../../releases/latest)
 
+# Running on iOS (experimental)
+
+The home screen runs on iOS through Compose Multiplatform. The shared `HomeScreenContent` (`home/ui`)
+and the tab model (`common-navigation`) compile into an iOS framework produced by `:app-ios`, which the
+`iosApp/` Xcode project hosts. The four tabs are solid-colour placeholders for now; the rest of the app
+stays Android-only.
+
+To run it on a simulator, open `iosApp/iosApp.xcodeproj` in Xcode and run the `iosApp` scheme, or from
+the command line:
+
+```
+xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -sdk iphonesimulator \
+  -destination 'platform=iOS Simulator,name=iPhone 17' build
+xcrun simctl install booted <derived-data>/Build/Products/Debug-iphonesimulator/iosApp.app
+xcrun simctl launch booted com.matejdro.micropebble.iosApp
+```
+
+iOS targets only build on macOS, so `:app-ios` is excluded from the build on other platforms. Tab
+switching is covered by `iosApp/iosAppUITests` (run serially with `-parallel-testing-enabled NO`).
+
 # Contributing
 
 To contribute to this project:
