@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="watches">Watches</string>
+    <string name="watch_apps">Watchapps</string>
+    <string name="notifications">Notifications</string>
+    <string name="tools">Tools</string>
+</resources>
