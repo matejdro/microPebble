@@ -1,8 +1,12 @@
 package com.matejdro.micropebble.webservices.data
 
+import android.content.Context
 import android.net.Uri
 import androidx.datastore.core.DataStore
 import com.matejdro.micropebble.appstore.api.AppstoreSourceService
+import com.matejdro.micropebble.webservices.api.GithubAsset
+import com.matejdro.micropebble.webservices.api.GithubRelease
+import com.matejdro.micropebble.webservices.api.GithubSource
 import com.matejdro.micropebble.webservices.api.NotAuthenticated
 import com.matejdro.micropebble.webservices.api.ParsedWebservicesToken
 import com.matejdro.micropebble.webservices.api.WebserviceLocker
@@ -26,6 +30,7 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import si.inova.kotlinova.core.exceptions.UnknownCauseException
 import si.inova.kotlinova.core.outcome.Outcome
+import java.io.File
 import kotlin.uuid.Uuid
 
 @Serializable
@@ -65,6 +70,8 @@ data class CobbleApi(
 class WebservicesClientImpl(
    private val appInstallSourcesStore: DataStore<Map<Uuid, WebservicesToken>>,
    private val sources: AppstoreSourceService,
+   private val context: Context,
+   private val githubClient: GithubClientImpl,
 ) : WebservicesClient {
    val json: Json = Json {
       isLenient = true
@@ -116,6 +123,17 @@ class WebservicesClientImpl(
          sourceId = sources.find { it.url == appstore.base }?.id, token = url.getQueryParameter("access_token"), bootUrl = bootUrl
       )
    }
+
+   // GitHub methods
+   override suspend fun fetchGithubReleases(
+       source: GithubSource,
+       token: String?
+   ): Outcome<List<GithubRelease>> = githubClient.fetchReleases(source, token)
+
+   override suspend fun downloadGithubAsset(
+       asset: GithubAsset,
+       token: String?
+   ): Outcome<File> = githubClient.downloadAsset(asset, token)
 
    private suspend inline fun WebservicesToken.httpGet(endpoint: String, block: HttpRequestBuilder.() -> Unit = {}) =
       getHttp().get(endpoint) {
