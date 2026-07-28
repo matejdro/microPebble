@@ -27,6 +27,7 @@ dependencies {
    implementation(libs.ktor.contentNegotiation)
    implementation(libs.ktor.serialization.kotlinx.json)
    implementation(libs.ktor.okhttp)
+   implementation(libs.logcat)
 
    compileOnly(libs.jspecify)
 }
