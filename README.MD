@@ -1,3 +1,10 @@
+# Project status
+
+Project is not updated by me (the original author) any more. I am still accepting PRs, but will likely not contribute much myself
+in the near future.
+
+If anyone creates a more active fork, feel free to create an issue and I will point people to it in this README.
+
 # microPebble
 
 A small scrappy open source Pebble companion app, based on the [libpebble3](https://github.com/coredevices/libpebble3).
