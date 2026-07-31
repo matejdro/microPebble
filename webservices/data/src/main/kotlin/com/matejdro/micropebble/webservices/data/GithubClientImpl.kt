@@ -18,8 +18,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headers
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.SerializationException
@@ -39,17 +38,6 @@ import java.time.Instant
 class GithubClientImpl(
     private val context: Context,
 ) : GithubClient {
-    
-    companion object {
-        private const val GITHUB_API_BASE = "https://api.github.com"
-        private const val USER_AGENT = "microPebble"
-        
-        private val json = Json {
-            isLenient = true
-            ignoreUnknownKeys = true
-            explicitNulls = false
-        }
-    }
     
     private var client: HttpClient? = null
     
@@ -71,7 +59,7 @@ class GithubClientImpl(
     override suspend fun fetchReleases(
         source: GithubSource,
         token: String?
-    ): Outcome<List<GithubRelease>> = withContext(Dispatchers.IO) {
+    ): Outcome<List<GithubRelease>> = withIO {
         try {
             logcat { "GithubClientImpl.fetchReleases: Fetching from ${source.owner}/${source.repo}" }
             
@@ -92,7 +80,7 @@ class GithubClientImpl(
                     ""
                 }
                 logcat { "GithubClientImpl.fetchReleases: ERROR - ${response.status}: $errorBody" }
-                return@withContext Outcome.Error(UnknownCauseException(
+                return@withIO Outcome.Error(UnknownCauseException(
                     cause = Exception("GitHub API returned ${response.status}: $errorBody")
                 ))
             }
@@ -144,7 +132,7 @@ class GithubClientImpl(
         asset: GithubAsset,
         token: String?,
         outputDir: File?
-    ): Outcome<File> = withContext(Dispatchers.IO) {
+    ): Outcome<File> = withIO {
         try {
             val actualOutputDir = outputDir ?: context.cacheDir
             val outputFile = File(actualOutputDir, asset.name)
@@ -168,7 +156,7 @@ class GithubClientImpl(
                 } catch (e: Exception) {
                     ""
                 }
-                return@withContext Outcome.Error(UnknownCauseException(
+                return@withIO Outcome.Error(UnknownCauseException(
                     cause = Exception("Failed to download asset: ${response.status} - $errorBody")
                 ))
             }
@@ -182,6 +170,17 @@ class GithubClientImpl(
             Outcome.Success(outputFile)
         } catch (e: Exception) {
             Outcome.Error(UnknownCauseException(cause = Exception("Failed to download asset: ${e.message}")))
+        }
+    }
+    
+    companion object {
+        private const val GITHUB_API_BASE = "https://api.github.com"
+        private const val USER_AGENT = "microPebble"
+        
+        private val json = Json {
+            isLenient = true
+            ignoreUnknownKeys = true
+            explicitNulls = false
         }
     }
     
