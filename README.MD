@@ -38,6 +38,42 @@ Supported features:
 
 # Contributing
 
+## Nix development environment
+
+On x86_64 Linux, the checked-in flake provides JDKs 17 and 21, Android SDK platforms 33, 34, and 36,
+SDK Build Tools 35.0.0, platform tools, Jujutsu, Git LFS, and the libraries used by Paparazzi screenshot
+tests. Gradle itself and the JVM dependencies remain pinned by the repository's wrapper and version catalogs;
+the first build downloads them into the normal Gradle cache.
+
+Enter the development shell, build a debug APK, and inspect connected devices from Nushell:
+
+```nu
+nix develop
+./gradlew --no-daemon assembleDebug
+adb devices
+```
+
+The upstream CI checks can be run from the same shell:
+
+```nu
+./gradlew --no-daemon compileDebugUnitTestSources compileReleaseUnitTestSources
+./gradlew --no-daemon lintRelease runDebugDetekt assertModuleGraph buildHealth detectTooManyFiles reportMerge --continue
+./gradlew --no-daemon runDebugTests -x :app-screenshot-tests:testDebugUnitTest -x :app-screenshot-tests:testReleaseUnitTest --continue
+```
+
+Jujutsu does not currently apply Git LFS clean and smudge filters. The LFS objects can remain downloaded
+locally while their pointer files keep the Jujutsu working copy clean. Temporarily materialize the golden
+images when running Paparazzi, then restore the pointers after a verification-only run:
+
+```nu
+git lfs checkout
+./gradlew --no-daemon verifyPaparazziDebug
+jj restore app-screenshot-tests/src/test/snapshots/images
+```
+
+Inspect and intentionally commit regenerated screenshots before restoring them. Use Jujutsu for ordinary
+version-control work; the Git command above is only for LFS compatibility.
+
 To contribute to this project:
 
 1. Install [Git LFS](https://git-lfs.com/)
