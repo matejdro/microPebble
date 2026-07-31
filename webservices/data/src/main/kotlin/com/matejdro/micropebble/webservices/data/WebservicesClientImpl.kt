@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.datastore.core.DataStore
 import com.matejdro.micropebble.appstore.api.AppstoreSourceService
 import com.matejdro.micropebble.webservices.api.GithubAsset
+import com.matejdro.micropebble.webservices.api.GithubClient
 import com.matejdro.micropebble.webservices.api.GithubRelease
 import com.matejdro.micropebble.webservices.api.GithubSource
 import com.matejdro.micropebble.webservices.api.NotAuthenticated
@@ -71,7 +72,7 @@ class WebservicesClientImpl(
    private val appInstallSourcesStore: DataStore<Map<Uuid, WebservicesToken>>,
    private val sources: AppstoreSourceService,
    private val context: Context,
-   private val githubClient: GithubClientImpl,
+   private val githubClient: GithubClient,
 ) : WebservicesClient {
    val json: Json = Json {
       isLenient = true
@@ -133,7 +134,7 @@ class WebservicesClientImpl(
    override suspend fun downloadGithubAsset(
        asset: GithubAsset,
        token: String?
-   ): Outcome<File> = githubClient.downloadAsset(asset, token)
+   ): Outcome<File> = githubClient.downloadAsset(asset, token, null)
 
    private suspend inline fun WebservicesToken.httpGet(endpoint: String, block: HttpRequestBuilder.() -> Unit = {}) =
       getHttp().get(endpoint) {

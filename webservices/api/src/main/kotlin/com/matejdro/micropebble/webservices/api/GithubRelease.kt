@@ -1,7 +1,7 @@
 package com.matejdro.micropebble.webservices.api
 
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.InstantComponentSerializer
 import java.time.Instant
 
 @Serializable
@@ -10,7 +10,7 @@ data class GithubRelease(
     val tag_name: String,
     val name: String?,
     val body: String?,
-    @Contextual
+    @Serializable(with = InstantComponentSerializer::class)
     val published_at: Instant?,
     val assets: List<GithubAsset>,
     val html_url: String,

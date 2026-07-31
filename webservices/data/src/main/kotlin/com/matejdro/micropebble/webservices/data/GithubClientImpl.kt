@@ -2,8 +2,11 @@ package com.matejdro.micropebble.webservices.data
 
 import android.content.Context
 import com.matejdro.micropebble.webservices.api.GithubAsset
+import com.matejdro.micropebble.webservices.api.GithubClient
 import com.matejdro.micropebble.webservices.api.GithubRelease
 import com.matejdro.micropebble.webservices.api.GithubSource
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dispatch.core.withIO
 import io.ktor.client.HttpClient
@@ -31,10 +34,11 @@ import java.time.Instant
 /**
  * Implementation of GitHub API client for fetching releases and downloading assets.
  */
+@ContributesBinding(AppScope::class)
 @Inject
 class GithubClientImpl(
     private val context: Context,
-) {
+) : GithubClient {
     
     companion object {
         private const val GITHUB_API_BASE = "https://api.github.com"
@@ -64,9 +68,9 @@ class GithubClientImpl(
      * @param token Optional GitHub personal access token for authenticated requests
      * @return Outcome with list of releases or error
      */
-    suspend fun fetchReleases(
+    override suspend fun fetchReleases(
         source: GithubSource,
-        token: String? = null
+        token: String?
     ): Outcome<List<GithubRelease>> = withContext(Dispatchers.IO) {
         try {
             logcat { "GithubClientImpl.fetchReleases: Fetching from ${source.owner}/${source.repo}" }
@@ -136,10 +140,10 @@ class GithubClientImpl(
      * @param outputDir Directory to save the file (defaults to cache dir)
      * @return Outcome with the downloaded File or error
      */
-    suspend fun downloadAsset(
+    override suspend fun downloadAsset(
         asset: GithubAsset,
-        token: String? = null,
-        outputDir: File? = null
+        token: String?,
+        outputDir: File?
     ): Outcome<File> = withContext(Dispatchers.IO) {
         try {
             val actualOutputDir = outputDir ?: context.cacheDir
