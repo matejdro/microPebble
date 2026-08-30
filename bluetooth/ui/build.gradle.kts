@@ -18,6 +18,7 @@ dependencies {
    api(projects.commonNavigation)
    api(projects.common)
    api(projects.notification.api)
+   api(projects.webservices.api)
    api(libs.kotlinova.navigation)
    api(libs.accompanist.permissions)
 

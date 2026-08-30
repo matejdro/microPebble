@@ -11,12 +11,18 @@ import com.matejdro.micropebble.common.exceptions.WatchDisconnectedException
 import com.matejdro.micropebble.common.logging.ActionLogger
 import com.matejdro.micropebble.navigation.keys.FirmwareUpdateScreenKey
 import com.matejdro.micropebble.navigation.keys.common.InputFile
+import com.matejdro.micropebble.webservices.api.GithubAsset
+import com.matejdro.micropebble.webservices.api.GithubRelease
+import com.matejdro.micropebble.webservices.api.GithubSource
+import com.matejdro.micropebble.webservices.api.WebservicesClient
 import dev.zacsweers.metro.Inject
 import dispatch.core.dispatcherProvider
 import dispatch.core.withDefault
 import io.rebble.libpebblecommon.connection.CommonConnectedDevice
 import io.rebble.libpebblecommon.connection.Watches
+import io.rebble.libpebblecommon.metadata.WatchHardwarePlatform
 import io.rebble.libpebblecommon.connection.endpointmanager.FirmwareUpdateException
+import io.rebble.libpebblecommon.services.FirmwareVersion
 import io.rebble.libpebblecommon.connection.endpointmanager.FirmwareUpdater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -41,6 +47,8 @@ import si.inova.kotlinova.core.outcome.mapData
 import si.inova.kotlinova.navigation.services.ContributesScopedService
 import si.inova.kotlinova.navigation.services.SingleScreenViewModel
 import java.io.File
+import kotlin.time.Instant
+import kotlin.time.Instant.Companion.DISTANT_PAST
 
 @Stable
 @Inject
@@ -50,12 +58,31 @@ class UpdateFirmwareViewModel(
    private val actionLogger: ActionLogger,
    private val watches: Watches,
    private val context: Context,
+   private val webservicesClient: WebservicesClient,
 ) : SingleScreenViewModel<FirmwareUpdateScreenKey>(resources.scope) {
    private val _watchInfo = MutableStateFlow<Outcome<UpdateFirmwareState>>(Outcome.Progress())
    val watchInfo: StateFlow<Outcome<UpdateFirmwareState>> = _watchInfo
 
    private val _updateStatus = MutableStateFlow<Outcome<Unit?>>(Outcome.Success(null))
    val updateStatus: StateFlow<Outcome<Unit?>> = _updateStatus
+   
+   // State for GitHub releases
+   private val _githubReleases = MutableStateFlow<Outcome<List<GithubRelease>?>>(Outcome.Success(null))
+   val githubReleases: StateFlow<Outcome<List<GithubRelease>?>> = _githubReleases
+   
+   // State for download progress
+   private val _downloadProgress = MutableStateFlow<Outcome<File>>(Outcome.Success(File("")))
+   val downloadProgress: StateFlow<Outcome<File>> = _downloadProgress
+   
+   // Whether GitHub auto-download is available for this watch
+   val isGithubAutoDownloadAvailable: Boolean
+      get() {
+         val watch = watchInfo.value.data?.watch
+         val revision = watch?.watchType?.revision?.lowercase() ?: return false
+         return revision.startsWith("asterix") || 
+                revision.startsWith("obelix") || 
+                revision.startsWith("getafix")
+      }
 
    override fun onServiceRegistered() {
       actionLogger.logAction { "UpdateFirmwareViewModel.onServiceRegistered()" }
@@ -74,6 +101,122 @@ class UpdateFirmwareViewModel(
          actionLogger.logAction { "UpdateFirmwareViewModel.selectPbz(pbzUri = $pbzUri)" }
          _watchInfo.update { outcome ->
             outcome.mapData { it.copy(pendingFirmware = InputFile(pbzUri, getFileName(pbzUri).orEmpty())) }
+         }
+      }
+
+   /**
+    * Check for firmware updates on GitHub from the default sources.
+    */
+   fun checkGithubUpdates(source: GithubSource = GithubSource.defaultSources[0]) =
+      resources.launchResourceControlTask(_githubReleases) {
+         actionLogger.logAction { "UpdateFirmwareViewModel.checkGithubUpdates(source = ${source.fullName})" }
+         
+         // Clear previous releases
+         emit(Outcome.Progress())
+         
+         logcat { "Fetching releases from ${source.fullName} (URL: ${source.apiUrl}/releases)" }
+         
+         val result = webservicesClient.fetchGithubReleases(source, null)
+         
+         if (result is Outcome.Success) {
+            val releases = result.data
+            
+            // Get the current watch to filter by hardware platform and version
+            val currentWatch = watchInfo.value.data?.watch
+            val watchRevision = currentWatch?.watchType?.revision?.lowercase()
+            val currentFwVersion = currentWatch?.watchInfo?.runningFwVersion
+            logcat { "Current watch revision: $watchRevision, firmware version: ${currentFwVersion?.stringVersion}" }
+            
+            // Filter releases to only include PBZ assets matching the watch hardware platform
+            val filteredReleases = releases.map { release ->
+               // Filter PBZ assets by watch revision if we have one
+               val filteredAssets = if (watchRevision != null) {
+                  release.assets.filter { asset ->
+                     asset.name.endsWith(".pbz", ignoreCase = true) &&
+                     asset.name.contains(watchRevision, ignoreCase = true)
+                  }
+               } else {
+                  release.assets.filter { asset ->
+                     asset.name.endsWith(".pbz", ignoreCase = true)
+                  }
+               }
+               
+               // Create a new release with only the filtered PBZ assets
+               release.copy(assets = filteredAssets)
+            }.filter { release ->
+               // Only keep releases that have at least one PBZ asset
+               release.assets.isNotEmpty()
+            }
+            
+            // Filter out releases older than current firmware version
+            val newerReleases = if (currentFwVersion != null) {
+               filteredReleases.filter { release ->
+                  // Try to parse the version from tag_name
+                  val releaseVersion = FirmwareVersion.from(
+                     tag = release.tag_name,
+                     isRecovery = false,
+                     gitHash = "",
+                     timestamp = DISTANT_PAST,
+                     isDualSlot = false,
+                     isSlot0 = false
+                  )
+                  // If we can't parse the version, keep the release (be safe)
+                  releaseVersion?.let { it > currentFwVersion } ?: true
+               }
+            } else {
+               filteredReleases
+            }
+            
+            logcat { "Successfully found ${newerReleases.size} releases from ${source.fullName} with matching PBZ assets" }
+            if (newerReleases.isNotEmpty()) {
+               newerReleases.forEach { release ->
+                  logcat { "  Release: ${release.tag_name} (${release.pbzAssets.size} PBZ assets)" }
+               }
+            } else if (currentFwVersion != null) {
+               logcat { "Watch is up to date (current version: ${currentFwVersion.stringVersion})" }
+            }
+            
+            // Emit empty list if no newer releases found (watch is up to date)
+            // or the filtered list if there are updates available
+            emit(Outcome.Success(newerReleases))
+         } else if (result is Outcome.Error) {
+            logcat { "Error fetching releases: ${result.exception.message}" }
+            result.exception.cause?.let { logcat { "Cause: ${it.message}" } }
+            emit(Outcome.Error(result.exception))
+         }
+      }
+
+   /**
+    * Download a firmware file from GitHub and prepare it for installation.
+    */
+   fun downloadFromGithub(asset: GithubAsset) =
+      resources.launchResourceControlTask(_downloadProgress) {
+         actionLogger.logAction { "UpdateFirmwareViewModel.downloadFromGithub(asset = ${asset.name})" }
+         
+         emit(Outcome.Progress())
+         
+         val result = webservicesClient.downloadGithubAsset(asset, null)
+         
+         if (result is Outcome.Success) {
+            val downloadedFile = result.data
+            logcat { "Downloaded firmware file: ${downloadedFile.absolutePath}" }
+            
+            // Convert the file to an InputFile so it can be installed
+            val inputFile = InputFile(
+               uri = Uri.fromFile(downloadedFile),
+               filename = asset.name
+            )
+            
+            // Set it as the pending firmware
+            _watchInfo.update { outcome ->
+               outcome.mapData { it.copy(pendingFirmware = inputFile) }
+            }
+            
+            // Reset download progress so user can select another file
+            emit(Outcome.Success(File("")))
+         } else if (result is Outcome.Error) {
+            logcat { "Error downloading asset: ${result.exception}" }
+            emit(Outcome.Error(result.exception))
          }
       }
 
@@ -196,4 +339,5 @@ class UpdateFirmwareViewModel(
 data class UpdateFirmwareState(
    val watch: CommonConnectedDevice,
    val pendingFirmware: InputFile? = null,
+   val githubReleases: List<GithubRelease>? = null,
 )

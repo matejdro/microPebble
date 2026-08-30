@@ -24,4 +24,15 @@ interface WebservicesClient {
    suspend fun deauthenticate(token: WebservicesToken)
    suspend fun parseTokenUri(uri: String): ParsedWebservicesToken
    suspend fun fetchLocker(sourceId: Uuid): Outcome<WebserviceLocker>
+   
+   // GitHub methods
+   suspend fun fetchGithubReleases(
+       source: GithubSource,
+       token: String? = null
+   ): Outcome<List<GithubRelease>>
+   
+   suspend fun downloadGithubAsset(
+       asset: GithubAsset,
+       token: String? = null
+   ): Outcome<java.io.File>
 }

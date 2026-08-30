@@ -25,4 +25,22 @@
     <string name="start_installation">Start installation</string>
     <string name="update_completed">Update completed</string>
     <string name="update_firmware">Update firmware</string>
+    
+    <!-- GitHub firmware update strings -->
+    <string name="check_github_updates">Check GitHub for updates</string>
+    <string name="checking_github_updates">Checking GitHub for updates…</string>
+    <string name="no_firmware_updates_available">Your watch firmware is up to date</string>
+    <string name="firmware_update_available">Firmware update available: %1$s</string>
+    <string name="github_releases">GitHub Releases</string>
+    <string name="download_firmware">Download firmware</string>
+    <string name="downloading_firmware">Downloading firmware…</string>
+    <string name="firmware_download_failed">Failed to download firmware</string>
+    <string name="firmware_version">Version: %1$s</string>
+    <string name="firmware_published_at">Published: %1$s</string>
+    <string name="firmware_size">Size: %1$s</string>
+    <string name="confirm_install_github_firmware">Install firmware %1$s from GitHub?</string>
+    <string name="install_from_github">Install from GitHub</string>
+    <string name="no_pbz_files_found">No .pbz files found in releases</string>
+    <string name="github_api_error">Failed to fetch GitHub releases</string>
+    <string name="select_github_source">Select GitHub source</string>
 </resources>
